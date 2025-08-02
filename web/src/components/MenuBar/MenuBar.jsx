@@ -1,28 +1,29 @@
-import { FaDownload } from 'react-icons/fa6';
+import { CgProfile } from 'react-icons/cg';
+
+import { FaList, FaRegArrowAltCircleRight } from 'react-icons/fa';
 import { FaChartLine } from 'react-icons/fa6';
-import { FaList } from 'react-icons/fa';
 import { FiFilePlus } from 'react-icons/fi';
 import { LuBookPlus } from 'react-icons/lu';
 import { NavLink, useLocation } from 'react-router-dom';
-import { FaRegArrowAltCircleRight } from 'react-icons/fa';
 
 import { GrTest } from 'react-icons/gr';
 
-import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import { MdOutlineChecklist, MdOutlineMenuBook } from 'react-icons/md';
+import { MdLogout, MdOutlineChecklist, MdOutlineMenuBook } from 'react-icons/md';
 
 import { MdDashboard } from 'react-icons/md';
 
 import { useState } from 'react';
+import { PiStudentBold } from 'react-icons/pi';
 import { H3 } from '../UI/Headings.jsx';
 import './MenuBar.css';
-import { PiStudentBold } from 'react-icons/pi';
 
 function MenuBar({ isSidebarOpen }) {
-    const dispatch = useDispatch();
-    const [showTestArea, setShowTestArea] = useState(true);
-    const [showMockArea, setShowMockArea] = useState(false);
+    const auth = useSelector((state) => state.auth);
+
+    const [showTestArea, setShowTestArea] = useState(false);
+    const [showMockArea, setShowMockArea] = useState(true);
     const [showStudentArea, setShowStudentArea] = useState(true);
     const [showReportsArea, setShowReportsArea] = useState(true);
 
@@ -31,6 +32,21 @@ function MenuBar({ isSidebarOpen }) {
     return (
         <>
             <div className="flex flex-col p-2 gap-2 justify-start container mx-auto">
+                <div className="flex items-center gap-2 justify-center">
+                    {auth?.username && (
+                        <>
+                            <CgProfile className="w-6 h-6 text-white" />
+                            {isSidebarOpen && (
+                                <div className="flex flex-col items-start">
+                                    <span className="text-xs text-white  font-medium">
+                                        Welcome,
+                                    </span>
+                                    <span className="text-white text-sm text-ellipsis">{auth.username}</span>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
                 <NavLink
                     to={'/dashboard'}
                     className={({ isActive }) => (isActive ? 'menu-item active' : 'menu-item')}>
@@ -219,6 +235,15 @@ function MenuBar({ isSidebarOpen }) {
                             {isSidebarOpen && <span>View Result</span>}
                         </NavLink>
                     </div>
+                </div>
+
+                <div>
+                    <NavLink
+                        to={'/logout'}
+                        className={({ isActive }) => (isActive ? 'menu-item active' : 'menu-item')}>
+                        <MdLogout className="text-xl" />
+                        {isSidebarOpen && <span>Logout</span>}
+                    </NavLink>
                 </div>
             </div>
         </>

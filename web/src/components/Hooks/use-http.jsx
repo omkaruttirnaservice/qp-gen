@@ -18,11 +18,17 @@ const useHttp = () => {
                     ...requestData.headers,
                 },
                 body: requestData.body ? requestData.body : null,
+                credentials: 'include',
             });
-            const data = await res.json();
             if (!res.ok) {
-                throw new Error(data?.usrMsg || data?.message || 'Request failed');
+                if (res.status === 404) {
+                    throw new Error('Not found');
+                } else {
+                    const data = await res.json();
+                    throw new Error(data?.usrMsg || 'Request failed');
+                }
             }
+            const data = await res.json();
 
             toast(data?.message || 'Success');
 
@@ -30,14 +36,21 @@ const useHttp = () => {
             // THIS FUNCTION IS FOR GETTING RESPONSE RECIVED FROM THE REQUEST
             callback(data);
         } catch (err) {
-            console.log(err.message);
+            console.log(err, '----');
             dispatch(loaderActions.hideLoader());
-            if (err.message == 'Failed to fetch') {
-                console.log('Unable to connect to backend');
-                toast('Unable to connect to backend');
-            } else {
-                toast(err?.message || 'Something went wrong.');
+            toast(err?.message || 'Unable to connect to backend');
+            if (err.message == 'Invalid token') {
+                navigate('/login', { replace: true });
             }
+
+            // console.log(err.message);
+            // dispatch(loaderActions.hideLoader());
+            // if (err.message == 'Failed to fetch') {
+            //     console.log('Unable to connect to backend');
+            //     toast('Unable to connect to backend');
+            // } else {
+            //     toast(err?.message || 'Something went wrong.');
+            // }
         } finally {
             setIsLoading(false);
         }

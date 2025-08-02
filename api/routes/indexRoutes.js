@@ -8,7 +8,9 @@ import testsRouter from './testsRouter.js';
 import reportsRouter from './reportsRouter.js';
 import saveExamsRouter from './saveExamsRouter.js';
 import remoteRouter from './remoteRouter.js';
+import authRoutes from './authRouter.js';
 const router = express.Router();
+import { authenticateJWT } from './authMiddleware.js';
 
 router.use('/', subjectRoutes);
 router.use('/questions', questionRoutes);
@@ -21,5 +23,6 @@ router.use('/reports', reportsRouter);
 router.use('/exams', saveExamsRouter);
 
 router.use('/remote', remoteRouter);
+router.use('/auth', authRoutes);
 
 export default router;

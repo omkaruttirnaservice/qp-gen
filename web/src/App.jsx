@@ -18,6 +18,8 @@ import MockTestHome from './components/MockTest/MockTestHome.jsx';
 import CreateMockForm from './components/MockTest/CreateMockForm.jsx';
 import MockTestsList from './components/MockTestsList/MockTestsList.jsx';
 import MockTestReport from './components/MockTestsList/MockTestReport.jsx';
+import LoginPage from './components/Login/Login.jsx';
+import Logout from './components/Logout/Logout.jsx';
 
 const router = createBrowserRouter([
     {
@@ -66,6 +68,14 @@ const router = createBrowserRouter([
             { path: '/view-reports', element: <ViewReports /> },
             { path: '/single-student-report', element: <StudentExamReportSingle /> },
         ],
+    },
+    {
+        path: '/login',
+        element: <LoginPage />,
+    },
+    {
+        path: '/logout',
+        element: <Logout />,
     },
 ]);
 

@@ -6,13 +6,15 @@ import modalSlice from './modal-slice.jsx';
 import reportsSlice from './reports-slice.jsx';
 import studentAreaSlice from './student-area-slice.jsx';
 import testsSlice from './tests-slice.jsx';
+import authSlice from './auth-slice.jsx';
 export const store = configureStore({
-	reducer: {
-		loader: loaderSlice.reducer,
-		modal: modalSlice.reducer,
-		questionForm: QuestionFormSlice.reducer,
-		tests: testsSlice.reducer,
-		studentArea: studentAreaSlice.reducer,
-		reports: reportsSlice.reducer,
-	},
+    reducer: {
+        auth: authSlice.reducer,
+        loader: loaderSlice.reducer,
+        modal: modalSlice.reducer,
+        questionForm: QuestionFormSlice.reducer,
+        tests: testsSlice.reducer,
+        studentArea: studentAreaSlice.reducer,
+        reports: reportsSlice.reducer,
+    },
 });
