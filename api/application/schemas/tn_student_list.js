@@ -1,7 +1,4 @@
-import {
-    DataTypes,
-    Sequelize
-} from 'sequelize';
+import { DataTypes, Sequelize } from 'sequelize';
 import sequelize from '../config/db-connect-migration.js';
 
 const tn_student_list = sequelize.define(
@@ -207,7 +204,7 @@ const tn_student_list = sequelize.define(
         },
         updatedAt: {
             type: DataTypes.DATE,
-            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP '),
         },
     },
     {
