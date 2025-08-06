@@ -14,24 +14,20 @@ import {
     singleCandiatePaper,
 } from './gen-reports-api.jsx';
 import { InputSelect } from '../../UI/Input.jsx';
-
-const RESULT_BY_BATCH = 'Batch';
-const RESULT_BY_POST = 'Post';
+import { RESULT_BY_BATCH, RESULT_BY_POST } from '../../Utils/Constants.jsx';
 
 function ViewReports() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { testDetails, singleStudentViewReport } = useSelector((state) => state.reports);
+    const { singleStudentViewReport, currentViewTestDetails } = useSelector(
+        (state) => state.reports
+    );
 
-    const [viewResultBy, setViewResultBy] = useState(RESULT_BY_POST);
-    const [resultData, setResultData] = useState([]);
     const [postsList, setPostList] = useState([]);
-    const [selectedPost, setSelectedPost] = useState('');
 
     const [showPercentileResult, setShowPercentileResult] = useState(false);
 
     const [examDates, setExamDates] = useState([]);
-    const [selectedExamDate, setSelectedExamDate] = useState('');
 
     const _getExamDatesList = useQuery({
         queryKey: ['get exam dates'],
@@ -52,22 +48,19 @@ function ViewReports() {
     });
 
     useEffect(() => {
-        if (viewResultBy === RESULT_BY_POST) {
+        if (currentViewTestDetails?.viewResultBy === RESULT_BY_POST) {
             _getResultBatchesList.refetch();
         }
-        if (viewResultBy === RESULT_BY_BATCH) {
+        if (currentViewTestDetails?.viewResultBy === RESULT_BY_BATCH) {
             _getExamDatesList.refetch();
         }
-    }, [viewResultBy]);
+    }, [currentViewTestDetails?.viewResultBy]);
 
     useEffect(() => {
         if (_getResultBatchesList?.data) {
-            console.log(1, '==1==');
             setPostList(_getResultBatchesList.data.data);
         }
         if (_getExamDatesList?.data) {
-            console.log(2, '==2==');
-            console.log(_getExamDatesList.data.data, '==_getExamDatesList.data==');
             setExamDates(_getExamDatesList.data.data);
         }
     }, [_getResultBatchesList, _getExamDatesList]);
@@ -113,26 +106,6 @@ function ViewReports() {
                 );
             },
         },
-        // {
-        // 	sortable: true,
-        // 	name: '% Got',
-        // 	selector: (row) =>
-        // 		((row.sfrs_marks_gain / row.sfrc_total_marks) * 100).toFixed(2) + '%',
-        // },
-        // {
-        // 	sortable: true,
-        // 	name: 'Result',
-        // 	cell: (row) =>
-        // 		+row.sfrs_marks_gain >= +testDetails.mt_passing_out_of ? (
-        // 			<span className="bg-green-400 px-2 py-1  text-white font-semibold tracking-widest">
-        // 				PASS
-        // 			</span>
-        // 		) : (
-        // 			<span className="bg-red-400 px-2 py-1 text-white font-semibold tracking-widest">
-        // 				FAIL
-        // 			</span>
-        // 		),
-        // },
         {
             sortable: true,
             name: 'Action',
@@ -150,9 +123,6 @@ function ViewReports() {
     const { mutate: _singleCandidatePaper, isPending: candidateReportViewLoading } = useMutation({
         mutationFn: (data) => singleCandiatePaper(data),
         onSuccess: (data) => {
-            console.log(data, '==data22==');
-            toast.success(data?.message || 'Successful.');
-
             dispatch(reportsAction.setSingleStudentViewReport(data.data));
         },
         onError: (err) => {
@@ -174,17 +144,14 @@ function ViewReports() {
         });
     };
 
-    const handleResultViewType = (e) => {
-        setViewResultBy(e.target.value);
-    };
-
     const _getResultViewDataMutation = useMutation({
         mutationFn: (type) => {
             return getResultViewData(type);
         },
         onSuccess: (data) => {
-            toast.success(data?.message || 'Successful.');
-            setResultData(data.data);
+            const updatedData = { ...currentViewTestDetails };
+            updatedData['studentResultList'] = data.data;
+            dispatch(reportsAction.setCurentViewTestDetails(updatedData));
         },
         onError: (error) => {
             console.log(error, '==error==');
@@ -194,29 +161,38 @@ function ViewReports() {
 
     const handleGetResultData = () => {
         const _data = {};
-        if (viewResultBy === RESULT_BY_POST) {
+        if (currentViewTestDetails?.viewResultBy === RESULT_BY_POST) {
             _data.viewResultBy = RESULT_BY_POST;
-            _data.postName = selectedPost;
+            _data.postName = currentViewTestDetails.selectedPost;
         }
 
-        if (viewResultBy === RESULT_BY_BATCH) {
+        if (currentViewTestDetails?.viewResultBy === RESULT_BY_BATCH) {
             _data.viewResultBy = RESULT_BY_BATCH;
-            _data.postName = selectedPost;
-            _data.examDate = selectedExamDate;
+            _data.postName = currentViewTestDetails?.selectedPost;
+            _data.examDate = currentViewTestDetails?.selectedExamDate;
         }
 
         _getResultViewDataMutation.mutate(_data);
     };
 
-    const handlePostChange = (e) => setSelectedPost(e.target.value);
-    const handleDateChange = (e) => setSelectedExamDate(e.target.value);
+    const handleChange = (e) => {
+        let updatedList = { ...currentViewTestDetails };
+
+        let name = e.currentTarget.name;
+        let value = e.currentTarget.value;
+        updatedList = {
+            ...updatedList,
+            studentResultList: [],
+            [name]: value,
+        };
+        dispatch(reportsAction.setCurentViewTestDetails(updatedList));
+    };
 
     const _getResultExel = useMutation({
         mutationFn: (data) => {
             return getCustomResultExcel(data);
         },
         onSuccess: (data) => {
-            console.log(data, '==data==');
         },
         onError: (error) => {
             console.log(error.message, '==error==');
@@ -226,16 +202,16 @@ function ViewReports() {
 
     const handleGetExcelBtn = () => {
         const _data = {};
-        if (viewResultBy === RESULT_BY_POST) {
+        if (currentViewTestDetails?.viewResultBy === RESULT_BY_POST) {
             _data.viewResultBy = RESULT_BY_POST;
-            _data.postName = selectedPost;
+            _data.postName = currentViewTestDetails?.selectedPost;
             _data.resultType = showPercentileResult ? 'PERCENTILE' : 'MARKS';
         }
 
-        if (viewResultBy === RESULT_BY_BATCH) {
+        if (currentViewTestDetails?.viewResultBy === RESULT_BY_BATCH) {
             _data.viewResultBy = RESULT_BY_BATCH;
-            _data.postName = selectedPost;
-            _data.examDate = selectedExamDate;
+            _data.postName = currentViewTestDetails?.selectedPost;
+            _data.examDate = currentViewTestDetails?.selectedExamDate;
             _data.resultType = showPercentileResult ? 'PERCENTILE' : 'MARKS';
         }
         _getResultExel.mutate(_data);
@@ -248,20 +224,22 @@ function ViewReports() {
                     <InputSelect
                         label="View Result By"
                         className={'w-full'}
-                        value={viewResultBy}
-                        onChange={handleResultViewType}>
+                        name="viewResultBy"
+                        value={currentViewTestDetails?.viewResultBy || RESULT_BY_BATCH}
+                        onChange={handleChange}>
                         <option value={RESULT_BY_BATCH}>{RESULT_BY_BATCH}</option>
                         <option value={RESULT_BY_POST}>{RESULT_BY_POST}</option>
                     </InputSelect>
                 </div>
 
-                {viewResultBy === RESULT_BY_BATCH && (
+                {currentViewTestDetails?.viewResultBy === RESULT_BY_BATCH && (
                     <div>
                         <InputSelect
                             label="Exam Dates"
                             className={'w-full'}
-                            value={selectedExamDate}
-                            onChange={handleDateChange}>
+                            name="selectedExamDate"
+                            value={currentViewTestDetails?.selectedExamDate || ''}
+                            onChange={handleChange}>
                             <option value="">--Select Exam Date--</option>
                             {examDates.length > 0 &&
                                 examDates.map((date) => {
@@ -279,8 +257,9 @@ function ViewReports() {
                     <InputSelect
                         label="Posts"
                         className={'w-full'}
-                        value={selectedPost}
-                        onChange={handlePostChange}>
+                        name="selectedPost"
+                        value={currentViewTestDetails?.selectedPost || ''}
+                        onChange={handleChange}>
                         <option value="">--Select Post--</option>
                         {postsList.length > 0 &&
                             postsList.map((post) => {
@@ -313,7 +292,6 @@ function ViewReports() {
                                 id="percentile-result"
                                 onClick={() => {
                                     setShowPercentileResult(!showPercentileResult);
-                                    console.log(showPercentileResult, '==showPercentileResult==');
                                 }}
                             />
                         </div>
@@ -325,58 +303,14 @@ function ViewReports() {
                 Note: The negative marking is only calculated for wrong answered questions.
             </p>
 
-            <DataTable columns={columns} data={resultData} pagination highlightOnHover />
+            <DataTable
+                columns={columns}
+                data={currentViewTestDetails?.studentResultList}
+                pagination
+                highlightOnHover
+            />
         </>
     );
 }
 
 export default ViewReports;
-
-{
-    /* <div className="flex gap-3 justify-center py-4">
-				<div className="text-xs border p-1">
-					Total Questions:{' '}
-					<span className="font-semibold">
-						{' '}
-						{testDetails.test_total_question}{' '}
-					</span>
-				</div>
-				<div className="text-xs border p-1">
-					Duration :{' '}
-					<span className="font-semibold">
-						{' '}
-						{testDetails.test_duration} Min{' '}
-					</span>
-				</div>
-				<div className="text-xs border p-1">
-					Marks per question :{' '}
-					<span className="font-semibold">
-						{' '}
-						{testDetails.mt_mark_per_question} M{' '}
-					</span>
-				</div>
-				<div className="text-xs border p-1">
-					Test Marks :{' '}
-					<span className="font-semibold">
-						{' '}
-						{testDetails.mt_total_marks} M{' '}
-					</span>
-				</div>
-				<div className="text-xs border p-1">
-					Passing Marks :{' '}
-					<span className="font-semibold">
-						{' '}
-						{testDetails.mt_passing_out_of} M{' '}
-					</span>
-				</div>
-				<div className="text-xs border p-1">
-					Negative Marking:{' '}
-					<span className="font-semibold"> {testDetails.test_negative} M </span>
-				</div>
-
-				<div className="text-xs border p-1">
-					Total candidates:{' '}
-					<span className="font-semibold"> {resultData.length} </span>
-				</div>
-			</div> */
-}
