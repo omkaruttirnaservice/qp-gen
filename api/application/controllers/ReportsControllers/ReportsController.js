@@ -295,9 +295,11 @@ const reportsController = {
         }
 
         // prettier-ignore
-        let file_name = `${data.viewResultBy}-${data.postName}-${data?.examDate || '-'}_result`
+        // let file_name = `${data.viewResultBy}-${data.postName}-${data?.examDate || '-'}_${data?.resultType || ''}_result`
+        let file_name = `${data?.resultType || ''}_result`
 
         file_name = file_name.replace(/[ _-\s]/, '_');
+        console.log({ file_name });
 
         let workbook = new excel.Workbook();
         let workSheet = workbook.addWorksheet('Sheet_1');
@@ -319,7 +321,7 @@ const reportsController = {
                 el.sl_contact_number,
                 parseInt(el.sfrs_correct) + parseInt(el.sfrs_wrong),
                 el?.sfrs_unattempted || 0,
-                el?.correct || 0,
+                el?.sfrs_correct || 0,
                 data.resultType === 'PERCENTILE'
                     ? el?.srfs_percentile
                     : `${el?.sfrs_marks_gain} / ${el?.sfrc_total_marks}`,
@@ -330,6 +332,9 @@ const reportsController = {
             'Content-Type',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         );
+
+        res.setHeader('Access-Control-Expose-Headers', 'x-file-name');
+        res.setHeader('x-file-name', `${file_name}.xlsx`);
 
         res.setHeader('Content-Disposition', 'attachment; filename=' + 'valid-candidate-list.xlsx');
         return workbook.xlsx.write(res);
