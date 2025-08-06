@@ -1,6 +1,9 @@
+import sequelize from '../../config/db-connect-migration.js';
 import remoteModelLegacy from '../../model/remoteModelLegacy.js';
 import tm_publish_test_by_post from '../../schemas/tm_publish_test_by_post.js';
 import tm_publish_test_list from '../../schemas/tm_publish_test_list.js';
+import tm_student_question_paper from '../../schemas/tm_student_question_paper.js';
+import tm_student_test_list from '../../schemas/tm_student_test_list.js';
 import tm_test_question_sets from '../../schemas/tm_test_question_sets.js';
 import tn_student_list from '../../schemas/tn_student_list.js';
 import ApiError from '../../utils/ApiError.js';
@@ -195,7 +198,7 @@ const remoteControllerLegacy = {
         /** *
          * Download student list for the given center code and batch
          * First we need to download all student list from form filling panel (its located in new QPGeneration panel => student area > Add new student)
-         * 
+         *
          * Then this api will be used to download students list in exam panel
          * AS per params
          * eg req.params
@@ -225,6 +228,47 @@ const remoteControllerLegacy = {
             call: 1,
             exam_student_list: _studentsList,
         });
+    }),
+
+    saveExamData: asyncHandler(async (req, res) => {
+        console.log(req.body, '==req.body==');
+        let { student_list, pub_id, exam_paper } = req.body;
+
+        if (student_list.length == 0) throw new ApiError(204, 'No students list found');
+
+        if (exam_paper.length == 0) throw new ApiError(204, 'No exams list found');
+
+        if (!pub_id) throw new ApiError(204, 'Invalid publish id');
+
+        let transact = await sequelize.transaction();
+
+        try {
+            await tm_student_test_list.bulkCreate(student_list, {
+                transaction: transact,
+            });
+            await tm_student_question_paper.bulkCreate(exam_paper, {
+                transaction: transact,
+            });
+            await transact.commit();
+
+            return res.status(200).json({
+                call: 1,
+                message: 'Successfully saved students and their question paper data',
+            });
+            // return res
+            //     .status(201)
+            //     .json(
+            //         new ApiResponse(
+            //             201,
+            //             {},
+            //             'Successfully uploaded students and their question paper data'
+            //         )
+            //     );
+        } catch (error) {
+            console.log(error, '==error==');
+            await transact.rollback();
+            throw new ApiError(424, error?.message || 'Something went wrong on server');
+        }
     }),
 };
 export default remoteControllerLegacy;

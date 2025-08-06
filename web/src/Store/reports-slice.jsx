@@ -42,10 +42,10 @@ const reportsSlice = createSlice({
 
 		setSingleStudentViewReport: (state, action) => {
 			state.singleStudentViewReport = action.payload;
-			if (action.payload?.studExam?.ptl_test_info) {
-				let [_testDetails] = JSON.parse(action.payload.studExam.ptl_test_info);
-				state.studTestDetails = _testDetails;
-			}
+			// if (action.payload?.studExam?.ptl_test_info) {
+			// 	let [_testDetails] = JSON.parse(action.payload.studExam.ptl_test_info);
+			// 	state.studTestDetails = _testDetails;
+			// }
 		},
 	},
 });

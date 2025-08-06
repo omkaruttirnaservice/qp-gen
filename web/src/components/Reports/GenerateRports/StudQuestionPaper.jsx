@@ -3,7 +3,8 @@ import { FaRegThumbsUp } from 'react-icons/fa';
 import { FaRegThumbsDown } from 'react-icons/fa6';
 
 function StudQuestionPaper({ el, idx }) {
-	let isAnsCorrect = el.q_ans == el.sqp_ans;
+	let isAnsCorrect = el?.q_ans?.toUpperCase() == el?.sqp_ans?.toUpperCase();
+
 	return (
 		<div className={`columns-2 py-3 px-4 text-start ${isAnsCorrect ? 'bg-green-200' : 'bg-red-200'} border border-b relative mb-3`}>
 			<div className="py-3">
