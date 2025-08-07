@@ -71,7 +71,7 @@ const router = createBrowserRouter([
                 path: '/reports',
                 element: <ReportsLayout />,
                 children: [
-                    { path: '/', element: <ViewReports /> },
+                    { path: '', element: <ViewReports /> },
                     { path: 'single', element: <StudentExamReportSingle /> },
                 ],
             },
