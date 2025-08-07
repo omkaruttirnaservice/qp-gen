@@ -1,27 +1,27 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './App.css';
 import Dashboard from './components/Dashboard/Dashboard.jsx';
+import LoginPage from './components/Login/Login.jsx';
+import Logout from './components/Logout/Logout.jsx';
+import CreateMockForm from './components/MockTest/CreateMockForm.jsx';
+import MockTestHome from './components/MockTest/MockTestHome.jsx';
+import MockTestReport from './components/MockTestsList/MockTestReport.jsx';
+import MockTestsList from './components/MockTestsList/MockTestsList.jsx';
 import PublishedTestQuestionsView from './components/PublishedTestsList/PublishedTestQuestionsView.jsx';
 import PublishedTestsList from './components/PublishedTestsList/PublishedTestsList.jsx';
 import QuestionsList from './components/QuestionsList/QuestionsList.jsx';
 import QuestionsListAutoTest from './components/QuestionsListAutoTest/QuestionsListAutoTest.jsx';
 import GenerateRports from './components/Reports/GenerateRports/GenerateRports.jsx';
+import PDFGenerator from './components/Reports/GenerateRports/PDFGenerator.jsx';
+import ReportsLayout from './components/Reports/GenerateRports/ReportsLayout.jsx';
+import StudentExamReportSingle from './components/Reports/GenerateRports/StudentExamReportSingle.jsx';
+import ViewReports from './components/Reports/GenerateRports/ViewReports.jsx';
 import RootComponent from './components/RootComponent/RootComponent';
 import AddNewStudent from './components/StudentArea/AddNewStudent/AddNewStudent.jsx';
 import StudentsList from './components/StudentArea/StudentsList/StudentsList.jsx';
 import StudentsListByCenter from './components/StudentArea/StudentsListByCenter/StudentsListByCenter.jsx';
 import TestQuestionsView from './components/TestsList/TestQuestionsView.jsx';
 import TestsList from './components/TestsList/TestsList.jsx';
-import ViewReports from './components/Reports/GenerateRports/ViewReports.jsx';
-import StudentExamReportSingle from './components/Reports/GenerateRports/StudentExamReportSingle.jsx';
-import MockTestHome from './components/MockTest/MockTestHome.jsx';
-import CreateMockForm from './components/MockTest/CreateMockForm.jsx';
-import MockTestsList from './components/MockTestsList/MockTestsList.jsx';
-import MockTestReport from './components/MockTestsList/MockTestReport.jsx';
-import LoginPage from './components/Login/Login.jsx';
-import Logout from './components/Logout/Logout.jsx';
-import PDFGenerator from './components/Reports/GenerateRports/PDFGenerator.jsx';
-import ReportsLayout from './components/Reports/GenerateRports/ReportsLayout.jsx';
 
 const router = createBrowserRouter([
     {

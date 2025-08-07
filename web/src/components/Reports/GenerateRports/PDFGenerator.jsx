@@ -1,10 +1,8 @@
-import { useSelector } from 'react-redux';
-import { useLocation, useParams, useSearchParams } from 'react-router-dom';
-import { singleCandiatePaper } from './gen-reports-api';
 import { useMutation } from '@tanstack/react-query';
-import { reportsAction } from '../../../Store/reports-slice';
-import { toast } from 'react-toastify';
 import { useLayoutEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { singleCandiatePaper } from './gen-reports-api';
 
 const PDFGenerator = () => {
     /**

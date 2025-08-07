@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate, useSearchParams } from 'react-router-dom';
 import { reportsAction } from '../../../Store/reports-slice.jsx';
 import CButton from '../../UI/CButton.jsx';
-import { H2, H3 } from '../../UI/Headings.jsx';
+import { H3 } from '../../UI/Headings.jsx';
 import ScoreCard from './ScoreCard.jsx';
 import StudQuestionPaper from './StudQuestionPaper.jsx';
 
