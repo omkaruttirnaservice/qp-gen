@@ -16,7 +16,7 @@ const initialState = {
         selectedExamDate: null,
         selectedPost: null,
         studentResultList: [],
-    }, // This will store details for test for which we are currently viewing result in /view-reports
+    }, // This will store details for test for which we are currently viewing result in /reports
 };
 
 const reportsSlice = createSlice({

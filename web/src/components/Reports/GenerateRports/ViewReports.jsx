@@ -15,6 +15,7 @@ import {
 } from './gen-reports-api.jsx';
 import { InputSelect } from '../../UI/Input.jsx';
 import { RESULT_BY_BATCH, RESULT_BY_POST } from '../../Utils/Constants.jsx';
+import { FiEye } from 'react-icons/fi';
 
 function ViewReports() {
     const navigate = useNavigate();
@@ -109,12 +110,14 @@ function ViewReports() {
         {
             sortable: true,
             name: 'Action',
+            width: '13%',
             cell: (row) => (
                 <CButton
                     className="text-xs"
                     onClick={handleCandidateViewReport.bind(null, row)}
-                    isLoading={candidateReportViewLoading}>
-                    View Report
+                    isLoading={candidateReportViewLoading}
+                    icon={<FiEye />}>
+                    Report
                 </CButton>
             ),
         },
@@ -133,7 +136,7 @@ function ViewReports() {
 
     useEffect(() => {
         if (singleStudentViewReport?.quePaper?.length >= 1 && singleStudentViewReport?.studExam) {
-            navigate('/single-student-report');
+            navigate('/reports/single');
         }
     }, [singleStudentViewReport]);
 
@@ -192,8 +195,7 @@ function ViewReports() {
         mutationFn: (data) => {
             return getCustomResultExcel(data);
         },
-        onSuccess: (data) => {
-        },
+        onSuccess: (data) => {},
         onError: (error) => {
             console.log(error.message, '==error==');
             toast.error(error?.message || 'Server error');

@@ -20,6 +20,8 @@ import MockTestsList from './components/MockTestsList/MockTestsList.jsx';
 import MockTestReport from './components/MockTestsList/MockTestReport.jsx';
 import LoginPage from './components/Login/Login.jsx';
 import Logout from './components/Logout/Logout.jsx';
+import PDFGenerator from './components/Reports/GenerateRports/PDFGenerator.jsx';
+import ReportsLayout from './components/Reports/GenerateRports/ReportsLayout.jsx';
 
 const router = createBrowserRouter([
     {
@@ -65,8 +67,14 @@ const router = createBrowserRouter([
 
             // reports
             { path: '/gen-reports', element: <GenerateRports /> },
-            { path: '/view-reports', element: <ViewReports /> },
-            { path: '/single-student-report', element: <StudentExamReportSingle /> },
+            {
+                path: '/reports',
+                element: <ReportsLayout />,
+                children: [
+                    { path: '/', element: <ViewReports /> },
+                    { path: 'single', element: <StudentExamReportSingle /> },
+                ],
+            },
         ],
     },
     {
@@ -77,6 +85,8 @@ const router = createBrowserRouter([
         path: '/logout',
         element: <Logout />,
     },
+
+    { path: '/qp-pdf/:roll/:ptid', element: <PDFGenerator /> },
 ]);
 
 function App() {

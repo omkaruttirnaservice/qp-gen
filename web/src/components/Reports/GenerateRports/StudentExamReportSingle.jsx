@@ -1,12 +1,12 @@
-import React, { useEffect, useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
+import { IoChevronBackOutline } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { NavLink, useNavigate, useSearchParams } from 'react-router-dom';
 import { reportsAction } from '../../../Store/reports-slice.jsx';
 import CButton from '../../UI/CButton.jsx';
 import { H2, H3 } from '../../UI/Headings.jsx';
 import ScoreCard from './ScoreCard.jsx';
 import StudQuestionPaper from './StudQuestionPaper.jsx';
-import { IoChevronBackOutline } from 'react-icons/io5';
 
 const SCORE_TAB = 'score_card';
 const QUESTION_PAPER_TAB = 'question-paper';
@@ -20,6 +20,8 @@ function StudentExamReportSingle() {
     );
     const { studExam, quePaper } = singleStudentViewReport;
 
+    console.log(studExam);
+
     useLayoutEffect(() => {
         setParams({ tab: SCORE_TAB });
     }, []);
@@ -30,7 +32,7 @@ function StudentExamReportSingle() {
             !singleStudentViewReport?.studExam ||
             !studExam
         ) {
-            navigate('/view-reports');
+            navigate('/reports');
         }
     }, [singleStudentViewReport, studExam]);
 
@@ -46,12 +48,12 @@ function StudentExamReportSingle() {
 
     return (
         <div>
-            <H2>Student Exam Report</H2>
-            <div className="flex justify-between gap-3 mb-3">
+            {/* <H2>Student Exam Report</H2> */}
+            <div className="flex justify-between gap-3 my-3">
                 <CButton
                     icon={<IoChevronBackOutline />}
                     onClick={() => {
-                        navigate('/view-reports');
+                        navigate('/reports');
                     }}
                     className="btn--danger"></CButton>
                 <div className="flex gap-3">
@@ -67,6 +69,17 @@ function StudentExamReportSingle() {
                         }`}>
                         Question Paper
                     </CButton>
+
+                    <CButton className={`btn--warning px-2 text-gray-700`}>
+                        <NavLink
+                            target="_blank"
+                            to={`/qp-pdf/${studExam?.sfrs_student_id || 0}/${
+                                studExam?.sfrs_publish_id || 0
+                            }`}
+                            className={`btn--warning px-9 text-gray-700`}>
+                            Get Pdf
+                        </NavLink>
+                    </CButton>
                 </div>
             </div>
 
@@ -78,7 +91,9 @@ function StudentExamReportSingle() {
 
             {params.get('tab') == QUESTION_PAPER_TAB && (
                 <>
-                    <H3>Question paper</H3>
+                    <H3 className="text-3xl font-bold text-indigo-700 mb-6 text-center">
+                        Question paper
+                    </H3>
 
                     {quePaper?.length > 0 &&
                         quePaper.map((el, idx) => {
