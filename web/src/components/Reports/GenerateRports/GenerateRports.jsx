@@ -1,18 +1,12 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { reportsAction } from '../../../Store/reports-slice.jsx';
 import CButton from '../../UI/CButton.jsx';
 import { H3 } from '../../UI/Headings.jsx';
-import {
-    generateResult,
-    getPublishedTestLists,
-    getResultExcel,
-    getResultViewData,
-} from './gen-reports-api.jsx';
-import ContextMenu from '../../UI/ContextMenu.jsx';
+import { generateResult, getPublishedTestLists, getResultExcel } from './gen-reports-api.jsx';
 
 function GenerateRports() {
     const { testsList } = useSelector((state) => state.reports);
@@ -124,11 +118,11 @@ function TestDetails({ el: details, idx, refetch }) {
                                 isLoading={_generateResultLoading}>
                                 Generate Result
                             </CButton>
-                            <CButton
+                            {/* <CButton
                                 onClick={handleGenerateResult.bind(null, details.id)}
                                 isLoading={_generateResultLoading}>
                                 Percentile Result
-                            </CButton>
+                            </CButton> */}
                         </>
                     ) : (
                         <>
@@ -138,12 +132,12 @@ function TestDetails({ el: details, idx, refetch }) {
                                 isLoading={_generateResultLoading}>
                                 Regenerate Result
                             </CButton>
-                            <CButton
+                            {/* <CButton
                                 varient={'btn--warning'}
                                 onClick={handleGenerateResult.bind(null, details.id)}
                                 isLoading={_generateResultLoading}>
                                 Percentile Result
-                            </CButton>
+                            </CButton> */}
                         </>
                     )}
 
