@@ -1,3 +1,4 @@
+import { Worker } from 'worker_threads';
 import excel from 'exceljs';
 import { Sequelize } from 'sequelize';
 import sequelize from '../../config/db-connect-migration.js';
@@ -285,59 +286,45 @@ const reportsController = {
 
     getCustomResultExcel: asyncHandler(async (req, res) => {
         const data = req.body;
-        console.log(data, '==data==');
 
         const [_resultDetailsRes] = await reportsModel.getResultData(data);
 
-        console.log(_resultDetailsRes, '==_testReportsForExcel111==');
         if (_resultDetailsRes.length === 0) {
             throw new ApiError(400, 'No students list found.');
         }
 
         // prettier-ignore
-        // let file_name = `${data.viewResultBy}-${data.postName}-${data?.examDate || '-'}_${data?.resultType || ''}_result`
-        let file_name = `${data?.resultType || ''}_result`
 
+        let file_name = `${data?.resultType || ''}_result`;
         file_name = file_name.replace(/[ _-\s]/, '_');
-        console.log({ file_name });
 
-        let workbook = new excel.Workbook();
-        let workSheet = workbook.addWorksheet('Sheet_1');
-
-        // prettier-ignore
-        const headerColumns = [ '#', 'Roll No', 'Post', 'First Name', 'Middle Name', 'Last Name', 'Date Of Birth', 'Mobile', 'Attempted', 'Uttempted', 'Correct', 'Score']
-
-        workSheet.addRow(headerColumns);
-
-        _resultDetailsRes.forEach((el, idx) => {
-            workSheet.addRow([
-                idx + 1,
-                el.id,
-                el.sl_post,
-                el.sl_f_name,
-                el.sl_m_name,
-                el.sl_l_name,
-                el.dob,
-                el.sl_contact_number,
-                parseInt(el.sfrs_correct) + parseInt(el.sfrs_wrong),
-                el?.sfrs_unattempted || 0,
-                el?.sfrs_correct || 0,
-                data.resultType === 'PERCENTILE'
-                    ? el?.srfs_percentile
-                    : `${el?.sfrs_marks_gain} / ${el?.sfrc_total_marks}`,
-            ]);
-        });
-
-        res.setHeader(
-            'Content-Type',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        const worker = new Worker(
+            './application/controllers/ReportsControllers/customExcelReportWorker.js',
+            {
+                workerData: {
+                    _resultDetailsRes,
+                    resultType: data.resultType,
+                },
+            }
         );
 
-        res.setHeader('Access-Control-Expose-Headers', 'x-file-name');
-        res.setHeader('x-file-name', `${file_name}.xlsx`);
+        worker.on('message', (data) => {
+            res.setHeader(
+                'Content-Type',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            );
 
-        res.setHeader('Content-Disposition', 'attachment; filename=' + 'valid-candidate-list.xlsx');
-        return workbook.xlsx.write(res);
+            res.setHeader('Access-Control-Expose-Headers', 'x-file-name');
+            res.setHeader('x-file-name', `${file_name}.xlsx`);
+            res.setHeader(
+                'Content-Disposition',
+                'attachment; filename=' + 'valid-candidate-list.xlsx'
+            );
+
+            res.end(data);
+        });
+
+        // return workbook.xlsx.write(res);
     }),
 };
 
