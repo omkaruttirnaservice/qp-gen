@@ -107,19 +107,33 @@ const studentAreaModel = {
 
     getAllStudentsList_v2: async (data) => {
         try {
-            console.log(data, '=data');
-            const { limit, page, offset } = data;
-
+            const { limit, page, offset, search_term, search_by } = data;
             let returnData = {};
+            let where = '';
+
+            if (search_by === 'roll_no') {
+                where = ` WHERE sl_roll_number LIKE '%${search_term}%' `;
+            }
+            if (search_by === 'name') {
+                where = `
+				WHERE 
+					sl_f_name LIKE '%${search_term}%'
+					OR sl_m_name LIKE '%${search_term}%'
+					OR sl_l_name LIKE '%${search_term}%'
+
+				`;
+            }
 
             let candidateListQuery = `SELECT 
 			sl.*,
 			DATE_FORMAT(sl_date_of_birth, '%d-%m-%Y') as sl_date_of_birth
 			FROM 
 			tn_student_list sl
+			${where}
+			ORDER BY sl_roll_number
 			LIMIT  ${limit} OFFSET ${offset}
 			`;
-            console.log({ candidateListQuery });
+            console.log(candidateListQuery);
 
             const [candidateList] = await sequelize.query(candidateListQuery);
             returnData['candidateList'] = candidateList?.length > 0 ? candidateList : [];
@@ -135,6 +149,7 @@ const studentAreaModel = {
             ) as pagination
             FROM
             tn_student_list sl
+			${where}
             `;
             const [pagination] = await sequelize.query(paginationDataQuery);
             returnData['pagination'] = pagination[0].pagination.pagination;

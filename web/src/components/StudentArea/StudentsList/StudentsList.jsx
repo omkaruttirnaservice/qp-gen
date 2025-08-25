@@ -27,7 +27,13 @@ function StudentsList() {
         refetch: refetchStudentsList,
     } = useQuery({
         queryKey: ['getStudList'],
-        queryFn: () => getStudList({ page: allList?.page || 1, limit: allList?.limit || 10 }),
+        queryFn: () =>
+            getStudList({
+                page: allList?.page || 1,
+                limit: allList?.limit || 10,
+                search_term: allList?.searchTerm || '',
+                search_by: allList?.searchType || '',
+            }),
         retry: false,
         refetchOnWindowFocus: false,
     });
@@ -47,24 +53,13 @@ function StudentsList() {
     };
 
     useEffect(() => {
-        if (allList.searchTerm == '') return setFilterStudentsList_All(allList.studentsList_ALL);
+        if (allList.searchTerm == '') {
+            refetchStudentsList();
+            return;
+        }
 
-        let timeOut = setTimeout(() => {
-            if (allList.searchType == SEARCH_TYPE_ROLL_NO) {
-                let updatedList = allList.studentsList_ALL.filter(
-                    (stud) => +stud.sl_roll_number.match(+allList.searchTerm)
-                );
-                setFilterStudentsList_All(updatedList);
-            }
-            if (allList.searchType == SEARCH_TYPE_NAME) {
-                let updatedList = allList.studentsList_ALL.filter((stud) => {
-                    let fullName = `${stud.sl_f_name} ${stud.sl_m_name} ${stud.sl_l_name}`;
-                    return fullName.toLowerCase().match(allList.searchTerm.toLowerCase());
-                });
+        let timeOut = setTimeout(() => refetchStudentsList(), 1500);
 
-                setFilterStudentsList_All(updatedList);
-            }
-        }, 1500);
         return () => {
             if (timeOut) clearTimeout(timeOut);
         };
@@ -96,7 +91,7 @@ function StudentsList() {
 
     useEffect(() => {
         refetchStudentsList();
-    }, [allList]);
+    }, [allList.page, allList.limit]);
 
     const columns = [
         {

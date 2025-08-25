@@ -39,6 +39,11 @@ const studentAreaSlice = createSlice({
             state.allList.searchType = action.payload;
         },
 
+        setSearch: (state, action) => {
+            state.allList.searchType = action.payload?.searchType || '-';
+            state.allList.searchTerm = action.payload?.searchTerm || '-';
+        },
+
         setStudentsList_All: (state, action) => {
             console.log(action.payload, '=payload');
             const _candidateList = action.payload?.candidateList || [];

@@ -185,12 +185,16 @@ const StudentAreaController = {
          * getting students list from local database (i.e. downlaoded db)
          * */
 
-        const { limit = 10, page = 1 } = req.query;
+        console.log(req.query, 'query');
+
+        const { limit = 10, page = 1, search_by = '', search_term = '' } = req.query;
 
         let data = {
             limit: limit || 10,
             page: page || 1,
             offset: (page - 1) * limit,
+            search_by,
+            search_term,
         };
 
         let _studListAll = await studentAreaModel.getAllStudentsList_v2(data);

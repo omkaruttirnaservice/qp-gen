@@ -23,6 +23,7 @@ export const asyncHandler = (controllerFun) => {
 		try {
 			await controllerFun(req, res, next);
 		} catch (err) {
+			console.log(err,'=err');
 			next(err); // This passes the error to the next middleware (which should be your error handler)
 		}
 	};
