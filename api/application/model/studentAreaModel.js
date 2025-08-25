@@ -8,262 +8,297 @@ import tm_student_question_paper from '../schemas/tm_student_question_paper.js';
 import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
 import tm_test_question_sets from '../schemas/tm_test_question_sets.js';
 import db from '../config/db.connect.js';
+import sequelize from '../config/db-connect-migration.js';
 
 const studentAreaModel = {
-	getServerIP: async () => {
-		return tm_server_ip_list.findAll({ raw: true });
-	},
-	addFormFillingIP: ({ form_filling_server_ip, exam_panel_server_ip }) => {
-		return tm_server_ip_list.create({
-			form_filling_server_ip,
-			exam_panel_server_ip,
-		});
-	},
-	updateFormFillingIP: (
-		{ form_filling_server_ip, exam_panel_server_ip },
-		id
-	) => {
-		return tm_server_ip_list.update(
-			{
-				form_filling_server_ip,
-				exam_panel_server_ip,
-			},
-			{
-				where: {
-					id: id,
-				},
-			}
-		);
-	},
+    getServerIP: async () => {
+        return tm_server_ip_list.findAll({ raw: true });
+    },
+    addFormFillingIP: ({ form_filling_server_ip, exam_panel_server_ip }) => {
+        return tm_server_ip_list.create({
+            form_filling_server_ip,
+            exam_panel_server_ip,
+        });
+    },
+    updateFormFillingIP: ({ form_filling_server_ip, exam_panel_server_ip }, id) => {
+        return tm_server_ip_list.update(
+            {
+                form_filling_server_ip,
+                exam_panel_server_ip,
+            },
+            {
+                where: {
+                    id: id,
+                },
+            }
+        );
+    },
 
-	deleteFormFillingIP: (id) => {
-		return tm_server_ip_list.destroy({
-			where: {
-				id: id,
-			},
-		});
-	},
+    deleteFormFillingIP: (id) => {
+        return tm_server_ip_list.destroy({
+            where: {
+                id: id,
+            },
+        });
+    },
 
-	saveAllStudentsList: (_data, transact) => {
-		try {
-			return tn_student_list.bulkCreate(_data, { transaction: transact });
-		} catch (error) {
-			throw new ApiError(500, error?.message || 'Something went wrong');
-		}
-	},
-	getAllStudentsList_2: () => {
-		try {
-			return tn_student_list.findAll(
-				{
-					attributes: [
-						'id',
-						'sl_f_name',
-						'sl_m_name',
-						'sl_l_name',
-						'sl_image',
-						'sl_sign',
-						'sl_email',
-						'sl_father_name',
-						'sl_mother_name',
-						'sl_address',
-						'sl_mobile_number_parents',
-						'sl_tenth_marks',
-						'sl_contact_number',
-						'sl_class',
-						'sl_roll_number',
-						'sl_subject',
-						'sl_stream',
-						'sl_addmit_type',
-						'sl_time',
-						'sl_date',
-						'sl_time_stamp',
-						'sl_added_by_login_id',
-						'sl_is_live',
-						[
-							Sequelize.fn(
-								'DATE_FORMAT',
-								Sequelize.col('sl_date_of_birth'),
-								'%d-%m-%Y'
-							),
-							'sl_date_of_birth',
-						],
-						'sl_school_name',
-						'sl_catagory',
-						'sl_application_number',
-						'sl_is_physical_handicap',
-						'sl_is_physical_handicap_desc',
-						'sl_post',
-						'sl_center_code',
-						'sl_batch_no',
-						'sl_exam_date',
-						'sl_password',
-					],
-				},
-				{ raw: true }
-			);
-		} catch (error) {
-			throw new ApiError(500, error?.message || 'Something went wrong');
-		}
-	},
+    saveAllStudentsList: (_data, transact) => {
+        try {
+            return tn_student_list.bulkCreate(_data, { transaction: transact });
+        } catch (error) {
+            throw new ApiError(500, error?.message || 'Something went wrong');
+        }
+    },
 
-	getStudentsListByFilter: async (data) => {
-		try {
-			let _result = await tn_student_list.findAll({
-				attributes: [
-					'id',
-					'sl_f_name',
-					'sl_m_name',
-					'sl_l_name',
-					'sl_image',
-					'sl_sign',
-					'sl_email',
-					'sl_father_name',
-					'sl_mother_name',
-					'sl_address',
-					'sl_mobile_number_parents',
-					'sl_tenth_marks',
-					'sl_contact_number',
-					'sl_class',
-					'sl_roll_number',
-					'sl_subject',
-					'sl_stream',
-					'sl_addmit_type',
-					'sl_time',
-					'sl_date',
-					'sl_time_stamp',
-					'sl_added_by_login_id',
-					'sl_is_live',
-					[
-						Sequelize.fn(
-							'DATE_FORMAT',
-							Sequelize.col('sl_date_of_birth'),
-							'%d-%m-%Y'
-						),
-						'sl_date_of_birth',
-					],
-					'sl_school_name',
-					'sl_catagory',
-					'sl_application_number',
-					'sl_is_physical_handicap',
-					'sl_is_physical_handicap_desc',
-					'sl_post',
-					'sl_center_code',
-					'sl_batch_no',
-					'sl_exam_date',
-					'sl_password',
-				],
-				where: {
-					sl_center_code: data.centerNumber,
-					sl_batch_no: data.batchNumber,
-					sl_exam_date: data.date,
-				},
-				raw: true,
-			});
-			return _result;
-		} catch (error) {
-			console.log(error, '==error==');
-			throw new ApiError(500, error || 'Something went wrong');
-		}
-	},
+    getAllStudentsList_2: () => {
+        try {
+            return tn_student_list.findAll(
+                {
+                    attributes: [
+                        'id',
+                        'sl_f_name',
+                        'sl_m_name',
+                        'sl_l_name',
+                        'sl_image',
+                        'sl_sign',
+                        'sl_email',
+                        'sl_father_name',
+                        'sl_mother_name',
+                        'sl_address',
+                        'sl_mobile_number_parents',
+                        'sl_tenth_marks',
+                        'sl_contact_number',
+                        'sl_class',
+                        'sl_roll_number',
+                        'sl_subject',
+                        'sl_stream',
+                        'sl_addmit_type',
+                        'sl_time',
+                        'sl_date',
+                        'sl_time_stamp',
+                        'sl_added_by_login_id',
+                        'sl_is_live',
+                        [
+                            Sequelize.fn(
+                                'DATE_FORMAT',
+                                Sequelize.col('sl_date_of_birth'),
+                                '%d-%m-%Y'
+                            ),
+                            'sl_date_of_birth',
+                        ],
+                        'sl_school_name',
+                        'sl_catagory',
+                        'sl_application_number',
+                        'sl_is_physical_handicap',
+                        'sl_is_physical_handicap_desc',
+                        'sl_post',
+                        'sl_center_code',
+                        'sl_batch_no',
+                        'sl_exam_date',
+                        'sl_password',
+                    ],
+                },
+                { raw: true }
+            );
+        } catch (error) {
+            throw new ApiError(500, error?.message || 'Something went wrong');
+        }
+    },
 
-	deleteCentersListOld: () => {
-		try {
-			return tn_center_list.destroy({
-				truncate: true,
-			});
-		} catch (error) {
-			throw new ApiError(500, error || 'Something went wrong');
-		}
-	},
+    getAllStudentsList_v2: async (data) => {
+        try {
+            console.log(data, '=data');
+            const { limit, page, offset } = data;
 
-	saveCentersList: (centersList) => {
-		try {
-			return tn_center_list.bulkCreate(centersList);
-		} catch (error) {
-			throw new ApiError(500, error?.message || 'Something went wrong');
-		}
-	},
+            let returnData = {};
 
-	getCentersList: async () => {
-		try {
-			const result = await tn_center_list.findAll({
-				group: ['cl_number'],
-				raw: true,
-			});
-			return result;
-		} catch (error) {
-			throw new ApiError(500, error.message);
-		}
-	},
+            let candidateListQuery = `SELECT 
+			sl.*,
+			DATE_FORMAT(sl_date_of_birth, '%d-%m-%Y') as sl_date_of_birth
+			FROM 
+			tn_student_list sl
+			LIMIT  ${limit} OFFSET ${offset}
+			`;
+            console.log({ candidateListQuery });
 
-	getBatchList: async () => {
-		try {
-			const results = await tn_student_list.findAll({
-				attributes: ['sl_batch_no'],
-				group: ['sl_batch_no'],
-				order: [['sl_batch_no', 'ASC']],
-				raw: true,
-			});
+            const [candidateList] = await sequelize.query(candidateListQuery);
+            returnData['candidateList'] = candidateList?.length > 0 ? candidateList : [];
 
-			return results;
-		} catch (error) {
-			throw new ApiError(500, error.message);
-		}
-	},
-	getPostsList: async () => {
-		try {
-			const _results = await tn_student_list.findAll({
-				attributes: ['sl_post'],
-				group: ['sl_post'],
-				raw: true,
-			});
-			return _results;
-		} catch (error) {
-			throw new ApiError(500, error.message);
-		}
-	},
+            let paginationDataQuery = `SELECT
+            JSON_OBJECT (
+            'pagination', JSON_OBJECT(
+					'total_rows', COUNT(*),
+					'page', ${page},
+					'limit', ${limit},
+					'total_pages', CEIL(COUNT(*) / ${limit})
+					)
+            ) as pagination
+            FROM
+            tn_student_list sl
+            `;
+            const [pagination] = await sequelize.query(paginationDataQuery);
+            returnData['pagination'] = pagination[0].pagination.pagination;
 
-	// save downlaoded students question paper from exam panel
-	saveStudentQuestionPaper: async (questionPapers) => {
-		try {
-			const result = tm_student_question_paper.bulkCreate(questionPapers);
-			return result;
-		} catch (error) {
-			throw new ApiError(500, error?.message || 'Server errror.');
-		}
-	},
+            return returnData;
+        } catch (error) {
+            throw new ApiError(500, error?.message || 'Something went wrong');
+        }
+    },
 
-	// get individual published test details
-	getPublishedTestById: async (id) => {
-		try {
-			const result = tm_publish_test_list.findAll({
-				where: {
-					id,
-				},
-				raw: true,
-				limit: 1
-			});
-			return result;
-		} catch (error) {
-			throw new ApiError(500, error?.message || 'Server errror.');
-		}
-	},
+    getStudentsListByFilter: async (data) => {
+        try {
+            let _result = await tn_student_list.findAll({
+                attributes: [
+                    'id',
+                    'sl_f_name',
+                    'sl_m_name',
+                    'sl_l_name',
+                    'sl_image',
+                    'sl_sign',
+                    'sl_email',
+                    'sl_father_name',
+                    'sl_mother_name',
+                    'sl_address',
+                    'sl_mobile_number_parents',
+                    'sl_tenth_marks',
+                    'sl_contact_number',
+                    'sl_class',
+                    'sl_roll_number',
+                    'sl_subject',
+                    'sl_stream',
+                    'sl_addmit_type',
+                    'sl_time',
+                    'sl_date',
+                    'sl_time_stamp',
+                    'sl_added_by_login_id',
+                    'sl_is_live',
+                    [
+                        Sequelize.fn('DATE_FORMAT', Sequelize.col('sl_date_of_birth'), '%d-%m-%Y'),
+                        'sl_date_of_birth',
+                    ],
+                    'sl_school_name',
+                    'sl_catagory',
+                    'sl_application_number',
+                    'sl_is_physical_handicap',
+                    'sl_is_physical_handicap_desc',
+                    'sl_post',
+                    'sl_center_code',
+                    'sl_batch_no',
+                    'sl_exam_date',
+                    'sl_password',
+                ],
+                where: {
+                    sl_center_code: data.centerNumber,
+                    sl_batch_no: data.batchNumber,
+                    sl_exam_date: data.date,
+                },
+                raw: true,
+            });
+            return _result;
+        } catch (error) {
+            console.log(error, '==error==');
+            throw new ApiError(500, error || 'Something went wrong');
+        }
+    },
 
-	// get individual question paper by published test id
-	getQuestionPaperByPublishedTestId: async ( test_id) => {
-		try {
-			const result = tm_test_question_sets.findAll({
-				where: {
-					tqs_test_id: test_id,
-				},
-				raw: true,
-			});
+    deleteCentersListOld: () => {
+        try {
+            return tn_center_list.destroy({
+                truncate: true,
+            });
+        } catch (error) {
+            throw new ApiError(500, error || 'Something went wrong');
+        }
+    },
 
-			return result;
-		} catch (error) {
-			throw new ApiError(500, error?.message || 'Server errror.');
-		}
-	},
+    saveCentersList: (centersList) => {
+        try {
+            return tn_center_list.bulkCreate(centersList);
+        } catch (error) {
+            throw new ApiError(500, error?.message || 'Something went wrong');
+        }
+    },
+
+    getCentersList: async () => {
+        try {
+            const result = await tn_center_list.findAll({
+                group: ['cl_number'],
+                raw: true,
+            });
+            return result;
+        } catch (error) {
+            throw new ApiError(500, error.message);
+        }
+    },
+
+    getBatchList: async () => {
+        try {
+            const results = await tn_student_list.findAll({
+                attributes: ['sl_batch_no'],
+                group: ['sl_batch_no'],
+                order: [['sl_batch_no', 'ASC']],
+                raw: true,
+            });
+
+            return results;
+        } catch (error) {
+            throw new ApiError(500, error.message);
+        }
+    },
+    getPostsList: async () => {
+        try {
+            const _results = await tn_student_list.findAll({
+                attributes: ['sl_post'],
+                group: ['sl_post'],
+                raw: true,
+            });
+            return _results;
+        } catch (error) {
+            throw new ApiError(500, error.message);
+        }
+    },
+
+    // save downlaoded students question paper from exam panel
+    saveStudentQuestionPaper: async (questionPapers) => {
+        try {
+            const result = tm_student_question_paper.bulkCreate(questionPapers);
+            return result;
+        } catch (error) {
+            throw new ApiError(500, error?.message || 'Server errror.');
+        }
+    },
+
+    // get individual published test details
+    getPublishedTestById: async (id) => {
+        try {
+            const result = tm_publish_test_list.findAll({
+                where: {
+                    id,
+                },
+                raw: true,
+                limit: 1,
+            });
+            return result;
+        } catch (error) {
+            throw new ApiError(500, error?.message || 'Server errror.');
+        }
+    },
+
+    // get individual question paper by published test id
+    getQuestionPaperByPublishedTestId: async (test_id) => {
+        try {
+            const result = tm_test_question_sets.findAll({
+                where: {
+                    tqs_test_id: test_id,
+                },
+                raw: true,
+            });
+
+            return result;
+        } catch (error) {
+            throw new ApiError(500, error?.message || 'Server errror.');
+        }
+    },
 };
 
 export default studentAreaModel;

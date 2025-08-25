@@ -173,8 +173,27 @@ const StudentAreaController = {
         /**
          * getting students list from local database (i.e. downlaoded db)
          * */
+
         let _studListAll = await studentAreaModel.getAllStudentsList_2();
-        console.log(_studListAll, '==_studListAll==');
+
+        return res.status(200).json(new ApiResponse(200, _studListAll, 'Students list'));
+    }),
+
+    getAllStudentsList_v2: asyncHandler(async (req, res) => {
+        /**
+         * This is version 2 of the api which provides paginated data of students
+         * getting students list from local database (i.e. downlaoded db)
+         * */
+
+        const { limit = 10, page = 1 } = req.query;
+
+        let data = {
+            limit: limit || 10,
+            page: page || 1,
+            offset: (page - 1) * limit,
+        };
+
+        let _studListAll = await studentAreaModel.getAllStudentsList_v2(data);
 
         return res.status(200).json(new ApiResponse(200, _studListAll, 'Students list'));
     }),
