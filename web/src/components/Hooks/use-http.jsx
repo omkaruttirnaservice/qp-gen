@@ -30,7 +30,7 @@ const useHttp = () => {
             }
             const data = await res.json();
 
-            toast(data?.message || 'Success');
+            toast(data?.message);
 
             dispatch(loaderActions.hideLoader());
             // THIS FUNCTION IS FOR GETTING RESPONSE RECIVED FROM THE REQUEST

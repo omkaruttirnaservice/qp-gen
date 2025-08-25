@@ -30,6 +30,9 @@ sequelize
 
 app.use('/api', indexRoutes);
 
+import legacyRoutes from './routes/remoteRouterLegacy.js';
+app.use('/gov', legacyRoutes);
+
 app.use(errorHandler);
 
 app.listen(process.env.PORT, () => {

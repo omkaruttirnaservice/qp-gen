@@ -1,100 +1,102 @@
-import React from 'react';
 import { FaRegThumbsUp } from 'react-icons/fa';
 import { FaRegThumbsDown } from 'react-icons/fa6';
+import { FiCheck, FiX } from 'react-icons/fi';
 
 function StudQuestionPaper({ el, idx }) {
-	let isAnsCorrect = el.q_ans == el.sqp_ans;
+	const isAnsCorrect = el?.q_ans?.toUpperCase() === el?.sqp_ans?.toUpperCase();
+	const optionKeys = ['a', 'b', 'c', 'd', 'e'];
+
+	const renderOptionCard = (opt) => {
+		const optionText = el[`q_${opt}`];
+		if (!optionText) return null;
+
+		const isStudentAnswer = el.sqp_ans?.toUpperCase() === opt.toUpperCase();
+		const isCorrectAnswer = el.q_ans?.toUpperCase() === opt.toUpperCase();
+
+		return (
+			<div
+				key={opt}
+				className={`rounded-lg border p-3 transition-all text-sm relative group ${
+					isCorrectAnswer
+						? 'border-green-500 bg-green-50'
+						: isStudentAnswer
+						? 'border-blue-500 bg-blue-50'
+						: 'border-gray-200 bg-white'
+				}`}
+			>
+				<div className="font-semibold text-gray-600 mb-1 uppercase">Option {opt}</div>
+				<div dangerouslySetInnerHTML={{ __html: optionText }} className="text-gray-800" />
+				{isCorrectAnswer && (
+					<span className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+						<FiCheck size={12} />
+						Correct
+					</span>
+				)}
+				{isStudentAnswer && !isCorrectAnswer && (
+					<span className="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+						<FiX size={12} />
+						Your Answer
+					</span>
+				)}
+			</div>
+		);
+	};
+
 	return (
-		<div className={`columns-2 py-3 px-4 text-start ${isAnsCorrect ? 'bg-green-200' : 'bg-red-200'} border border-b relative mb-3`}>
-			<div className="py-3">
-				<p className="font-bold text-[#555] mb-4 block text-start">Q. {idx + 1} </p>
-				<p
-					className="text-start"
-					dangerouslySetInnerHTML={{
-						__html: el.q,
-					}}></p>
+		<div
+			className={`relative mb-6 w-full rounded-xl border-l-4 shadow-md transition-all p-6 space-y-5 ${
+				isAnsCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'
+			}`}
+		>
+			{/* Top status bar */}
+			<div className="flex justify-between items-center mb-3">
+				<h4 className="text-lg font-semibold text-gray-800">
+					Q.{idx + 1}
+				</h4>
+				<span
+					className={`flex items-center gap-2 text-sm font-medium px-3 py-1 rounded-full text-white shadow ${
+						isAnsCorrect ? 'bg-green-500' : 'bg-red-500'
+					}`}
+				>
+					{isAnsCorrect ? <FaRegThumbsUp size={16} /> : <FaRegThumbsDown size={16} />}
+					{isAnsCorrect ? 'Correct' : 'Wrong'}
+				</span>
 			</div>
 
-			<div className="py-3">
-				<span className="font-bold text-[#555] mb-4 block text-start">Option A</span>
+			{/* Question */}
+			<div className="text-gray-700" dangerouslySetInnerHTML={{ __html: el.q }} />
 
-				<p
-					dangerouslySetInnerHTML={{
-						__html: el.q_a,
-					}}></p>
+			{/* Options */}
+			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+				{optionKeys.map((opt) => renderOptionCard(opt))}
 			</div>
 
-			<hr />
-
-			<div className="py-3">
-				<span className="font-bold text-[#555] mb-4 block text-start">Option B</span>
-
-				<p
-					dangerouslySetInnerHTML={{
-						__html: el.q_b,
-					}}></p>
-			</div>
-
-			<hr />
-
-			<div className="py-3">
-				<span className="font-bold text-[#555] mb-4 block text-start">Option C</span>
-				<p
-					dangerouslySetInnerHTML={{
-						__html: el.q_c,
-					}}></p>
-			</div>
-
-			<hr />
-
-			<div className="py-3">
-				<span className="font-bold text-[#555] mb-4 block text-start">Option D</span>
-				<p
-					dangerouslySetInnerHTML={{
-						__html: el.q_d,
-					}}></p>
-			</div>
-
-			<hr />
-
-			{el.q_e && (
-				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">Option E</span>
-					<p
-						dangerouslySetInnerHTML={{
-							__html: el.q_e,
-						}}></p>
+			{/* Correct and Student Answer Summary */}
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+				<div className="text-sm text-gray-600">
+					<span className="font-semibold text-gray-800">Correct Option: </span>
+					<span className="inline-block bg-green-100 text-green-700 px-3 py-1 rounded font-semibold">
+						{el.q_ans?.toUpperCase() || '-'}
+					</span>
 				</div>
-			)}
-
-			<hr />
-
-			<div className="py-3">
-				<span className="font-bold text-[#555] mb-4 me-3">Correct Option</span>
-				<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el?.q_ans?.toUpperCase() || '-'}</span>
+				<div className="text-sm text-gray-600">
+					<span className="font-semibold text-gray-800">Student Option: </span>
+					<span className="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded font-semibold">
+						{el.sqp_ans?.toUpperCase() || '-'}
+					</span>
+				</div>
 			</div>
 
-			<div className="py-3">
-				<span className="font-bold text-[#555] mb-4 me-3">Student Option</span>
-				<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el?.sqp_ans?.toUpperCase() || '-'}</span>
-			</div>
-
-			{isAnsCorrect ? <FaRegThumbsUp className='absolute top-2 right-2 !text-4xl'/> : <FaRegThumbsDown className='absolute top-2 right-2 !text-4xl'/>}
-
-			<hr />
-
+			{/* Solution */}
 			{el.q_sol && (
-				<div className="py-3">
-					<span className="font-bold text-[#555] my-4 block text-start">Solution</span>
-					<p
-						className="text-start"
-						dangerouslySetInnerHTML={{
-							__html: el.q_sol,
-						}}></p>
+				<div className="mt-6 border-t pt-4">
+					<span className="text-sm text-gray-600 font-medium mb-2 block">Solution</span>
+					<div
+						className="text-gray-700 text-sm"
+						dangerouslySetInnerHTML={{ __html: el.q_sol }}
+					/>
 				</div>
 			)}
-
-			<hr />
 		</div>
 	);
 }

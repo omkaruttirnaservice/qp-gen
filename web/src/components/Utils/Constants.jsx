@@ -11,3 +11,5 @@ export const SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 
 export const s3BucketUrl = import.meta.env.VITE_S3_BUCKET_URL;
 
+export const RESULT_BY_BATCH = 'Batch';
+export const RESULT_BY_POST = 'Post';

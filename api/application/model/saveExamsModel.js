@@ -3,13 +3,21 @@ import sequelize from '../config/db-connect-migration.js';
 const saveExamsModel = {
 	getStudentExamReportDetails: ({ stud_roll, pub_test_id }) => {
 		let q = `
-        SELECT * 
+        SELECT 
+        *,
+        DATE_FORMAT(sl.sl_date_of_birth, '%d-%m-%Y') AS sl_date_of_birth,
+        DATE_FORMAT(sfrs.sfrs_test_date, '%d-%m-%Y') AS sfrs_test_date,
+        CONCAT(sl_f_name,' ', sl_m_name,' ',sl_l_name) AS full_name
+
+
         FROM tm_student_final_result_set sfrs
 
-        INNER JOIN
-            tm_publish_test_list ptl
-                ON 
-                    sfrs.sfrs_publish_id = ptl.id
+        INNER JOIN tm_publish_test_list ptl
+        ON sfrs.sfrs_publish_id = ptl.id
+
+        INNER JOIN tn_student_list AS sl
+        ON sl.sl_roll_number = sfrs.sfrs_student_roll_no
+
         WHERE
             sfrs.sfrs_student_id = ${stud_roll}
         ;`;

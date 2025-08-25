@@ -56,7 +56,7 @@ export function InputSelect({
 			>
 				{label}
 			</label> */}
-            <InputLabel name={name} />
+            <InputLabel name={label} />
             <select
                 type={type}
                 id={name}

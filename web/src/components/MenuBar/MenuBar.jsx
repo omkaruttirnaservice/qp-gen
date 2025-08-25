@@ -41,7 +41,9 @@ function MenuBar({ isSidebarOpen }) {
                                     <span className="text-xs text-white  font-medium">
                                         Welcome,
                                     </span>
-                                    <span className="text-white text-sm text-ellipsis">{auth.username}</span>
+                                    <span className="text-white text-sm text-ellipsis">
+                                        {auth.username}
+                                    </span>
                                 </div>
                             )}
                         </>
@@ -227,7 +229,7 @@ function MenuBar({ isSidebarOpen }) {
                             {isSidebarOpen && <span>Gen Reports</span>}
                         </NavLink>
                         <NavLink
-                            to={'/view-reports'}
+                            to={'/reports'}
                             className={({ isActive }) =>
                                 isActive ? 'menu-item active' : 'menu-item'
                             }>

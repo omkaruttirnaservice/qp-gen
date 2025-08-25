@@ -56,7 +56,7 @@ function AddSubjectModal() {
 
 	function postSubjectAdd(postId, subjectName) {
 		const requestData = {
-			url: '/add-subject',
+			url: '/api/add',
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

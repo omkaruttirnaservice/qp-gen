@@ -2,12 +2,11 @@ import { Navigate, Outlet } from 'react-router-dom';
 import MenuBar from '../MenuBar/MenuBar';
 
 import { ToastContainer } from 'react-toastify';
-import { PiStudentBold } from 'react-icons/pi';
 
-import 'react-toastify/dist/ReactToastify.css';
-import { RxHamburgerMenu } from 'react-icons/rx';
 import { useState } from 'react';
+import { RxHamburgerMenu } from 'react-icons/rx';
 import { useSelector } from 'react-redux';
+import 'react-toastify/dist/ReactToastify.css';
 
 function RootComponent() {
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);

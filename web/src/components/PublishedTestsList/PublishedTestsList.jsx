@@ -18,7 +18,6 @@ function PublishedTestsList() {
     const { sendRequest } = useHttp();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { isLoading } = useSelector((state) => state.loader);
 
     const [publishedTestsList, setPublishedTestsList] = useState([]);
     useEffect(() => {
@@ -127,11 +126,13 @@ function PublishedTestsList() {
             width: '190px',
             cell: (row) => {
                 return (
-                    <>
-                        {row.post_details.map((_post) => (
-                            <mark className="me-1 p-1">{_post.post_name}</mark>
+                    <div className="flex flex-col gap-2">
+                        {row.post_details.map((_post, idx) => (
+                            <mark key={idx} className="me-1 p-1">
+                                {_post.post_name}
+                            </mark>
                         ))}
-                    </>
+                    </div>
                 );
             },
         },
@@ -142,10 +143,10 @@ function PublishedTestsList() {
             cell: (row) => (
                 <>
                     {isExamToday(row.ptl_active_date) == 1 && (
-                        <span className="bg-blue-300 p-1">Today</span>
+                        <span className="bg-gradient-to-tr from-indigo-500 to-indigo-600 p-1 text-white shadow-md text-xs">Today</span>
                     )}
                     {isExamToday(row.ptl_active_date) == 2 && (
-                        <span className="bg-green-300 p-1">Upcomming</span>
+                        <span className="bg-gradient-to-tr from-green-500 to-green-600 p-1 text-white shadow-md text-xs">Upcomming</span>
                     )}
                 </>
             ),
@@ -189,74 +190,6 @@ function PublishedTestsList() {
                     pagination
                     highlightOnHover
                 />
-
-                {/* {publishedTestsList.length == false && (
-					<table className="w-[100%]">
-						<thead>
-							<tr className="bg-cyan-300 text-center cursor-pointer">
-								<th className="p-2">#</th>
-								<th className="p-2">Published Test Id</th>
-								<th className="p-2">Name</th>
-								<th className="p-2">Batch</th>
-								<th className="p-2">Duration</th>
-								<th className="p-2">Total Questions</th>
-								<th className="p-2">Test Date</th>
-								<th className="p-2">Scheduled</th>
-								<th className="p-2">Exam Key</th>
-								<th className="p-2">Unpublished</th>
-								<th className="p-2">View Question</th>
-							</tr>
-						</thead>
-						<tbody>
-							{publishedTestsList.length >= 1 &&
-								publishedTestsList.map((el, idx, _array) => {
-									let value = isExamToday(el.ptl_active_date);
-									return (
-										<tr className="border-b-gray-300 border hover:bg-gray-100 text-center cursor-pointer">
-											<td className="p-2">{idx + 1}</td>
-											<td className="p-2">{el.ptl_test_id}</td>
-											<td className="p-2">{el.mt_name}</td>
-											<td className="p-2">Batch-{el.tm_allow_to}</td>
-											<td className="p-2">{el.mt_test_time} Min</td>
-											<td className="p-2">{el.mt_total_test_question}</td>
-											<td className="p-2">{el.ptl_active_date}</td>
-											<td className="p-2">
-												{value == 1 && <span className="bg-blue-300 p-1">Today</span>}
-												{value == 2 && <span className="bg-green-300 p-1">Upcomming</span>}
-											</td>
-											<td className="p-2">{el.ptl_link}</td>
-
-											<td className="p-2">
-												<div className="flex gap-2 items-center justify-center">
-													{value == 2 && <CButton icon={<FaXmark />} onClick={handleUnpublishExam.bind(null, el)}></CButton>}
-												</div>
-											</td>
-											<td className="p-2">
-												<div className="flex gap-2 items-center justify-center">
-													<CButton className="btn--info m-0" onClick={handlePublishedTestQuePreview.bind(null, el)} icon={<FaEye />}></CButton>
-												</div>
-											</td>
-										</tr>
-									);
-								})}
-						</tbody>
-					</table>
-				)} */}
-
-                {/* {publishedTestsList.length == 0 && !isLoading && (
-					<div className="text-center mt-6 flex justify-center">
-						<span>Woops! no test list found.&nbsp;&nbsp;</span>
-						<Link className="underline font-semibold flex items-center gap-2 " to={'/tests-list'}>
-							Publish Test <FaPlus className="inline-block" />
-						</Link>
-					</div>
-				)}
-
-				{isLoading && (
-					<div className="flex justify-center mt-6">
-						<AiOutlineLoading3Quarters className="animate-spin text-2xl font-semibold" />{' '}
-					</div>
-				)} */}
             </div>
         </>
     );
