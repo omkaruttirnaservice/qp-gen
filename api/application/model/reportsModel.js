@@ -7,80 +7,133 @@ export const BATCH_LIST = 'batchs';
 export const POST_LIST = 'posts';
 
 const reportsModel = {
-	getReportForType: async (type) => {
-		let q;
-		if (type === DATES_LIST) {
-			q = `SELECT 
+    getReportForType: async (type) => {
+        let q;
+        if (type === DATES_LIST) {
+            q = `SELECT 
 					DATE_FORMAT(sl_exam_date,'%d-%m-%Y') as sl_exam_date  
 				FROM tn_student_list 
 				GROUP BY sl_exam_date`;
-			return await sequelize.query(q);
-		}
+            return await sequelize.query(q);
+        }
 
-		if (type === BATCH_LIST) {
-			q = `SELECT 
+        if (type === BATCH_LIST) {
+            q = `SELECT 
 					sl_batch_no 
 				FROM tn_student_list 
 				GROUP BY sl_batch_no`;
-			return await sequelize.query(q);
-		}
+            return await sequelize.query(q);
+        }
 
-		if (type === POST_LIST) {
-			q = `SELECT 
+        if (type === POST_LIST) {
+            q = `SELECT 
 					sl_post
 				FROM tn_student_list 
 				GROUP BY sl_post`;
-			return await sequelize.query(q);
-		}
-	},
+            return await sequelize.query(q);
+        }
+    },
 
-	getResultData: async (data) => {
-		const RESULT_BY_BATCH = 'Batch';
-		const RESULT_BY_POST = 'Post';
-		let q = `SELECT *,
+    getResultData: async (data) => {
+        const RESULT_BY_BATCH = 'Batch';
+        const RESULT_BY_POST = 'Post';
+        let where = '';
+        let q = '';
+        const { postName, examDate, viewResultBy, type, page, limit, offset } = data;
+
+        if (viewResultBy === RESULT_BY_POST) {
+            where = ` WHERE sl_post = '${postName}' `;
+        }
+
+        if (viewResultBy === RESULT_BY_BATCH) {
+            where = ` WHERE sl_post = '${postName}' AND DATE_FORMAT(sl_exam_date,'%d-%m-%Y') = '${examDate}' `;
+        }
+
+        if (type === 'EXCEL') {
+            q = `SELECT *,
 					CONCAT(sl_f_name,' ',sl_m_name,' ',sl_l_name) AS full_name,
 					DATE_FORMAT(sl_date_of_birth,'%d-%m-%Y') AS dob
 					FROM tm_student_final_result_set AS sfrs
 					INNER JOIN tn_student_list sl
 					ON sfrs.sfrs_student_id = sl.id
+					${where}
 					`;
-		if (data.viewResultBy === RESULT_BY_POST) {
-			q += ` WHERE sl_post = '${data.postName}' `;
-			return await sequelize.query(q);
-		}
+        } else {
+            q = `SELECT JSON_OBJECT(
+					'pagination', JSON_OBJECT(
+						'total_rows', t.total_rows,
+						'page', ${page},
+						'limit', ${limit},
+						'total_pages', CEIL(t.total_rows / ${limit})
+					),
+					'candidate_results', JSON_ARRAYAGG(
+						JSON_OBJECT(
+							'id', sub.id,
+							'full_name', CONCAT(sub.sl_f_name,' ',sub.sl_m_name,' ',sub.sl_l_name),
+							'dob', DATE_FORMAT(sub.sl_date_of_birth,'%d-%m-%Y'),
+							'post', sub.sl_post,
+							'marks', sub.sfrs_marks_gain,
+							'sfrs_student_roll_no', sub.sfrs_student_roll_no,
+							'sfrs_unattempted', sub.sfrs_unattempted,
+							'sfrs_wrong', sub.sfrs_wrong,
+							'sfrs_correct', sub.sfrs_correct,
+							'sfrc_total_marks', sub.sfrc_total_marks,
+							'sfrs_marks_gain', sub.sfrs_marks_gain,
+							'sfrs_student_id', sub.sfrs_student_id,
+							'sfrs_publish_id',  sub.sfrs_publish_id,
+							'srfs_percentile', sub.srfs_percentile
+						)
+					)
+				) AS result_data
+				FROM 
+				(
+					SELECT sfrs.*, sl.sl_f_name, sl.sl_m_name, sl.sl_l_name, sl.sl_date_of_birth, sl.sl_post,
+						COUNT(*) OVER() AS total_count
+					FROM tm_student_final_result_set AS sfrs
+					INNER JOIN tn_student_list sl
+						ON sfrs.sfrs_student_id = sl.id
+					${where}
+					LIMIT ${limit} OFFSET ${offset}
+				) as sub
+				CROSS JOIN (
+					SELECT COUNT(*) AS total_rows
+					FROM tm_student_final_result_set sfrs
+					INNER JOIN tn_student_list sl
+						ON sfrs.sfrs_student_id = sl.id
+					${where}
+				) AS t;
+				`;
+        }
 
-		if (data.viewResultBy === RESULT_BY_BATCH) {
-			q += ` WHERE sl_post = '${data.postName}' AND DATE_FORMAT(sl_exam_date,'%d-%m-%Y') = '${data.examDate}' `;
-			return await sequelize.query(q);
-		}
-	},
+        return await sequelize.query(q);
+    },
 
-	getExamServerIP: async () => {
-		return await aouth.findOne({
-			attributes: ['exam_server_ip'],
-			where: {
-				id: 1,
-			},
-			raw: true,
-		});
-	},
+    getExamServerIP: async () => {
+        return await aouth.findOne({
+            attributes: ['exam_server_ip'],
+            where: {
+                id: 1,
+            },
+            raw: true,
+        });
+    },
 
-	saveExamServerIP: async (ip) => {
-		return await aouth.update({ exam_server_ip: ip }, { where: { id: 1 } });
-	},
+    saveExamServerIP: async (ip) => {
+        return await aouth.update({ exam_server_ip: ip }, { where: { id: 1 } });
+    },
 
-	getPublishedTests: async () => {
-		return await tm_publish_test_list.findAll({ raw: true });
-	},
+    getPublishedTests: async () => {
+        return await tm_publish_test_list.findAll({ raw: true });
+    },
 
-	generateResult: async (publishedTestId, transact) => {
-		let where = '';
+    generateResult: async (publishedTestId, transact) => {
+        let where = '';
 
-		if (publishedTestId != 0) {
-			where += `main_test_list.id = ${publishedTestId}`;
-		}
+        if (publishedTestId != 0) {
+            where += `main_test_list.id = ${publishedTestId}`;
+        }
 
-		let query = `SELECT
+        let query = `SELECT
                  main_result.sfrs_publish_id as sfrs_publish_id,
                  main_result.student_id as  sfrs_student_id,
                  main_result.sfrs_student_roll_no as sfrs_student_roll_no,
@@ -138,11 +191,11 @@ const reportsModel = {
                  ) as main_result
                 GROUP BY main_result.student_id`;
 
-		return await sequelize.query(query, { transaction: transact });
-	},
+        return await sequelize.query(query, { transaction: transact });
+    },
 
-	deleteResultsData: async () => {
-		let query = `DELETE
+    deleteResultsData: async () => {
+        let query = `DELETE
 							set_1
 						FROM 
 							tm_student_final_result_set set_1 ,
@@ -151,11 +204,11 @@ const reportsModel = {
 							set_1.id < set_2.id AND (
 							set_1.sfrs_publish_id = set_2.sfrs_publish_id
 							AND set_1.sfrs_student_id = set_2.sfrs_student_id )`;
-		return await sequelize.query(query);
-	},
+        return await sequelize.query(query);
+    },
 
-	getTestDetails: async (testId) => {
-		let q = ` SELECT  
+    getTestDetails: async (testId) => {
+        let q = ` SELECT  
 					post_list.mtl_test_name as post_name,
 					test.mt_name as test_name,
 					test.ptl_active_date as test_date
@@ -164,11 +217,11 @@ const reportsModel = {
 					tm_master_test_list as post_list 
 				ON test.mt_pattern_type = post_list.id
 				WHERE test.id = ${testId} LIMIT 1`;
-		return await sequelize.query(q);
-	},
+        return await sequelize.query(q);
+    },
 
-	getTestReportsForExcel: async (testId) => {
-		let q = ` SELECT 
+    getTestReportsForExcel: async (testId) => {
+        let q = ` SELECT 
                       IFNULL(student_list.sl_f_name,'') as f_name ,
                       IFNULL(student_list.sl_m_name,'') as m_name ,
                       IFNULL(student_list.sl_l_name,'') as l_name ,
@@ -199,25 +252,25 @@ const reportsModel = {
                          main_test_list.id = ${testId}
                           GROUP BY student_paper.sfrs_student_id
                         ORDER BY roll_number`;
-		return await sequelize.query(q);
-	},
+        return await sequelize.query(q);
+    },
 
-	updatePercentileResult: async (data) => {
-		let q = `UPDATE tm_student_final_result_set
+    updatePercentileResult: async (data) => {
+        let q = `UPDATE tm_student_final_result_set
 					SET
 						srfs_percentile = CASE	
 					`;
-		let ids = [];
-		data.forEach((_el) => {
-			ids.push(_el.sfrs_student_id);
-			q += ` WHEN sfrs_student_id = ${_el.sfrs_student_id} THEN '${_el.srfs_percentile}'`;
-		});
+        let ids = [];
+        data.forEach((_el) => {
+            ids.push(_el.sfrs_student_id);
+            q += ` WHEN sfrs_student_id = ${_el.sfrs_student_id} THEN '${_el.srfs_percentile}'`;
+        });
 
-		q += ` END `;
-		q += ` WHERE sfrs_student_id IN (${[...ids]})`;
+        q += ` END `;
+        q += ` WHERE sfrs_student_id IN (${[...ids]})`;
 
-		return await sequelize.query(q);
-	},
+        return await sequelize.query(q);
+    },
 };
 
 export default reportsModel;

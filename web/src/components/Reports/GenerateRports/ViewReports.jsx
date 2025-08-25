@@ -153,7 +153,12 @@ function ViewReports() {
         },
         onSuccess: (data) => {
             const updatedData = { ...currentViewTestDetails };
-            updatedData['studentResultList'] = data.data;
+            updatedData['studentResultList'] = data.data[0].result_data?.candidate_results || [];
+            const { page, limit, total_pages, total_rows } = data.data[0].result_data.pagination;
+            updatedData['page'] = page;
+            updatedData['limit'] = limit;
+            updatedData['totalRows'] = total_rows;
+            updatedData['totalPages'] = total_pages;
             dispatch(reportsAction.setCurentViewTestDetails(updatedData));
         },
         onError: (error) => {
@@ -175,8 +180,28 @@ function ViewReports() {
             _data.examDate = currentViewTestDetails?.selectedExamDate;
         }
 
+        _data.page = currentViewTestDetails.page;
+        _data.limit = currentViewTestDetails.limit;
+
         _getResultViewDataMutation.mutate(_data);
     };
+
+    const handlePageChange = (newPage) => {
+        const updatedData = { ...currentViewTestDetails };
+        updatedData['page'] = newPage;
+        dispatch(reportsAction.setCurentViewTestDetails(updatedData));
+    };
+
+    const handleChangeRowsPerPage = (currentRowsPerPage, currentPage) => {
+        const updatedData = { ...currentViewTestDetails };
+        updatedData['page'] = 1;
+        updatedData['limit'] = currentRowsPerPage || 10;
+        dispatch(reportsAction.setCurentViewTestDetails(updatedData));
+    };
+
+    useEffect(() => {
+        handleGetResultData();
+    }, [currentViewTestDetails.page, currentViewTestDetails.limit]);
 
     const handleChange = (e) => {
         let updatedList = { ...currentViewTestDetails };
@@ -243,7 +268,7 @@ function ViewReports() {
                             value={currentViewTestDetails?.selectedExamDate || ''}
                             onChange={handleChange}>
                             <option value="">--Select Exam Date--</option>
-                            {examDates.length > 0 &&
+                            {examDates?.length > 0 &&
                                 examDates.map((date) => {
                                     return (
                                         <option value={date.sl_exam_date}>
@@ -263,7 +288,7 @@ function ViewReports() {
                         value={currentViewTestDetails?.selectedPost || ''}
                         onChange={handleChange}>
                         <option value="">--Select Post--</option>
-                        {postsList.length > 0 &&
+                        {postsList?.length > 0 &&
                             postsList.map((post) => {
                                 return <option value={post.sl_post}>{post.sl_post}</option>;
                             })}
@@ -307,9 +332,18 @@ function ViewReports() {
 
             <DataTable
                 columns={columns}
-                data={currentViewTestDetails?.studentResultList}
+                data={currentViewTestDetails?.studentResultList || []}
                 pagination
                 highlightOnHover
+                paginationServer
+                paginationTotalRows={currentViewTestDetails?.totalRows || 0}
+                paginationDefaultPage={currentViewTestDetails?.page || 0}
+                onChangePage={handlePageChange}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+                paginationComponentOptions={{
+                    rowsPerPageText: 'Total Per Page',
+                    rangeSeparatorText: '--',
+                }}
             />
         </>
     );

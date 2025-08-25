@@ -16,6 +16,10 @@ const initialState = {
         selectedExamDate: null,
         selectedPost: null,
         studentResultList: [],
+        page: 1,
+        limit: 10,
+        totalRows: 0,
+        totalPages: 0
     }, // This will store details for test for which we are currently viewing result in /reports
 };
 
@@ -40,6 +44,7 @@ const reportsSlice = createSlice({
         },
 
         setCurentViewTestDetails: (state, action) => {
+            console.log(action.payload);
             state.currentViewTestDetails = action.payload;
         },
 

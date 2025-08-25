@@ -134,38 +134,17 @@ const reportsController = {
     }),
 
     getResultViewData: asyncHandler(async (req, res) => {
-        const data = req.body;
-        console.log(data, '==data==');
+        let data = req.body;
+        // Sample req.body { viewResultBy: 'Post', postName: 'वाहन चालक', page: 1, limit: 10 }
+
+        data.page = data?.page || 1;
+        data.limit = data?.limit || 10;
+        data.offset = (data.page - 1) * data.limit;
+        data.type = 'REPORT';
 
         const [_resultDetailsRes] = await reportsModel.getResultData(data);
 
-        // let _resultDetilsRes = await tm_student_final_result_set.findAll({
-        // 	include: [
-        // 		{
-        // 			model: tn_student_list,
-        // 			as: 'tn_student_list',
-        // 			attributes: [
-        // 				[
-        // 					Sequelize.fn(
-        // 						'CONCAT',
-        // 						Sequelize.col('sl_f_name'),
-        // 						' ',
-        // 						Sequelize.col('sl_m_name'),
-        // 						' ',
-        // 						Sequelize.col('sl_l_name')
-        // 					),
-        // 					'full_name',
-        // 				],
-        // 			],
-        // 			required: true,
-        // 		},
-        // 	],
-        // 	where: {
-        // 		sl_post: data.postName,
-        // 	},
-        // 	raw: true,
-        // });
-        // console.log(_resultDetilsRes, '====1');
+        console.log(_resultDetailsRes, '=_resultDetailsRes');
 
         if (_resultDetailsRes.length === 0) {
             throw new ApiError(400, 'No students found.');
@@ -286,6 +265,7 @@ const reportsController = {
 
     getCustomResultExcel: asyncHandler(async (req, res) => {
         const data = req.body;
+        data.type = 'EXCEL';
 
         const [_resultDetailsRes] = await reportsModel.getResultData(data);
 

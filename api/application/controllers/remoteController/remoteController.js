@@ -11,6 +11,7 @@ import { asyncHandler } from '../../utils/asyncHandler.js';
 const remoteController = {
     getTodaysExamList: asyncHandler(async (req, res) => {
         console.log(req.body, '==req.body==');
+        console.log('HERE==============================');
 
         /**
 		 * 
