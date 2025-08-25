@@ -185,21 +185,29 @@ const StudentAreaController = {
          * getting students list from local database (i.e. downlaoded db)
          * */
 
-        console.log(req.query, 'query');
-
-        const { limit = 10, page = 1, search_by = '', search_term = '' } = req.query;
+        const { limit = 10, page = 1, ...rest } = req.query;
 
         let data = {
             limit: limit || 10,
             page: page || 1,
             offset: (page - 1) * limit,
-            search_by,
-            search_term,
+            ...rest,
         };
 
         let _studListAll = await studentAreaModel.getAllStudentsList_v2(data);
 
         return res.status(200).json(new ApiResponse(200, _studListAll, 'Students list'));
+    }),
+
+    getStudentSearchPageFilters: asyncHandler(async (req, res) => {
+        /**
+         * This API will give filters for student search page
+         * Will give filters like center, exam date, batch , post , etc.
+         * */
+
+        let _filters = await studentAreaModel.getStudentsListPageFilters();
+
+        return res.status(200).json(new ApiResponse(200, _filters, 'Students list page filters'));
     }),
 
     getStudentsListByFilter: asyncHandler(async (req, res) => {

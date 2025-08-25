@@ -9,7 +9,10 @@ studentsAreaRouter.delete('/delete-server-ip/:id', StudentAreaController.deleteF
 
 studentsAreaRouter.post('/all-list', StudentAreaController.getAllStudentsList_1); // this is to get list from form filling server
 studentsAreaRouter.get('/all-list', StudentAreaController.getAllStudentsList_2); // this is to get list from local server
+
 studentsAreaRouter.get('/v2/all-list', StudentAreaController.getAllStudentsList_v2); // this is to get list from local server
+studentsAreaRouter.get('/v1/student-search-page-filter', StudentAreaController.getStudentSearchPageFilters); // this is to get list from local server
+
 studentsAreaRouter.post('/all-list-filtered', StudentAreaController.getStudentsListByFilter); // this is to get filtered list from local server
 
 // get centers list

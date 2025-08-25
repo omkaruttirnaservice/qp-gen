@@ -18,16 +18,133 @@ import { useState } from 'react';
 import { PiStudentBold } from 'react-icons/pi';
 import { H3 } from '../UI/Headings.jsx';
 import './MenuBar.css';
+import { useEffect } from 'react';
 
 function MenuBar({ isSidebarOpen }) {
     const auth = useSelector((state) => state.auth);
 
-    const [showTestArea, setShowTestArea] = useState(false);
+    const [showTestArea, setShowTestArea] = useState(true);
     const [showMockArea, setShowMockArea] = useState(true);
     const [showStudentArea, setShowStudentArea] = useState(true);
     const [showReportsArea, setShowReportsArea] = useState(true);
 
+    // const [showAreaMap, setShowAreaMap] = useState({
+    //     mockArea: false,
+    //     testArea: false,
+    //     studentArea: false,
+    //     reportArea: false,
+    // });
+
+    const navigation = [
+        {
+            title: 'Test Area',
+            url: '/tests',
+            key: 'testArea',
+            isChildrensOpen: false,
+            childrens: [
+                {
+                    childrenTitle: 'Tests List',
+                    _url: '/tests/list',
+                    icon: <FaList className="text-xl" />,
+                },
+                {
+                    childrenTitle: 'Published Tests List',
+                    _url: '/tests/published',
+                    icon: <MdOutlineChecklist className="text-xl" />,
+                },
+                {
+                    childrenTitle: 'Create Test (Manual)',
+                    _url: '/tests/create/manual',
+                    icon: <LuBookPlus className="text-xl" />,
+                },
+                {
+                    childrenTitle: 'Create Test (Auto)',
+                    _url: '/tests/create/auto',
+                    icon: <FiFilePlus className="text-xl" />,
+                },
+            ],
+        },
+        {
+            title: 'Mock Area',
+            url: '/mock',
+            key: 'mockArea',
+            isChildrensOpen: false,
+            childrens: [
+                {
+                    childrenTitle: 'Tests List',
+                    _url: '/mock/list',
+                    icon: <MdOutlineChecklist className="text-xl" />,
+                },
+                {
+                    childrenTitle: 'Mock Test',
+                    _url: '/mock/create',
+                    icon: <FiFilePlus className="text-xl" />,
+                },
+            ],
+        },
+        {
+            title: 'Student Area',
+            url: '/students',
+            key: 'studentArea',
+            isChildrensOpen: false,
+            childrens: [
+                {
+                    childrenTitle: 'Add New Student',
+                    _url: '/students/add',
+                    icon: <FaList className="text-xl" />,
+                },
+                {
+                    childrenTitle: 'Students List',
+                    _url: '/students/list',
+                    icon: <MdOutlineChecklist className="text-xl" />,
+                },
+            ],
+        },
+        {
+            title: 'Reports',
+            url: '/reports',
+            key: 'reportsArea',
+            isChildrensOpen: false,
+            childrens: [
+                {
+                    childrenTitle: 'Gen Reports',
+                    _url: '/reports/generate',
+                    icon: <MdOutlineMenuBook className="text-xl" />,
+                },
+                {
+                    childrenTitle: 'View Result',
+                    _url: '/reports/list',
+                    icon: <MdOutlineMenuBook className="text-xl" />,
+                },
+            ],
+        },
+    ];
+
+    const [_navigation, _setNavigation] = useState(navigation);
+
+    const handleAreaToggle = (itemKey) => {
+        _setNavigation((prev) =>
+            prev.map((navItem) =>
+                navItem.key === itemKey
+                    ? { ...navItem, isChildrensOpen: !navItem.isChildrensOpen }
+                    : navItem
+            )
+        );
+    };
+
     const location = useLocation();
+    useEffect(() => {
+        let updated = [..._navigation];
+        updated.forEach((_el) => {
+            console.log(_el.url, '=_el.url');
+            console.log(location.pathname, 'pathname');
+            console.log(location.pathname.startsWith(_el.url));
+            if (location.pathname.startsWith(_el.url)) {
+                _el.isChildrensOpen = true;
+            }
+        });
+        _setNavigation(updated);
+    }, []);
 
     return (
         <>
@@ -49,6 +166,7 @@ function MenuBar({ isSidebarOpen }) {
                         </>
                     )}
                 </div>
+
                 <NavLink
                     to={'/dashboard'}
                     className={({ isActive }) => (isActive ? 'menu-item active' : 'menu-item')}>
@@ -58,186 +176,52 @@ function MenuBar({ isSidebarOpen }) {
                     </div>
                 </NavLink>
 
-                <div
-                    className="flex justify-between items-center cursor-pointer select-none bg-lime-200 px-3 py-2"
-                    onClick={() => setShowTestArea(!showTestArea)}>
-                    <div className="flex items-center gap-1">
-                        <GrTest />
-                        {isSidebarOpen && <H3 className={'mb-0 '}>Test Area</H3>}
-                    </div>
-                    <FaRegArrowAltCircleRight
-                        className={`${
-                            !showTestArea ? 'rotate-90' : 'rotate-0'
-                        } transition-all duration-300 `}
-                    />
-                </div>
-                <div className="overflow-hidden">
-                    <div
-                        className={`${
-                            showTestArea ? '-translate-y-full h-0' : '-translate-y-0 h-full'
-                        } transition-all overflow-hidden bg-cyan-800`}>
-                        <NavLink
-                            to={'/tests-list'}
-                            className={({ isActive }) =>
-                                isActive ? 'menu-item active' : 'menu-item'
-                            }>
-                            <FaList className="text-xl" />
-                            {isSidebarOpen && <span>Tests List</span>}
-                        </NavLink>
-
-                        <NavLink
-                            to={'/published-test'}
-                            className={({ isActive }) =>
-                                isActive ? 'menu-item active' : 'menu-item'
-                            }>
-                            <MdOutlineChecklist className="text-xl" />
-                            {isSidebarOpen && <span>Published Tests List</span>}
-                        </NavLink>
-
-                        <NavLink
-                            to={'/create-test/manual'}
-                            className={({ isActive }) =>
-                                isActive ? 'menu-item active' : 'menu-item'
-                            }>
-                            <LuBookPlus className="text-xl" />
-                            {isSidebarOpen && <span>Create Test (Manual)</span>}
-                        </NavLink>
-
-                        <NavLink
-                            to={'/create-test/auto'}
-                            className={({ isActive }) =>
-                                isActive ? 'menu-item active' : 'menu-item'
-                            }>
-                            <FiFilePlus className="text-xl" />
-                            {isSidebarOpen && <span>Create Test (Auto)</span>}
-                        </NavLink>
-                    </div>
-                </div>
-
-                <div
-                    className="flex justify-between items-center cursor-pointer select-none bg-lime-200 px-3 py-2"
-                    onClick={() => setShowMockArea(!showMockArea)}>
-                    <div className="flex items-center gap-1">
-                        <GrTest />
-                        {isSidebarOpen && <H3 className={'mb-0 '}>Mock Area</H3>}
-                    </div>
-                    <FaRegArrowAltCircleRight
-                        className={`${
-                            !showMockArea ? 'rotate-90' : 'rotate-0'
-                        } transition-all duration-300 `}
-                    />
-                </div>
-
-                <div className="overflow-hidden">
-                    <div
-                        className={`${
-                            showMockArea ? '-translate-y-full h-0' : '-translate-y-0 h-full'
-                        } transition-all overflow-hidden bg-cyan-800`}>
-                        <NavLink
-                            to={'/mock-list'}
-                            className={({ isActive }) =>
-                                isActive ? 'menu-item active' : 'menu-item'
-                            }>
-                            <MdOutlineChecklist className="text-xl" />
-                            {isSidebarOpen && <span>Tests List</span>}
-                        </NavLink>
-
-                        <NavLink
-                            to={'/mock-test'}
-                            className={({ isActive }) =>
-                                location.pathname.startsWith('/mock-test')
-                                    ? 'menu-item active'
-                                    : 'menu-item'
-                            }>
-                            <FiFilePlus className="text-xl" />
-                            {isSidebarOpen && <span>Mock Test</span>}
-                        </NavLink>
-                    </div>
-                </div>
-
-                <div
-                    className="flex justify-between items-center cursor-pointer select-none bg-lime-200 px-3 py-2"
-                    onClick={() => setShowStudentArea(!showStudentArea)}>
-                    <div className="flex items-center gap-1">
-                        <PiStudentBold />
-                        {isSidebarOpen && <H3 className={'mb-0 '}>Student Area</H3>}
-                    </div>
-                    <FaRegArrowAltCircleRight
-                        className={`${
-                            !showStudentArea ? 'rotate-90' : 'rotate-0'
-                        } transition-all duration-300 `}
-                    />
-                </div>
-                <div className="overflow-hidden">
-                    <div
-                        className={`${
-                            showStudentArea ? '-translate-y-full h-0' : '-translate-y-0 h-full'
-                        } transition-all overflow-hidden bg-cyan-800`}>
-                        <NavLink
-                            to={'/add-new-student'}
-                            className={({ isActive }) =>
-                                isActive ? 'menu-item active' : 'menu-item'
-                            }>
-                            <FaList className="text-xl" />
-                            {isSidebarOpen && <span>Add New Student</span>}
-                        </NavLink>
-
-                        <NavLink
-                            to={'/students-list'}
-                            className={({ isActive }) =>
-                                isActive ? 'menu-item active' : 'menu-item'
-                            }>
-                            <MdOutlineChecklist className="text-xl" />
-                            {isSidebarOpen && <span> Students List</span>}
-                        </NavLink>
-
-                        <NavLink
-                            to={'/students-list-by-center'}
-                            className={({ isActive }) =>
-                                isActive ? 'menu-item active' : 'menu-item'
-                            }>
-                            <MdOutlineChecklist className="text-xl" />
-                            {isSidebarOpen && <span> Students List By Center</span>}
-                        </NavLink>
-                    </div>
-                </div>
-
-                <div
-                    className="flex justify-between items-center cursor-pointer select-none bg-lime-200 px-3 py-2"
-                    onClick={() => setShowReportsArea(!showReportsArea)}>
-                    <div className="flex items-center gap-1">
-                        <FaChartLine />
-                        {isSidebarOpen && <H3 className={'mb-0 '}> Reports </H3>}
-                    </div>
-                    <FaRegArrowAltCircleRight
-                        className={`${
-                            !showReportsArea ? 'rotate-90' : 'rotate-0'
-                        } transition-all duration-300 `}
-                    />
-                </div>
-                <div className="overflow-hidden">
-                    <div
-                        className={`${
-                            showReportsArea ? '-translate-y-full h-0' : '-translate-y-0 h-full'
-                        } transition-all overflow-hidden bg-cyan-800`}>
-                        <NavLink
-                            to={'/gen-reports'}
-                            className={({ isActive }) =>
-                                isActive ? 'menu-item active' : 'menu-item'
-                            }>
-                            <MdOutlineMenuBook className="text-xl" />
-                            {isSidebarOpen && <span>Gen Reports</span>}
-                        </NavLink>
-                        <NavLink
-                            to={'/reports'}
-                            className={({ isActive }) =>
-                                isActive ? 'menu-item active' : 'menu-item'
-                            }>
-                            <MdOutlineMenuBook className="text-xl" />
-                            {isSidebarOpen && <span>View Result</span>}
-                        </NavLink>
-                    </div>
-                </div>
+                {_navigation.map((_el, _idx) => {
+                    return (
+                        <div key={_idx + 1}>
+                            <div
+                                className="flex justify-between items-center cursor-pointer select-none bg-lime-200 px-3 py-2"
+                                onClick={() => {
+                                    handleAreaToggle(_el.key);
+                                }}>
+                                <div className="flex items-center gap-1">
+                                    <GrTest />
+                                    {isSidebarOpen && <H3 className={'mb-0 '}>{_el.title}</H3>}
+                                </div>
+                                <FaRegArrowAltCircleRight
+                                    className={`${
+                                        // showAreaMap[_el.key] ? 'rotate-90' : 'rotate-0'
+                                        _el.isChildrensOpen ? 'rotate-90' : 'rotate-0'
+                                    } transition-all duration-300 `}
+                                />
+                            </div>
+                            <div className="overflow-hidden">
+                                {_el.childrens.map((children, idx) => {
+                                    return (
+                                        <div
+                                            key={idx + 1}
+                                            className={`${
+                                                _el.isChildrensOpen
+                                                    ? '-translate-y-0 h-full'
+                                                    : '-translate-y-full h-0'
+                                            } transition-all overflow-hidden bg-cyan-800`}>
+                                            <NavLink
+                                                to={children._url}
+                                                className={({ isActive }) =>
+                                                    isActive ? 'menu-item active' : 'menu-item'
+                                                }>
+                                                {children.icon}
+                                                {isSidebarOpen && (
+                                                    <span>{children.childrenTitle}</span>
+                                                )}
+                                            </NavLink>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    );
+                })}
 
                 <div>
                     <NavLink

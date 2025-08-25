@@ -2,10 +2,29 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     formFillingIP: null,
+    filters: {
+        center: [],
+        post: [],
+        exam_date: [],
+        batch: [],
+    },
+
+    searchData: {
+        centerName: '',
+        postName: '',
+        examDate: '',
+        batch: '',
+        searchType: '',
+        searchTerm: '',
+    },
+
     allList: {
         studentsList_ALL: [],
-        searchTerm: '',
-        searchType: '',
+        centerName: '',
+        postName: '',
+        examDate: '',
+        batch: '',
+
         page: 1,
         limit: 10,
         totalRows: 0,
@@ -27,6 +46,26 @@ const studentAreaSlice = createSlice({
     name: 'student-area-slice',
     initialState,
     reducers: {
+        setFiltersData: (state, action) => {
+            console.log(action.payload, '-filter payload');
+            state.filters = action.payload;
+        },
+
+        setSearchFilterValues: (state, action) => {
+            state.searchData = action.payload;
+        },
+
+        resetSearchFilterValues: (state) => {
+            state.searchData = {
+                centerName: '',
+                postName: '',
+                examDate: '',
+                batch: '',
+                searchType: '',
+                searchTerm: '',
+            };
+        },
+
         setFormFillingIP: (state, action) => {
             state.formFillingIP = action.payload;
         },

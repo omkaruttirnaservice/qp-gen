@@ -1,7 +1,7 @@
 import { FaEye, FaTrash, FaXmark } from 'react-icons/fa6';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
-import { getStudList } from './stud-list-api.jsx';
+import { getSearchFilters, getStudList } from './stud-list-api.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { StudentAreaActions } from '../../../Store/student-area-slice.jsx';
 import CButton from '../../UI/CButton.jsx';
@@ -12,7 +12,7 @@ import { s3BucketUrl, SEARCH_TYPE_NAME, SEARCH_TYPE_ROLL_NO } from '../../Utils/
 
 function StudentsList() {
     const dispatch = useDispatch();
-    const { allList } = useSelector((state) => state.studentArea);
+    const { allList, filters, searchData } = useSelector((state) => state.studentArea);
     const [filterStudentsList_All, setFilterStudentsList_All] = useState(allList.studentsList_ALL);
 
     useEffect(() => {
@@ -31,8 +31,7 @@ function StudentsList() {
             getStudList({
                 page: allList?.page || 1,
                 limit: allList?.limit || 10,
-                search_term: allList?.searchTerm || '',
-                search_by: allList?.searchType || '',
+                ...searchData,
             }),
         retry: false,
         refetchOnWindowFocus: false,
@@ -45,11 +44,47 @@ function StudentsList() {
         }
     }, [_studList]);
 
+    const {
+        data: _filters,
+        isError: _filtersError,
+        isPending: _filtersPending,
+        refetch: _filtersRefetch,
+    } = useQuery({
+        queryKey: ['_filters'],
+        queryFn: () => getSearchFilters(),
+        retry: false,
+        refetchOnWindowFocus: false,
+    });
+
+    useEffect(() => {
+        if (_filters?.data) {
+            console.log(_filters?.data.data[0].filters, '=_filters?.data');
+            let { center, post, exam_date, batch } = _filters?.data.data[0].filters;
+
+            dispatch(
+                StudentAreaActions.setFiltersData({
+                    center: center.split(','),
+                    post: post.split(','),
+                    exam_date: exam_date.split(','),
+                    batch: batch.split(','),
+                })
+            );
+        }
+    }, [_filters]);
+
     const handleSearch = (e) => dispatch(StudentAreaActions.setSearchTerm_ALL(e.target.value));
 
-    const handleSearchType = (e) => {
-        dispatch(StudentAreaActions.setSearchTerm_ALL(''));
-        dispatch(StudentAreaActions.setSearchType_ALL(e.target.value));
+    const handleSearchFilterChange = (e) => {
+        // dispatch(StudentAreaActions.setSearchTerm_ALL(''));
+        // dispatch(StudentAreaActions.setSearchType_ALL(e.target.value));
+
+        const updatedSearchData = {
+            ...searchData,
+        };
+
+        updatedSearchData[e.currentTarget.name] = e.currentTarget.value;
+
+        dispatch(StudentAreaActions.setSearchFilterValues(updatedSearchData));
     };
 
     useEffect(() => {
@@ -63,7 +98,7 @@ function StudentsList() {
         return () => {
             if (timeOut) clearTimeout(timeOut);
         };
-    }, [allList.searchTerm]);
+    }, [searchData.searchTerm]);
 
     const handlePageChange = (newPage) => {
         const candidateList = allList.studentsList_ALL;
@@ -91,7 +126,7 @@ function StudentsList() {
 
     useEffect(() => {
         refetchStudentsList();
-    }, [allList.page, allList.limit]);
+    }, [allList.page, allList.limit, searchData]);
 
     const columns = [
         {
@@ -143,12 +178,65 @@ function StudentsList() {
 
     return (
         <div className="">
-            <div className="flex gap-3 mb-5 mt-3 items-center">
+            <div className="grid grid-cols-7 gap-3 mb-5 mt-3 items-center">
+                <InputSelect
+                    label={'Center'}
+                    className={'w-fit'}
+                    value={searchData.centerName}
+                    name="centerName"
+                    onChange={handleSearchFilterChange}>
+                    <option value="">-- Select --</option>
+                    {filters?.center?.length > 0 &&
+                        filters.center.map((_el) => {
+                            return <option value={_el}>{_el}</option>;
+                        })}
+                </InputSelect>
+
+                <InputSelect
+                    label={'Post'}
+                    className={'w-fit'}
+                    value={searchData.postName}
+                    name="postName"
+                    onChange={handleSearchFilterChange}>
+                    <option value="">-- Select --</option>
+                    {filters?.post?.length > 0 &&
+                        filters.post.map((_el) => {
+                            return <option value={_el}>{_el}</option>;
+                        })}
+                </InputSelect>
+
+                <InputSelect
+                    label={'Exam Date'}
+                    className={' w-full'}
+                    value={searchData.examDate}
+                    name="examDate"
+                    onChange={handleSearchFilterChange}>
+                    <option value="">-- Select --</option>
+                    {filters?.exam_date?.length > 0 &&
+                        filters.exam_date.map((_el) => {
+                            return <option value={_el}>{_el}</option>;
+                        })}
+                </InputSelect>
+
+                <InputSelect
+                    label={'Batch'}
+                    className={' w-full'}
+                    value={searchData.batch}
+                    name="batch"
+                    onChange={handleSearchFilterChange}>
+                    <option value="">-- Select --</option>
+                    {filters?.batch?.length > 0 &&
+                        filters.batch.map((_el) => {
+                            return <option value={_el}>{_el}</option>;
+                        })}
+                </InputSelect>
+
                 <InputSelect
                     label={'Search Type'}
-                    className={'w-fit'}
-                    value={allList.searchType}
-                    onChange={handleSearchType}>
+                    className={' w-full'}
+                    value={searchData.searchType}
+                    name="searchType"
+                    onChange={handleSearchFilterChange}>
                     <option value="">-- Select --</option>
                     <option value={SEARCH_TYPE_ROLL_NO}>Roll No</option>
                     <option value={SEARCH_TYPE_NAME}>Name</option>
@@ -156,15 +244,17 @@ function StudentsList() {
 
                 <Input
                     label={'Search'}
-                    className={'w-fit'}
-                    value={allList.searchTerm}
-                    onChange={handleSearch}
-                    disabled={allList.searchType == ''}></Input>
+                    className={' w-full'}
+                    value={searchData.searchTerm}
+                    name="searchTerm"
+                    onChange={handleSearchFilterChange}
+                    disabled={searchData.searchType == ''}></Input>
+
                 <CButton
-                    className={'h-fit mt-auto'}
+                    className={'h-fit w-fit mt-auto'}
                     icon={<FaXmark />}
                     onClick={() => {
-                        dispatch(StudentAreaActions.setSearchTerm_ALL(''));
+                        dispatch(StudentAreaActions.resetSearchFilterValues());
                     }}></CButton>
             </div>
             {filterStudentsList_All?.length >= 1 && (

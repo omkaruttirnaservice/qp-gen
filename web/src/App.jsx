@@ -31,22 +31,22 @@ const router = createBrowserRouter([
             { path: '/dashboard', element: <Dashboard /> },
 
             // test area
-            { path: '/tests-list', element: <TestsList /> },
-            { path: '/published-test', element: <PublishedTestsList /> },
-            { path: '/create-test/manual', element: <QuestionsList /> },
-            { path: '/create-test/auto', element: <QuestionsListAutoTest /> },
+            { path: '/tests/list', element: <TestsList /> },
+            { path: '/tests/published', element: <PublishedTestsList /> },
+            { path: '/tests/create/manual', element: <QuestionsList /> },
+            { path: '/tests/create/auto', element: <QuestionsListAutoTest /> },
             { path: '/view-test-questions', element: <TestQuestionsView /> },
             {
                 path: '/view-published-test-questions',
                 element: <PublishedTestQuestionsView />,
             },
             {
-                path: '/mock-test',
+                path: '/mock/create',
                 element: <MockTestHome />,
             },
 
             {
-                path: '/mock-list',
+                path: '/mock/list',
                 element: <MockTestsList />,
             },
 
@@ -61,17 +61,17 @@ const router = createBrowserRouter([
             },
 
             // student area
-            { path: '/add-new-student', element: <AddNewStudent /> },
-            { path: '/students-list', element: <StudentsList /> },
-            { path: '/students-list-by-center', element: <StudentsListByCenter /> },
+            { path: '/students/add', element: <AddNewStudent /> },
+            { path: '/students/list', element: <StudentsList /> },
+            // { path: '/students-list-by-center', element: <StudentsListByCenter /> },
 
             // reports
-            { path: '/gen-reports', element: <GenerateRports /> },
+            { path: '/reports/generate', element: <GenerateRports /> },
             {
                 path: '/reports',
                 element: <ReportsLayout />,
                 children: [
-                    { path: '', element: <ViewReports /> },
+                    { path: 'list', element: <ViewReports /> },
                     { path: 'single', element: <StudentExamReportSingle /> },
                 ],
             },

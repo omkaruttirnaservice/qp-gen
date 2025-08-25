@@ -107,23 +107,35 @@ const studentAreaModel = {
 
     getAllStudentsList_v2: async (data) => {
         try {
-            const { limit, page, offset, search_term, search_by } = data;
+            const { limit, page, offset, searchTerm, searchType, ...rest } = data;
             let returnData = {};
-            let where = '';
 
-            if (search_by === 'roll_no') {
-                where = ` WHERE sl_roll_number LIKE '%${search_term}%' `;
+            // Build WHERE clauses
+            let whereClauses = [];
+
+            if (searchTerm) {
+                if (searchType === 'roll_no') {
+                    whereClauses.push(`sl_roll_number LIKE '%${searchTerm}%'`);
+                }
+                if (searchType === 'name') {
+                    whereClauses.push(`
+						(
+                    sl_f_name LIKE '%${searchTerm}%' OR
+                    sl_m_name LIKE '%${searchTerm}%' OR
+                    sl_l_name LIKE '%${searchTerm}%'
+						)
+                `);
+                }
             }
-            if (search_by === 'name') {
-                where = `
-				WHERE 
-					sl_f_name LIKE '%${search_term}%'
-					OR sl_m_name LIKE '%${search_term}%'
-					OR sl_l_name LIKE '%${search_term}%'
 
-				`;
-            }
+            // Additional filters
+            if (rest.postName) whereClauses.push(`sl_post = '${rest.postName}'`);
+            if (rest.examDate)
+                whereClauses.push(`DATE_FORMAT(sl_exam_date,'%d-%m-%Y') = '${rest.examDate}'`);
+            if (rest.batch) whereClauses.push(`sl_batch_no = '${rest.batch}'`);
 
+            // Combine all WHERE clauses
+            const where = whereClauses.length ? `WHERE ${whereClauses.join(' AND ')}` : '';
             let candidateListQuery = `SELECT 
 			sl.*,
 			DATE_FORMAT(sl_date_of_birth, '%d-%m-%Y') as sl_date_of_birth
@@ -158,6 +170,24 @@ const studentAreaModel = {
         } catch (error) {
             throw new ApiError(500, error?.message || 'Something went wrong');
         }
+    },
+
+    getStudentsListPageFilters: async () => {
+        let q = ` SELECT 
+				JSON_OBJECT(
+					'post',GROUP_CONCAT(DISTINCT(sl_post)),
+					'exam_date',GROUP_CONCAT(DISTINCT(DATE_FORMAT(sl_exam_date, '%d-%m-%Y'))),
+					'batch',GROUP_CONCAT(DISTINCT sl_batch_no),
+					'center',GROUP_CONCAT(DISTINCT cl_name)
+				) AS filters
+
+				FROM utr_question_paper.tn_student_list sl
+
+				INNER JOIN tn_center_list cl
+				ON sl.sl_center_code = cl.cl_number `;
+
+        const [filters] = await sequelize.query(q);
+        return filters;
     },
 
     getStudentsListByFilter: async (data) => {
