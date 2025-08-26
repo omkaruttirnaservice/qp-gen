@@ -15,7 +15,7 @@ const tm_student_final_result_set = sequelize.define('tm_student_final_result_se
 
     sfrs_student_id: { type: Sequelize.INTEGER },
     sfrs_student_roll_no: { type: Sequelize.STRING(50) },
-    sfrs_marks_gain: { type: Sequelize.STRING(50) },
+    sfrs_marks_gain: { type: Sequelize.INTEGER },
     srfs_percentile: { type: Sequelize.DOUBLE, defaultValue: 0 },
     sfrs_correct: { type: Sequelize.STRING(50) },
     sfrs_wrong: { type: Sequelize.STRING(50) },

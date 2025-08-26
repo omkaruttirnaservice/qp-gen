@@ -57,6 +57,7 @@ const reportsModel = {
 					INNER JOIN tn_student_list sl
 					ON sfrs.sfrs_student_id = sl.id
 					${where}
+                    ORDER BY sfrs_marks_gain DESC
 					`;
         } else {
             q = `SELECT JSON_OBJECT(
@@ -93,6 +94,7 @@ const reportsModel = {
 					INNER JOIN tn_student_list sl
 						ON sfrs.sfrs_student_id = sl.id
 					${where}
+                    ORDER BY sfrs_marks_gain DESC
 					LIMIT ${limit} OFFSET ${offset}
 				) as sub
 				CROSS JOIN (

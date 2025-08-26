@@ -178,10 +178,10 @@ const PDFGenerator = () => {
                             </div>
                             <div className="mt-2 text-sm text-gray-800 border justify-center flex items-center gap-6">
                                 <p>
-                                    Correct Answer: <strong>{q.q_ans}</strong>
+                                    Correct Answer: <strong>{q?.q_ans?.toUpperCase() || '-'}</strong>
                                 </p>
                                 <p>
-                                    Your Answer: <strong>{q.sqp_ans?.toUpperCase()}</strong>
+                                    Your Answer: <strong>{q?.sqp_ans?.toUpperCase() || '-'}</strong>
                                 </p>
                             </div>
                         </div>

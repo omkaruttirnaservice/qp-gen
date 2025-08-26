@@ -21,6 +21,7 @@ const tm_publish_test_list = sequelize.define(
         ptl_link: {
             type: DataTypes.TEXT,
             allowNull: false,
+            unique: false,
         },
         ptl_link_1: {
             type: DataTypes.STRING(50),
@@ -102,7 +103,7 @@ const tm_publish_test_list = sequelize.define(
         tm_aouth_id: {
             type: DataTypes.BIGINT,
             allowNull: false,
-            comment: "This is the id of user by whom the test is published"
+            comment: 'This is the id of user by whom the test is published',
         },
         mt_test_time: {
             type: DataTypes.STRING(10),
