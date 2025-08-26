@@ -225,6 +225,7 @@ const testsController = {
                 message: 'Successfully created auto test',
             });
         } catch (error) {
+            console.log(error,'err');
             await transact.rollback();
             return sendError(res, error.message);
         }

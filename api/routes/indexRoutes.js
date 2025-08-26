@@ -13,7 +13,7 @@ import testsRouter from './testsRouter.js';
 import subjectRouter from './subjectRouter.js';
 import topicRouter from './topicRouter.js';
 
-router.use('/topic', topicRouter);
+router.use('/topics', topicRouter);
 router.use('/subject', subjectRouter);
 
 router.use('/questions', questionRoutes);

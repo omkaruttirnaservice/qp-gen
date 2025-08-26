@@ -48,7 +48,7 @@ function LoginPage() {
                         userId: userId,
                     })
                 );
-                navigate('/tests-list');
+                navigate('/tests/list');
             } else {
                 setError('Invalid login credentials');
             }

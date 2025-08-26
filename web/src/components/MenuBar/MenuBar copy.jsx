@@ -84,7 +84,7 @@ function MenuBar({ isSidebarOpen }) {
                             showTestArea ? '-translate-y-full h-0' : '-translate-y-0 h-full'
                         } transition-all overflow-hidden bg-cyan-800`}>
                         <NavLink
-                            to={'/tests-list'}
+                            to={'/tests/list'}
                             className={({ isActive }) =>
                                 isActive ? 'menu-item active' : 'menu-item'
                             }>

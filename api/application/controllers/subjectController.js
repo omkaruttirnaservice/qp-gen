@@ -42,6 +42,7 @@ const subjectController = {
 
 	getTopicList: async function (req, res) {
 		try {
+			console.log(11);
 			const subjectId = req.body.subjectId;
 			const response = await subjectModel.getTopicList(subjectId);
 			sendSuccess(res, response[0]);

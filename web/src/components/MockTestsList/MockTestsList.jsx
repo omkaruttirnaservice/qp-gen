@@ -263,7 +263,7 @@ function MockTestsList() {
                 {/* {publishedTestsList.length == 0 && !isLoading && (
 					<div className="text-center mt-6 flex justify-center">
 						<span>Woops! no test list found.&nbsp;&nbsp;</span>
-						<Link className="underline font-semibold flex items-center gap-2 " to={'/tests-list'}>
+						<Link className="underline font-semibold flex items-center gap-2 " to={'/tests/list'}>
 							Publish Test <FaPlus className="inline-block" />
 						</Link>
 					</div>

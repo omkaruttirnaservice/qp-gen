@@ -252,7 +252,7 @@ export const getSubjectsListThunk = (post_id, sendRequest) => {
 export const getTopicsListThunk = (subject_id, sendRequest) => {
     return async (dispatch) => {
         const requestData = {
-            url: SERVER_IP + '/api/get-topic-list',
+            url: SERVER_IP + '/api/topics/list',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
