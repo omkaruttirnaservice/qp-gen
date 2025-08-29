@@ -67,7 +67,7 @@ const PDFGenerator = () => {
         <div className="p-6  ">
             {/* Component to be captured */}
             <div className="p-4 bg-white shadow-md rounded-md w-full max-w-4xl mx-auto space-y-6">
-                <h2 className="text-2xl font-bold mb-4 text-center">Student Question Paper</h2>
+                <h2 className="text-2xl font-bold mb-4 text-center">Candidate Question Paper</h2>
                 {/* 📌 Header Section */}
                 {qpDetails.studExam && (
                     <div className="mb-6 grid grid-cols-2 gap-y-2 gap-x-6 border p-4 rounded-md text-sm text-gray-700">

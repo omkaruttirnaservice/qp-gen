@@ -53,7 +53,7 @@ function MockTestsList() {
 
     const handlePublishedTestQuePreview = (el) => {
         dispatch(testsSliceActions.setPreviewPublishedTestDetails(el));
-        navigate('/view-published-test-questions');
+        navigate('/tests/list/questions');
     };
 
     const handleViewReport = (el) => {

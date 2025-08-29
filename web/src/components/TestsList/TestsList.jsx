@@ -130,7 +130,7 @@ function TestsList() {
 
         dispatch(testsSliceActions.setPreviewTestDetails(el));
 
-        navigate('/view-test-questions');
+        navigate('/tests/list/questions');
     };
 
     const handleChange = (e) => {
@@ -216,7 +216,7 @@ function TestsList() {
                     );
                     dispatch(testsSliceActions.setPreviewPublishedTestDetails(data.testDetails));
                     setTimeout(() => {
-                        navigate('/view-published-test-questions');
+                        navigate('/tests/list/questions');
                     }, 10);
                     setPublishExamForm(initialStatePublishForm);
                 }
@@ -353,7 +353,11 @@ function TestsList() {
                             <option value="">-- Select -- </option>
 
                             {batchCount.map((el, idx) => {
-                                return <option key={idx} value={idx + 1}>Batch {idx + 1}</option>;
+                                return (
+                                    <option key={idx} value={idx + 1}>
+                                        Batch {idx + 1}
+                                    </option>
+                                );
                             })}
                         </select>
 

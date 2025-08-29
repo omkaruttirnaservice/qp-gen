@@ -57,7 +57,7 @@ const reportsModel = {
 					INNER JOIN tn_student_list sl
 					ON sfrs.sfrs_student_id = sl.id
 					${where}
-                    ORDER BY sfrs_marks_gain DESC
+                    ORDER BY CAST(sfrs_marks_gain AS DECIMAL) DESC
 					`;
         } else {
             q = `SELECT JSON_OBJECT(
@@ -94,7 +94,7 @@ const reportsModel = {
 					INNER JOIN tn_student_list sl
 						ON sfrs.sfrs_student_id = sl.id
 					${where}
-                    ORDER BY sfrs_marks_gain DESC
+                    ORDER BY CAST(sfrs_marks_gain AS DECIMAL) DESC
 					LIMIT ${limit} OFFSET ${offset}
 				) as sub
 				CROSS JOIN (
@@ -106,6 +106,8 @@ const reportsModel = {
 				) AS t;
 				`;
         }
+
+        console.log(q,'=q');
 
         return await sequelize.query(q);
     },

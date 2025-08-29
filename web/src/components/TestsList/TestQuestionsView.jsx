@@ -1,4 +1,4 @@
-import { FaBackspace } from 'react-icons/fa';
+import { FaBackspace, FaPrint } from 'react-icons/fa';
 import { GoPencil } from 'react-icons/go';
 import { useDispatch, useSelector } from 'react-redux';
 import useHttp from '../Hooks/use-http.jsx';
@@ -13,9 +13,12 @@ import CButton from '../UI/CButton.jsx';
 import { H2, H3 } from '../UI/Headings.jsx';
 import EditQuestionView from './EditQuestionView.jsx';
 import { EDIT_QUESTION_OF_GENERATED_TEST } from '../Utils/Constants.jsx';
+import CModal from '../UI/CModal.jsx';
+import PDFGenerator from '../Reports/GenerateRports/PDFGen.jsx';
 
 function TestQuestionsView() {
     const { testQuestionsList, previewTestDetails } = useSelector((state) => state.tests);
+
 
     const { sendRequest } = useHttp();
     const dispatch = useDispatch();
@@ -69,6 +72,16 @@ function TestQuestionsView() {
     return (
         <>
             <EditQuestionView />
+            <CModal id={'view-pdf-modal'} title={'Questions Print List'} className={`min-w-[95vw]`}>
+                <PDFGenerator questions={testQuestionsList} testDetails={previewTestDetails} />
+            </CModal>
+
+            <CButton
+                className={'absolute bottom-5 right-5 z-30'}
+                onClick={() => dispatch(ModalActions.toggleModal('view-pdf-modal'))}>
+                <FaPrint />
+            </CButton>
+
             <div className="container mx-auto text-center my-6 relative">
                 <Link
                     className="bg-blue-200 inline-block absolute left-0 top-0 p-2"

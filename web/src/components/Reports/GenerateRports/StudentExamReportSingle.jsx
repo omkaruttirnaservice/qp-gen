@@ -32,7 +32,7 @@ function StudentExamReportSingle() {
             !singleStudentViewReport?.studExam ||
             !studExam
         ) {
-            navigate('/reports');
+            navigate('/reports/list');
         }
     }, [singleStudentViewReport, studExam]);
 
@@ -53,7 +53,7 @@ function StudentExamReportSingle() {
                 <CButton
                     icon={<IoChevronBackOutline />}
                     onClick={() => {
-                        navigate('/reports');
+                        navigate('/reports/list');
                     }}
                     className="btn--danger"></CButton>
                 <div className="flex gap-3">

@@ -29,7 +29,7 @@ function Dashboard() {
     };
 
     const testsListHandler = () => navigate('/tests/list');
-    const publishedTestsListHandler = () => navigate('/published-test');
+    const publishedTestsListHandler = () => navigate('/tests/published');
 
     return (
         <>

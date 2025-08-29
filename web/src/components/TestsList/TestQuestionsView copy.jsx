@@ -1,61 +1,37 @@
+import { FaBackspace, FaPrint } from 'react-icons/fa';
+import { GoPencil } from 'react-icons/go';
 import { useDispatch, useSelector } from 'react-redux';
 import useHttp from '../Hooks/use-http.jsx';
-let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 
-import { useEffect, useLayoutEffect } from 'react';
-import { FaBackspace } from 'react-icons/fa';
-import { GoPencil } from 'react-icons/go';
+import { useEffect } from 'react';
+import { FaSpinner } from 'react-icons/fa6';
 import { Link, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import { EditQuestionFormActions } from '../../Store/edit-question-form-slice.jsx';
 import { ModalActions } from '../../Store/modal-slice.jsx';
-import { testsSliceActions } from '../../Store/tests-slice.jsx';
-import EditQuestionView from '../TestsList/EditQuestionView.jsx';
+import { getTestQuestionsListThunk, testsSliceActions } from '../../Store/tests-slice.jsx';
 import CButton from '../UI/CButton.jsx';
 import { H2, H3 } from '../UI/Headings.jsx';
-import { EDIT_QUESTION_OF_PUBLISHED_TEST } from '../Utils/Constants.jsx';
+import EditQuestionView from './EditQuestionView.jsx';
+import { EDIT_QUESTION_OF_GENERATED_TEST } from '../Utils/Constants.jsx';
+import CModal from '../UI/CModal.jsx';
+import PDFGenerator from '../Reports/GenerateRports/PDFGen.jsx';
 
-function PublishedTestQuestionsView() {
-    const { previewPublishedTestDetails, publishedTestQuestionsList } = useSelector(
-        (state) => state.tests
-    );
-
-    useLayoutEffect(() => {
-        if (!previewPublishedTestDetails.testId) {
-            navigate('/tests/published');
-        }
-    }, []);
+function TestQuestionsView() {
+    const { testQuestionsList, previewTestDetails } = useSelector((state) => state.tests);
 
     const { sendRequest } = useHttp();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (publishedTestQuestionsList.length == 0) {
-            let reqData = {
-                url: SERVER_IP + '/api/test/questions',
-                method: 'POST',
-                body: JSON.stringify({ testId: previewPublishedTestDetails.test_id }),
-            };
-            sendRequest(reqData, ({ success, data }) => {
-                if (data.length == 0) {
-                    Swal.fire({
-                        title: 'Warning!',
-                        text: 'No questions found for the test!',
-                    });
-
-                    navigate('/tests/published');
-                    return false;
-                }
-
-                dispatch(testsSliceActions.setPublishedTestQuestionsList(data));
-            });
+        if (testQuestionsList.length == 0) {
+            dispatch(getTestQuestionsListThunk(previewTestDetails.test_id, sendRequest, navigate));
         }
-    }, [publishedTestQuestionsList]);
+    }, [testQuestionsList]);
 
     useEffect(() => {
         return () => {
-            dispatch(testsSliceActions.cleanupPublishedTestDetails());
+            dispatch(testsSliceActions.cleanupPreviewTestDetails());
         };
     }, []);
 
@@ -63,7 +39,7 @@ function PublishedTestQuestionsView() {
         dispatch(
             EditQuestionFormActions.setEditQuestionDetails({
                 el,
-                edit_for: EDIT_QUESTION_OF_PUBLISHED_TEST,
+                edit_for: EDIT_QUESTION_OF_GENERATED_TEST,
             })
         );
         dispatch(ModalActions.toggleModal('edit-que-modal'));
@@ -75,6 +51,7 @@ function PublishedTestQuestionsView() {
     const renderTopicHeader = (mainTopicName, subTopicSection) => {
         let header = null;
 
+        // Render sub topic header if it changes
         if (subTopicSection !== lastSub) {
             lastSub = subTopicSection;
             header = (
@@ -94,62 +71,68 @@ function PublishedTestQuestionsView() {
     return (
         <>
             <EditQuestionView />
-            
+            <CModal id={'view-pdf-modal'} title={'Questions Print List'} className={`min-w-[95vw]`}>
+                <PDFGenerator questions={testQuestionsList} testDetails={previewTestDetails} />
+            </CModal>
+
+            <CButton
+                className={'absolute bottom-5 right-5 z-30'}
+                onClick={() => dispatch(ModalActions.toggleModal('view-pdf-modal'))}>
+                <FaPrint />
+            </CButton>
+
             <div className="container mx-auto text-center my-6 relative">
                 <Link
                     className="bg-blue-200 inline-block absolute left-0 top-0 p-2"
-                    to={'/tests/published'}>
+                    to={'/tests/list'}>
                     <FaBackspace />
                 </Link>
-                <H2>{previewPublishedTestDetails.test_name}</H2>
+                <H2 className="mb-0">{previewTestDetails.test_name}</H2>
             </div>
-            <div className="container mx-auto grid grid-cols-3 gap-2 mb-6 border-b border-b-gray-500">
-                <PreviewTestDetails
-                    title={'Test Duration'}
-                    value={previewPublishedTestDetails.test_name}
-                />
+            <div className="container mx-auto grid grid-cols-3 gap-2 mb-6">
+                <PreviewTestDetails title={'Test Duration'} value={previewTestDetails.test_name} />
 
                 <PreviewTestDetails
                     title={'Marks per question'}
-                    value={previewPublishedTestDetails.marks_per_question}
+                    value={previewTestDetails.marks_per_question}
                 />
 
                 <PreviewTestDetails
                     title={'Total questions'}
-                    value={previewPublishedTestDetails.total_questions}
+                    value={previewTestDetails.total_questions}
                 />
 
                 <PreviewTestDetails
                     title={'Is negative marking'}
-                    value={previewPublishedTestDetails.is_negative_marking == 0 ? 'No' : 'Yes'}
+                    value={previewTestDetails.is_negative_marking == 0 ? 'No' : 'Yes'}
                 />
 
                 <PreviewTestDetails
                     title={'Negative marks'}
-                    value={previewPublishedTestDetails.negative_mark}
+                    value={previewTestDetails.negative_mark == 0 ? 'No' : 'Yes'}
                 />
                 <PreviewTestDetails
                     title={'Passing marks'}
-                    value={previewPublishedTestDetails.test_passing_mark}
+                    value={previewTestDetails.test_passing_mark}
                 />
 
                 <PreviewTestDetails
                     title={'Test created date'}
-                    value={`
-					${previewPublishedTestDetails?.test_created_on.split('-')[2]}-
-					${previewPublishedTestDetails?.test_created_on.split('-')[1]}-
-					${previewPublishedTestDetails?.test_created_on.split('-')[0]}`}
+                    value={previewTestDetails.test_created_on}
                 />
 
-                <PreviewTestDetails
-                    title={'Todays date'}
-                    value={previewPublishedTestDetails.todays_date}
-                />
+                <PreviewTestDetails title={'Todays date'} value={previewTestDetails.todays_date} />
             </div>
 
+            {testQuestionsList.length == 0 && (
+                <div className="flex justify-center">
+                    <FaSpinner className="animate-spin text-2xl" />
+                </div>
+            )}
+
             <div className="container mx-auto columns-2">
-                {publishedTestQuestionsList.length >= 1 &&
-                    publishedTestQuestionsList.map((el, idx) => {
+                {testQuestionsList.length >= 1 &&
+                    testQuestionsList.map((el, idx) => {
                         const topicHeader = renderTopicHeader(
                             el.main_topic_name,
                             el.sub_topic_section
@@ -162,7 +145,7 @@ function PublishedTestQuestionsView() {
                                     </div>
                                 )}
                                 <div
-                                    className={`border transition-all duration-300 mb-5 shadow-sm bg-gray-100 relative que-container`}
+                                    className={`border transition-all duration-300  mb-5 shadow-sm bg-gray-100 relative que-container`}
                                     key={idx}>
                                     <CButton
                                         icon={<GoPencil />}
@@ -232,7 +215,7 @@ function PublishedTestQuestionsView() {
 
                                         <hr />
 
-                                        {el.mqs_opt_five && (
+                                        {el.q_e && (
                                             <div className="py-3">
                                                 <span className="font-bold text-[#555] mb-4 block text-start">
                                                     Option E
@@ -251,7 +234,7 @@ function PublishedTestQuestionsView() {
                                                 Correct Option
                                             </span>
                                             <span className="mb-6 bg-blue-200 px-2 py-1 w-fit">
-                                                {el.q_ans}
+                                                {el.q_ans.toUpperCase()}
                                             </span>
                                         </div>
 
@@ -271,6 +254,7 @@ function PublishedTestQuestionsView() {
                                         )}
 
                                         <hr />
+
                                         <div className=" bg-gray-300 p-3 ">
                                             <H3>Publication Info</H3>
 
@@ -312,4 +296,4 @@ function PreviewTestDetails({ title, value }) {
     );
 }
 
-export default PublishedTestQuestionsView;
+export default TestQuestionsView;

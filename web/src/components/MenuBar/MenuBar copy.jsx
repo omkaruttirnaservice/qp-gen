@@ -93,7 +93,7 @@ function MenuBar({ isSidebarOpen }) {
                         </NavLink>
 
                         <NavLink
-                            to={'/published-test'}
+                            to={'/tests/published'}
                             className={({ isActive }) =>
                                 isActive ? 'menu-item active' : 'menu-item'
                             }>

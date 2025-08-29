@@ -35,9 +35,9 @@ const router = createBrowserRouter([
             { path: '/tests/published', element: <PublishedTestsList /> },
             { path: '/tests/create/manual', element: <QuestionsList /> },
             { path: '/tests/create/auto', element: <QuestionsListAutoTest /> },
-            { path: '/view-test-questions', element: <TestQuestionsView /> },
+            { path: '/tests/list/questions', element: <TestQuestionsView /> },
             {
-                path: '/view-published-test-questions',
+                path: '/tests/published/questions',
                 element: <PublishedTestQuestionsView />,
             },
             {

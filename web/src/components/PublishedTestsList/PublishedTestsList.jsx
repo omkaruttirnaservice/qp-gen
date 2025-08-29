@@ -52,7 +52,7 @@ function PublishedTestsList() {
 
     const handlePublishedTestQuePreview = (el) => {
         dispatch(testsSliceActions.setPreviewPublishedTestDetails(el));
-        navigate('/view-published-test-questions');
+        navigate('/tests/published/questions');
     };
 
     const handleUnpublishExam = async (el) => {
@@ -143,10 +143,14 @@ function PublishedTestsList() {
             cell: (row) => (
                 <>
                     {isExamToday(row.ptl_active_date) == 1 && (
-                        <span className="bg-gradient-to-tr from-indigo-500 to-indigo-600 p-1 text-white shadow-md text-xs">Today</span>
+                        <span className="bg-gradient-to-tr from-indigo-500 to-indigo-600 p-1 text-white shadow-md text-xs">
+                            Today
+                        </span>
                     )}
                     {isExamToday(row.ptl_active_date) == 2 && (
-                        <span className="bg-gradient-to-tr from-green-500 to-green-600 p-1 text-white shadow-md text-xs">Upcomming</span>
+                        <span className="bg-gradient-to-tr from-green-500 to-green-600 p-1 text-white shadow-md text-xs">
+                            Upcomming
+                        </span>
                     )}
                 </>
             ),

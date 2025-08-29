@@ -309,7 +309,7 @@ function QuestionsListAutoTest() {
                 dispatch(testsSliceActions.setPreviewTestDetails(data.testDetails));
 
                 setTimeout(() => {
-                    navigate('/view-test-questions');
+                    navigate('/tests/list/questions');
                 }, 10);
             }
         });
