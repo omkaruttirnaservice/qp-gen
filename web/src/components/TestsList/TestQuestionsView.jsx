@@ -93,6 +93,28 @@ function TestQuestionsView() {
                 <FaPrint />
             </CButton>
 
+            <TestInfoHeader testDetails={testDetails} />
+
+            {questionsList.length == 0 && (
+                <div className="flex justify-center">
+                    <FaSpinner className="animate-spin text-2xl" />
+                </div>
+            )}
+
+            {questionsList.length !== 0 && (
+                <QuestionSplitView
+                    questionsList={questionsList}
+                    renderTopicHeader={renderTopicHeader}
+                    handleEditQuestion={handleEditQuestion}
+                />
+            )}
+        </>
+    );
+}
+
+function TestInfoHeader({ testDetails }) {
+    return (
+        <>
             <div className="container mx-auto text-center my-6 relative">
                 <div
                     className="bg-blue-200 inline-block absolute left-0 top-0 p-2 cursor-pointer"
@@ -103,7 +125,7 @@ function TestQuestionsView() {
                 <H2 className="mb-0">{testDetails.test_name}</H2>
             </div>
             <div className="container mx-auto grid grid-cols-3 gap-2 mb-6">
-                <PreviewTestDetails title={'Test Duration'} value={testDetails.test_name} />
+                <PreviewTestDetails title={'Test Duration'} value={testDetails.test_duration} />
 
                 <PreviewTestDetails
                     title={'Marks per question'}
@@ -130,26 +152,11 @@ function TestQuestionsView() {
 
                 <PreviewTestDetails title={'Todays date'} value={testDetails.todays_date} />
             </div>
-
-            {questionsList.length == 0 && (
-                <div className="flex justify-center">
-                    <FaSpinner className="animate-spin text-2xl" />
-                </div>
-            )}
-
-            {questionsList.length !== 0 && (
-                <QuestionSplitView
-                    questionsList={questionsList}
-                    renderTopicHeader={renderTopicHeader}
-                    handleEditQuestion={handleEditQuestion}
-                />
-            )}
         </>
     );
 }
 
 function QuestionSplitView({ questionsList, renderTopicHeader, handleEditQuestion }) {
-    console.log(questionsList,'=questionsList');
     return (
         <>
             <div className="container mx-auto columns-2">
