@@ -36,7 +36,7 @@ export const _router = createBrowserRouter([
             { path: '/tests/list/questions', element: <TestQuestionsView /> },
             {
                 path: '/tests/published/questions',
-                element: <PublishedTestQuestionsView />,
+                element: <TestQuestionsView />,
             },
             {
                 path: '/mock/create',

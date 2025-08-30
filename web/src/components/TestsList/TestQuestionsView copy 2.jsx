@@ -8,26 +8,47 @@ import { FaSpinner } from 'react-icons/fa6';
 import { Link, useNavigate } from 'react-router-dom';
 import { EditQuestionFormActions } from '../../Store/edit-question-form-slice.jsx';
 import { ModalActions } from '../../Store/modal-slice.jsx';
-import { getQuestionsListThunk, testsSliceActions } from '../../Store/tests-slice.jsx';
-import PDFGenerator from '../Reports/GenerateRports/PDFGen.jsx';
+import { getTestQuestionsListThunk, testsSliceActions } from '../../Store/tests-slice.jsx';
 import CButton from '../UI/CButton.jsx';
-import CModal from '../UI/CModal.jsx';
 import { H2, H3 } from '../UI/Headings.jsx';
-import { EDIT_QUESTION_OF_GENERATED_TEST } from '../Utils/Constants.jsx';
 import EditQuestionView from './EditQuestionView.jsx';
+import { EDIT_QUESTION_OF_GENERATED_TEST } from '../Utils/Constants.jsx';
+import CModal from '../UI/CModal.jsx';
+import PDFGenerator from '../Reports/GenerateRports/PDFGen.jsx';
 
 function TestQuestionsView() {
-    const { questionsList, testDetails } = useSelector((state) => state.tests);
+    const { testQuestionsList, testDetails } = useSelector((state) => state.tests);
 
     const { sendRequest } = useHttp();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (questionsList.length == 0) {
-            dispatch(getQuestionsListThunk(testDetails.test_id, sendRequest, navigate));
+        if (testQuestionsList.length == 0) {
+            dispatch(getTestQuestionsListThunk(previewTestDetails.test_id, sendRequest, navigate));
         }
-    }, [questionsList]);
+
+        return async (dispatch) => {
+            let reqData = {
+                url: SERVER_IP + '/api/test/questions',
+                method: 'POST',
+                body: JSON.stringify({ testId }),
+            };
+            sendRequest(reqData, ({ success, data }) => {
+                if (data.length == 0) {
+                    // Swal.fire({
+                    //     title: 'Warning!',
+                    //     text: 'No questions found for the test!',
+                    // });
+
+                    // navigate(-1);
+                    return false;
+                }
+
+                dispatch(testsSliceActions.setTestQuestionsList(data));
+            });
+        };
+    }, [testQuestionsList]);
 
     useEffect(() => {
         return () => {
@@ -72,7 +93,7 @@ function TestQuestionsView() {
         <>
             <EditQuestionView />
             <CModal id={'view-pdf-modal'} title={'Questions Print List'} className={`min-w-[95vw]`}>
-                <PDFGenerator questions={questionsList} testDetails={testDetails} />
+                <PDFGenerator questions={testQuestionsList} testDetails={previewTestDetails} />
             </CModal>
 
             <CButton
@@ -82,29 +103,57 @@ function TestQuestionsView() {
             </CButton>
 
             <div className="container mx-auto text-center my-6 relative">
-                {/* <Link
+                <Link
                     className="bg-blue-200 inline-block absolute left-0 top-0 p-2"
                     to={'/tests/list'}>
-                </Link> */}
-                <div
-                    className="bg-blue-200 inline-block absolute left-0 top-0 p-2 cursor-pointer"
-                    onClick={() => navigate(-1)}>
                     <FaBackspace />
-                </div>
-                <H2 className="mb-0">{testDetails.test_name}</H2>
+                </Link>
+                <H2 className="mb-0">{previewTestDetails.test_name}</H2>
+            </div>
+            <div className="container mx-auto grid grid-cols-3 gap-2 mb-6">
+                <PreviewTestDetails title={'Test Duration'} value={previewTestDetails.test_name} />
+
+                <PreviewTestDetails
+                    title={'Marks per question'}
+                    value={previewTestDetails.marks_per_question}
+                />
+
+                <PreviewTestDetails
+                    title={'Total questions'}
+                    value={previewTestDetails.total_questions}
+                />
+
+                <PreviewTestDetails
+                    title={'Is negative marking'}
+                    value={previewTestDetails.is_negative_marking == 0 ? 'No' : 'Yes'}
+                />
+
+                <PreviewTestDetails
+                    title={'Negative marks'}
+                    value={previewTestDetails.negative_mark == 0 ? 'No' : 'Yes'}
+                />
+                <PreviewTestDetails
+                    title={'Passing marks'}
+                    value={previewTestDetails.test_passing_mark}
+                />
+
+                <PreviewTestDetails
+                    title={'Test created date'}
+                    value={previewTestDetails.test_created_on}
+                />
+
+                <PreviewTestDetails title={'Todays date'} value={previewTestDetails.todays_date} />
             </div>
 
-            <TestHeader testDetails={testDetails} />
-
-            {questionsList.length == 0 && (
+            {testQuestionsList.length == 0 && (
                 <div className="flex justify-center">
                     <FaSpinner className="animate-spin text-2xl" />
                 </div>
             )}
 
             <div className="container mx-auto columns-2">
-                {questionsList.length >= 1 &&
-                    questionsList.map((el, idx) => {
+                {testQuestionsList.length >= 1 &&
+                    testQuestionsList.map((el, idx) => {
                         const topicHeader = renderTopicHeader(
                             el.main_topic_name,
                             el.sub_topic_section
@@ -254,41 +303,6 @@ function TestQuestionsView() {
                             </>
                         );
                     })}
-            </div>
-        </>
-    );
-}
-
-function TestHeader({ testDetails }) {
-    return (
-        <>
-            <div className="container mx-auto grid grid-cols-3 gap-2 mb-6">
-                <PreviewTestDetails title={'Test Duration'} value={testDetails.test_name} />
-
-                <PreviewTestDetails
-                    title={'Marks per question'}
-                    value={testDetails.marks_per_question}
-                />
-
-                <PreviewTestDetails title={'Total questions'} value={testDetails.total_questions} />
-
-                <PreviewTestDetails
-                    title={'Is negative marking'}
-                    value={testDetails.is_negative_marking == 0 ? 'No' : 'Yes'}
-                />
-
-                <PreviewTestDetails
-                    title={'Negative marks'}
-                    value={testDetails.negative_mark == 0 ? 'No' : 'Yes'}
-                />
-                <PreviewTestDetails title={'Passing marks'} value={testDetails.test_passing_mark} />
-
-                <PreviewTestDetails
-                    title={'Test created date'}
-                    value={testDetails.test_created_on}
-                />
-
-                <PreviewTestDetails title={'Todays date'} value={testDetails.todays_date} />
             </div>
         </>
     );

@@ -51,7 +51,7 @@ function PublishedTestsList() {
     }
 
     const handlePublishedTestQuePreview = (el) => {
-        dispatch(testsSliceActions.setPreviewPublishedTestDetails(el));
+        dispatch(testsSliceActions.setTestDetails(el));
         navigate('/tests/published/questions');
     };
 

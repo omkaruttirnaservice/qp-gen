@@ -128,7 +128,7 @@ function TestsList() {
     const handleViewQuestions = (el) => {
         if (!el.id) return false;
 
-        dispatch(testsSliceActions.setPreviewTestDetails(el));
+        dispatch(testsSliceActions.setTestDetails(el));
 
         navigate('/tests/list/questions');
     };
