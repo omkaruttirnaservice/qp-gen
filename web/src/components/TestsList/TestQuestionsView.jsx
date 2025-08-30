@@ -5,42 +5,30 @@ import useHttp from '../Hooks/use-http.jsx';
 
 import { useEffect } from 'react';
 import { FaSpinner } from 'react-icons/fa6';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { EditQuestionFormActions } from '../../Store/edit-question-form-slice.jsx';
 import { ModalActions } from '../../Store/modal-slice.jsx';
 import {
     getQuestionsListThunk,
-    getTestQuestionsListThunk,
-    testsSliceActions,
+    testsSliceActions
 } from '../../Store/tests-slice.jsx';
-import CButton from '../UI/CButton.jsx';
-import { H2, H3 } from '../UI/Headings.jsx';
-import EditQuestionView from './EditQuestionView.jsx';
-import { EDIT_QUESTION_OF_GENERATED_TEST } from '../Utils/Constants.jsx';
-import CModal from '../UI/CModal.jsx';
 import PDFGenerator from '../Reports/GenerateRports/PDFGen.jsx';
-
-const CIRCLE = 'CIRCLE';
-const TEXT = 'TEXT';
-const NUMBER = 'NUMBER';
-const ROMAN = 'ROMAN';
-
-const optionsInputEnum = [NUMBER, CIRCLE, TEXT, ROMAN];
+import CButton from '../UI/CButton.jsx';
+import CModal from '../UI/CModal.jsx';
+import { H2 } from '../UI/Headings.jsx';
+import { EDIT_QUESTION_OF_GENERATED_TEST } from '../Utils/Constants.jsx';
+import EditQuestionView from './EditQuestionView.jsx';
 
 function TestQuestionsView() {
     const { questionsList, testDetails } = useSelector((state) => state.tests);
-
-    console.log(testDetails, '=testDetails==================');
 
     const { sendRequest } = useHttp();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (questionsList.length == 0) {
-            dispatch(getQuestionsListThunk(testDetails.test_id, sendRequest, navigate));
-        }
-    }, [questionsList]);
+        dispatch(getQuestionsListThunk(testDetails.test_id, sendRequest, navigate));
+    }, [testDetails.test_id]);
 
     useEffect(() => {
         return () => {
@@ -138,11 +126,13 @@ function TestQuestionsView() {
                 </div>
             )}
 
-            <QuestionSplitView
-                questionsList={questionsList}
-                renderTopicHeader={renderTopicHeader}
-                handleEditQuestion={handleEditQuestion}
-            />
+            {questionsList.length !== 0 && (
+                <QuestionSplitView
+                    questionsList={questionsList}
+                    renderTopicHeader={renderTopicHeader}
+                    handleEditQuestion={handleEditQuestion}
+                />
+            )}
         </>
     );
 }
@@ -159,14 +149,14 @@ function QuestionSplitView({ questionsList, renderTopicHeader, handleEditQuestio
                         );
                         return (
                             <>
-                                {topicHeader && (
-                                    <div className="border p-2 text-center bg-green-300">
-                                        {topicHeader}
-                                    </div>
-                                )}
                                 <div
                                     className={`border transition-all duration-300  mb-5 shadow-sm bg-gray-100 relative que-container`}
                                     key={idx}>
+                                    {topicHeader && (
+                                        <div className="border p-2 text-center bg-green-300">
+                                            {topicHeader}
+                                        </div>
+                                    )}
                                     <CButton
                                         icon={<GoPencil />}
                                         onClick={handleEditQuestion.bind(null, el)}
