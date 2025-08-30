@@ -88,7 +88,7 @@ const testsSlice = createSlice({
             state.selectedTopicList = action.payload;
         },
 
-        setTestDetails: (state, action) => {
+        _setTestDetails: (state, action) => {
             let { key, value } = action.payload;
             state.test[key] = value;
         },
@@ -121,6 +121,7 @@ const testsSlice = createSlice({
         },
 
         setTestDetails: (state, { payload }) => {
+            console.log(payload, '===================');
             state.testDetails.test_id = payload.id;
             state.testDetails.test_name = payload.mt_name;
             state.testDetails.test_duration = payload.mt_test_time;
