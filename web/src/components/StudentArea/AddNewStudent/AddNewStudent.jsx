@@ -431,7 +431,7 @@ function UploadQuestionPaperToFormFilling({ _el }) {
 	};
 
 	const getPublishedTestListQuery = useQuery({
-		queryKey: ['Get Published Test List'],
+		queryKey: ['Get-Published-Test-List'],
 		queryFn: getPublishedTestList,
 		retry: false,
 		refetchInterval: false,

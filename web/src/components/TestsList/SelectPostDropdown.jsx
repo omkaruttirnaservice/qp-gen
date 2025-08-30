@@ -23,7 +23,7 @@ function SelectPostDropdown({ publishExamForm, serverIPAddresses, setPublishExam
     const [postList, setPostList] = useState([]);
 
     const postsListQuery = useQuery({
-        queryKey: ['GET POST LIST FROM SERVER(FORM FILLING PANEL)', serverIPAddress],
+        queryKey: ['GET-POST-LIST-FROM-SERVER(FORM-FILLING-PANEL)', serverIPAddress],
         queryFn: () => getPostList(serverIPAddress),
         refetchOnMount: false,
         retry: false,

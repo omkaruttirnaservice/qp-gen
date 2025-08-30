@@ -122,13 +122,10 @@ const testsSlice = createSlice({
         },
 
         setTestDetails: (state, { payload }) => {
-            console.log(payload.id, '=payload');
-            console.log(payload.ptl_test_id, '=payload');
             if (payload.mode == TEST_LIST_MODE.TEST_LIST) {
                 state.testDetails.test_id = payload.id;
             }
             if (payload.mode == TEST_LIST_MODE.PUBLISHED_TEST_LIST) {
-				console.log('in this');
                 state.testDetails.test_id = payload.ptl_test_id;
             }
             state.testDetails.test_name = payload.mt_name;
@@ -155,7 +152,6 @@ const testsSlice = createSlice({
         },
 
         setPreviewTestDetails: (state, { payload }) => {
-            console.log(payload, '==payload==');
             state.previewTestDetails.test_id = payload.id;
             state.previewTestDetails.test_name = payload.mt_name;
             state.previewTestDetails.test_duration = payload.mt_test_time;
@@ -239,7 +235,6 @@ const testsSlice = createSlice({
 
         // RESET
         reset(state, action) {
-            console.log(TEST_INITIAL_STATE, '==TEST_INITIAL_STATE==');
             state.test = TEST_INITIAL_STATE.test;
             state.topicList = TEST_INITIAL_STATE.topicList;
             state.selectedTopicList = [];
@@ -259,11 +254,6 @@ const testsSlice = createSlice({
 });
 
 export const getQuestionsListThunk = (testId, sendRequest, navigate) => {
-    console.log(
-        testId,
-
-        'testId============='
-    );
     return async (dispatch) => {
         let reqData = {
             url: SERVER_IP + '/api/test/questions',
@@ -281,15 +271,12 @@ export const getQuestionsListThunk = (testId, sendRequest, navigate) => {
                 return false;
             }
 
-            console.log(data, '=data===================');
-
             dispatch(testsSliceActions.setQuestionsList(data));
         });
     };
 };
 
 export const getTestQuestionsListThunk = (testId, sendRequest, navigate) => {
-    console.log(1, testId, '==going type 1, testId==');
     return async (dispatch) => {
         let reqData = {
             url: SERVER_IP + '/api/test/questions',
@@ -313,7 +300,6 @@ export const getTestQuestionsListThunk = (testId, sendRequest, navigate) => {
 };
 
 export const getPublishedTestQuestionsListThunk = (testId, sendRequest, navigate) => {
-    console.log(2, '==going type 2==');
     return async (dispatch) => {
         let reqData = {
             url: SERVER_IP + '/api/test/questions',

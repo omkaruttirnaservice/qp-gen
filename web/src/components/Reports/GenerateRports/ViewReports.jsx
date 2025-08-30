@@ -31,7 +31,7 @@ function ViewReports() {
     const [examDates, setExamDates] = useState([]);
 
     const _getExamDatesList = useQuery({
-        queryKey: ['get exam dates'],
+        queryKey: ['get-exam-dates'],
         queryFn: () => getExamDates(),
 
         refetchOnMount: false,
@@ -40,7 +40,7 @@ function ViewReports() {
     });
 
     const _getResultBatchesList = useQuery({
-        queryKey: ['get result batches list'],
+        queryKey: ['get-result-batches-list'],
         queryFn: () => getResultBatchesList(),
 
         refetchOnMount: false,

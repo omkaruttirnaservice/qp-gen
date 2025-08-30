@@ -51,7 +51,7 @@ function TestsList() {
     const [testsList, setTestsList] = useState([]);
 
     const getServerIPQuery = useQuery({
-        queryKey: ['get server ip list'],
+        queryKey: ['get-server-ip-list'],
         queryFn: getServerIP,
         refetchOnMount: false,
         retry: false,
@@ -127,7 +127,6 @@ function TestsList() {
     };
 
     const handleViewQuestions = (el) => {
-        console.log('handling', '=');
         if (!el.id) return false;
         const _testData = { ...el };
         _testData.mode = TEST_LIST_MODE.TEST_LIST;
@@ -194,7 +193,6 @@ function TestsList() {
     };
 
     const handleFinalPublishExam = async () => {
-        console.log(publishExamForm, '==publishExamForm==');
         try {
             await TestListSchemaYUP.validate(publishExamForm, { abortEarly: false });
             setErrors({});
@@ -225,7 +223,6 @@ function TestsList() {
                 }
             });
         } catch (error) {
-            console.log(error, '==error==');
             let _err = {};
             error.inner.forEach((err) => {
                 _err[err.path] = err.message;
@@ -381,7 +378,9 @@ function TestsList() {
                             {serverIPAddresses?.length > 0 &&
                                 serverIPAddresses.map((el, idx) => {
                                     return (
-                                        <option value={el.id}>{el?.form_filling_server_ip}</option>
+                                        <option key={idx} value={el.id}>
+                                            {el?.form_filling_server_ip}
+                                        </option>
                                     );
                                 })}
                         </select>

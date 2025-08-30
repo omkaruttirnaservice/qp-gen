@@ -136,9 +136,6 @@ function MenuBar({ isSidebarOpen }) {
     useEffect(() => {
         let updated = [..._navigation];
         updated.forEach((_el) => {
-            console.log(_el.url, '=_el.url');
-            console.log(location.pathname, 'pathname');
-            console.log(location.pathname.startsWith(_el.url));
             if (location.pathname.startsWith(_el.url)) {
                 _el.isChildrensOpen = true;
             }
