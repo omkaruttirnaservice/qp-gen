@@ -1,98 +1,11 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './App.css';
-import Dashboard from './components/Dashboard/Dashboard.jsx';
-import LoginPage from './components/Login/Login.jsx';
-import Logout from './components/Logout/Logout.jsx';
-import CreateMockForm from './components/MockTest/CreateMockForm.jsx';
-import MockTestHome from './components/MockTest/MockTestHome.jsx';
-import MockTestReport from './components/MockTestsList/MockTestReport.jsx';
-import MockTestsList from './components/MockTestsList/MockTestsList.jsx';
-import PublishedTestQuestionsView from './components/PublishedTestsList/PublishedTestQuestionsView.jsx';
-import PublishedTestsList from './components/PublishedTestsList/PublishedTestsList.jsx';
-import QuestionsList from './components/QuestionsList/QuestionsList.jsx';
-import QuestionsListAutoTest from './components/QuestionsListAutoTest/QuestionsListAutoTest.jsx';
-import GenerateRports from './components/Reports/GenerateRports/GenerateRports.jsx';
-import PDFGenerator from './components/Reports/GenerateRports/PDFGenerator.jsx';
-import ReportsLayout from './components/Reports/GenerateRports/ReportsLayout.jsx';
-import StudentExamReportSingle from './components/Reports/GenerateRports/StudentExamReportSingle.jsx';
-import ViewReports from './components/Reports/GenerateRports/ViewReports.jsx';
-import RootComponent from './components/RootComponent/RootComponent';
-import AddNewStudent from './components/StudentArea/AddNewStudent/AddNewStudent.jsx';
-import StudentsList from './components/StudentArea/StudentsList/StudentsList.jsx';
-import StudentsListByCenter from './components/StudentArea/StudentsListByCenter/StudentsListByCenter.jsx';
-import TestQuestionsView from './components/TestsList/TestQuestionsView.jsx';
-import TestsList from './components/TestsList/TestsList.jsx';
-
-const router = createBrowserRouter([
-    {
-        path: '/',
-        element: <RootComponent />,
-        children: [
-            { path: '/dashboard', element: <Dashboard /> },
-
-            // test area
-            { path: '/tests/list', element: <TestsList /> },
-            { path: '/tests/published', element: <PublishedTestsList /> },
-            { path: '/tests/create/manual', element: <QuestionsList /> },
-            { path: '/tests/create/auto', element: <QuestionsListAutoTest /> },
-            { path: '/tests/list/questions', element: <TestQuestionsView /> },
-            {
-                path: '/tests/published/questions',
-                element: <PublishedTestQuestionsView />,
-            },
-            {
-                path: '/mock/create',
-                element: <MockTestHome />,
-            },
-
-            {
-                path: '/mock/list',
-                element: <MockTestsList />,
-            },
-
-            {
-                path: '/mock-report',
-                element: <MockTestReport />,
-            },
-
-            {
-                path: '/mock-test/create',
-                element: <CreateMockForm />,
-            },
-
-            // student area
-            { path: '/students/add', element: <AddNewStudent /> },
-            { path: '/students/list', element: <StudentsList /> },
-            // { path: '/students-list-by-center', element: <StudentsListByCenter /> },
-
-            // reports
-            { path: '/reports/generate', element: <GenerateRports /> },
-            {
-                path: '/reports',
-                element: <ReportsLayout />,
-                children: [
-                    { path: 'list', element: <ViewReports /> },
-                    { path: 'single', element: <StudentExamReportSingle /> },
-                ],
-            },
-        ],
-    },
-    {
-        path: '/login',
-        element: <LoginPage />,
-    },
-    {
-        path: '/logout',
-        element: <Logout />,
-    },
-
-    { path: '/qp-pdf/:roll/:ptid', element: <PDFGenerator /> },
-]);
+import { _router } from './router';
 
 function App() {
     return (
         <>
-            <RouterProvider router={router} />
+            <RouterProvider router={_router} />
         </>
     );
 }
