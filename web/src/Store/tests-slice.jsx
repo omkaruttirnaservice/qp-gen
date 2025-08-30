@@ -122,11 +122,13 @@ const testsSlice = createSlice({
         },
 
         setTestDetails: (state, { payload }) => {
-            console.log(payload, '=payload');
+            console.log(payload.id, '=payload');
+            console.log(payload.ptl_test_id, '=payload');
             if (payload.mode == TEST_LIST_MODE.TEST_LIST) {
                 state.testDetails.test_id = payload.id;
             }
             if (payload.mode == TEST_LIST_MODE.PUBLISHED_TEST_LIST) {
+				console.log('in this');
                 state.testDetails.test_id = payload.ptl_test_id;
             }
             state.testDetails.test_name = payload.mt_name;
@@ -257,6 +259,11 @@ const testsSlice = createSlice({
 });
 
 export const getQuestionsListThunk = (testId, sendRequest, navigate) => {
+    console.log(
+        testId,
+
+        'testId============='
+    );
     return async (dispatch) => {
         let reqData = {
             url: SERVER_IP + '/api/test/questions',

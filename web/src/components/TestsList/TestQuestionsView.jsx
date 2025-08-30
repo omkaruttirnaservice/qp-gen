@@ -30,6 +30,8 @@ const optionsInputEnum = [NUMBER, CIRCLE, TEXT, ROMAN];
 function TestQuestionsView() {
     const { questionsList, testDetails } = useSelector((state) => state.tests);
 
+    console.log(testDetails, '=testDetails==================');
+
     const { sendRequest } = useHttp();
     const dispatch = useDispatch();
     const navigate = useNavigate();

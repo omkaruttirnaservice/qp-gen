@@ -127,9 +127,11 @@ function TestsList() {
     };
 
     const handleViewQuestions = (el) => {
+        console.log('handling', '=');
         if (!el.id) return false;
-        el.mode = TEST_LIST_MODE.PUBLISHED_TEST_LIST;
-        dispatch(testsSliceActions.setTestDetails(el));
+        const _testData = { ...el };
+        _testData.mode = TEST_LIST_MODE.TEST_LIST;
+        dispatch(testsSliceActions.setTestDetails(_testData));
 
         navigate('/tests/list/questions');
     };
