@@ -1,10 +1,10 @@
-import { FaBackspace, FaPrint } from 'react-icons/fa';
+import { FaArrowAltCircleLeft, FaArrowAltCircleRight, FaBackspace, FaPrint } from 'react-icons/fa';
 import { GoPencil } from 'react-icons/go';
 import { useDispatch, useSelector } from 'react-redux';
 import useHttp from '../Hooks/use-http.jsx';
 
-import { useEffect } from 'react';
-import { FaSpinner } from 'react-icons/fa6';
+import { useEffect, useState } from 'react';
+import { FaListUl, FaSpinner } from 'react-icons/fa6';
 import { useNavigate } from 'react-router-dom';
 import { EditQuestionFormActions } from '../../Store/edit-question-form-slice.jsx';
 import { ModalActions } from '../../Store/modal-slice.jsx';
@@ -19,8 +19,17 @@ import {
     TEST_LIST_MODE,
 } from '../Utils/Constants.jsx';
 import EditQuestionView from './EditQuestionView.jsx';
+import { IoGridOutline } from 'react-icons/io5';
+
+const _questionListView = {
+    LIST: 'LIST',
+    SPLIT: 'SPLIT',
+    EXAM_THEME_1: 'EXAM_THEME_1',
+};
 
 function TestQuestionsView() {
+    const [questionListView, setQuestionListView] = useState(_questionListView.SPLIT);
+
     const { questionsList, testDetails } = useSelector((state) => state.tests);
 
     const { sendRequest } = useHttp();
@@ -93,7 +102,11 @@ function TestQuestionsView() {
                 <FaPrint />
             </CButton>
 
-            <TestInfoHeader testDetails={testDetails} />
+            <TestInfoHeader
+                testDetails={testDetails}
+                questionListView={questionListView}
+                setQuestionListView={setQuestionListView}
+            />
 
             {questionsList.length == 0 && (
                 <div className="flex justify-center">
@@ -101,8 +114,16 @@ function TestQuestionsView() {
                 </div>
             )}
 
-            {questionsList.length !== 0 && (
+            {questionListView === _questionListView.SPLIT && questionsList.length !== 0 && (
                 <QuestionSplitView
+                    questionsList={questionsList}
+                    renderTopicHeader={renderTopicHeader}
+                    handleEditQuestion={handleEditQuestion}
+                />
+            )}
+
+            {questionListView === _questionListView.EXAM_THEME_1 && questionsList.length !== 0 && (
+                <ExamThemeView
                     questionsList={questionsList}
                     renderTopicHeader={renderTopicHeader}
                     handleEditQuestion={handleEditQuestion}
@@ -112,7 +133,11 @@ function TestQuestionsView() {
     );
 }
 
-function TestInfoHeader({ testDetails }) {
+function TestInfoHeader({ testDetails, questionListView, setQuestionListView }) {
+    function toggleListMode(mode) {
+        setQuestionListView(mode);
+    }
+
     return (
         <>
             <div className="container mx-auto text-center my-6 relative">
@@ -124,6 +149,32 @@ function TestInfoHeader({ testDetails }) {
 
                 <H2 className="mb-0">{testDetails.test_name}</H2>
             </div>
+
+            <div className="border w-fit flex items-center h-fit justify-self-end">
+                {/* View Toggle button */}
+                <div
+                    onClick={toggleListMode.bind(null, _questionListView.SPLIT)}
+                    className={`${
+                        questionListView == _questionListView.SPLIT ? 'bg-gray-200' : 'bg-white'
+                    } p-3 cursor-pointer`}>
+                    <FaListUl className="" />
+                </div>
+                <div
+                    onClick={toggleListMode.bind(null, _questionListView.EXAM_THEME_1)}
+                    className={`${
+                        questionListView == _questionListView.EXAM_THEME_1
+                            ? 'bg-gray-200'
+                            : 'bg-white'
+                    } p-3 cursor-pointer`}>
+                    <IoGridOutline />
+                </div>
+
+                {/* Print buttons */}
+                <div className="p-3 cursor-pointer" onClick={() => {}}>
+                    <FaPrint />
+                </div>
+            </div>
+
             <div className="container mx-auto grid grid-cols-3 gap-2 mb-6">
                 <PreviewTestDetails title={'Test Duration'} value={testDetails.test_duration} />
 
@@ -190,6 +241,85 @@ function QuestionSplitView({ questionsList, renderTopicHeader, handleEditQuestio
                     })}
             </div>
         </>
+    );
+}
+
+function ExamThemeView({ questionsList, renderTopicHeader, handleEditQuestion }) {
+    const dispatch = useDispatch();
+    const [idx, setIdx] = useState(0);
+    const [currentQuestion, setCurrentQuestion] = useState(questionsList[idx]);
+
+    useEffect(() => {
+        setCurrentQuestion(questionsList[idx]);
+    }, [idx]);
+
+    const topicHeader = renderTopicHeader(
+        currentQuestion?.main_topic_name || '-',
+        currentQuestion?.sub_topic_section || '-'
+    );
+
+    useEffect(() => {
+        dispatch(ModalActions.toggleModal('exam-theme-1-modal'));
+    }, []);
+
+    return (
+        <CModal id="exam-theme-1-modal" title="Exam View" className="w-[97vw] h-[100lvh]">
+            <div className="container mx-auto ">
+                <div className="grid grid-cols-5 border ">
+                    <div className="col-span-4">
+                        <div
+                            className={`border transition-all duration-300 mb-5 shadow-sm bg-gray-100 relative que-container `}
+                            key={idx}>
+                            {topicHeader && (
+                                <div className="border p-2 text-center bg-green-300">
+                                    {topicHeader}
+                                </div>
+                            )}
+
+                            <QuestionUi q={currentQuestion} idx={idx} />
+
+                            <div className="flex justify-between mx-6 mb-6">
+                                <CButton
+                                    disabled={idx == 0}
+                                    className={'btn--success'}
+                                    icon={<FaArrowAltCircleLeft />}
+                                    onClick={() => setIdx((prev) => prev - 1)}>
+                                    Prev
+                                </CButton>
+                                <CButton
+                                    icon={<GoPencil />}
+                                    onClick={handleEditQuestion.bind(null, currentQuestion)}
+                                    className={'btn--success edit-que-btn'}>
+                                    Edit
+                                </CButton>
+                                <CButton
+                                    disabled={questionsList.length == idx + 1}
+                                    icon={<FaArrowAltCircleRight />}
+                                    onClick={() => setIdx((prev) => prev + 1)}>
+                                    Next
+                                </CButton>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-span-1">
+                        <div className="grid grid-cols-5 gap-3">
+                            {questionsList.map((_q, _i) => {
+                                return (
+                                    <div
+                                        className={`border size-8 flex items-center justify-center hover:bg-gray-300 cursor-pointer ${
+                                            idx == _i ? 'bg-gray-600 text-white' : ''
+                                        }`}
+                                        onClick={() => setIdx(_i)}>
+                                        {_i + 1}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </CModal>
     );
 }
 

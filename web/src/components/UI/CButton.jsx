@@ -13,7 +13,7 @@ export default function CButton({
     return (
         <>
             <button
-                className={`cd-btn  flex justify-center items-center gap-1 p-2 px-3 ${className} ${varient} disabled:hover:${disabledCursor}`}
+                className={`cd-btn  flex justify-center items-center gap-1 p-2 px-3 ${className} ${varient} disabled:!bg-gray-400 disabled:hover:${disabledCursor}`}
                 type={type}
                 onClick={onClick}
                 disabled={isLoading || disabled}>
