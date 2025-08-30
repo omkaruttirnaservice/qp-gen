@@ -1,6 +1,7 @@
 let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 import { createSlice } from '@reduxjs/toolkit';
 import Swal from 'sweetalert2';
+import { TEST_LIST_MODE } from '../components/Utils/Constants';
 
 const TEST_INITIAL_STATE = {
     test: {
@@ -121,8 +122,13 @@ const testsSlice = createSlice({
         },
 
         setTestDetails: (state, { payload }) => {
-            console.log(payload, '===================');
-            state.testDetails.test_id = payload.id;
+            console.log(payload, '=payload');
+            if (payload.mode == TEST_LIST_MODE.TEST_LIST) {
+                state.testDetails.test_id = payload.id;
+            }
+            if (payload.mode == TEST_LIST_MODE.PUBLISHED_TEST_LIST) {
+                state.testDetails.test_id = payload.ptl_test_id;
+            }
             state.testDetails.test_name = payload.mt_name;
             state.testDetails.test_duration = payload.mt_test_time;
             state.testDetails.marks_per_question = payload.mt_mark_per_question;
@@ -141,6 +147,7 @@ const testsSlice = createSlice({
                 '-' +
                 todaysDate.getFullYear();
         },
+
         setQuestionsList: (state, action) => {
             state.questionsList = action.payload;
         },

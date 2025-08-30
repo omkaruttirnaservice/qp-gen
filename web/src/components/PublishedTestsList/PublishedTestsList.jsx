@@ -13,6 +13,7 @@ import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import Swal from 'sweetalert2';
 import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
 import DataTable from 'react-data-table-component';
+import { TEST_LIST_MODE } from '../Utils/Constants.jsx';
 
 function PublishedTestsList() {
     const { sendRequest } = useHttp();
@@ -51,7 +52,8 @@ function PublishedTestsList() {
     }
 
     const handlePublishedTestQuePreview = (el) => {
-        console.log(el,'-el');
+        if (!el.id) return false;
+        el.mode = TEST_LIST_MODE.PUBLISHED_TEST_LIST;
         dispatch(testsSliceActions.setTestDetails(el));
         navigate('/tests/published/questions');
     };

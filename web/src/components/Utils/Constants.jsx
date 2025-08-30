@@ -13,3 +13,8 @@ export const s3BucketUrl = import.meta.env.VITE_S3_BUCKET_URL;
 
 export const RESULT_BY_BATCH = 'Batch';
 export const RESULT_BY_POST = 'Post';
+
+export const TEST_LIST_MODE = {
+    TEST_LIST: 'TEST_LIST',
+    PUBLISHED_TEST_LIST: 'PUBLISHED_TEST_LIST',
+};

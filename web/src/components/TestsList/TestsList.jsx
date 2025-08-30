@@ -21,6 +21,7 @@ import InputError from '../UI/InputError.jsx';
 import SelectPostDropdown from './SelectPostDropdown.jsx';
 import './TestsList.css';
 import { generateTestKey } from './utils.js';
+import { TEST_LIST_MODE } from '../Utils/Constants.jsx';
 
 let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 
@@ -127,7 +128,7 @@ function TestsList() {
 
     const handleViewQuestions = (el) => {
         if (!el.id) return false;
-
+        el.mode = TEST_LIST_MODE.PUBLISHED_TEST_LIST;
         dispatch(testsSliceActions.setTestDetails(el));
 
         navigate('/tests/list/questions');
