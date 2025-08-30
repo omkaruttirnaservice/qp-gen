@@ -225,7 +225,7 @@ const testsController = {
                 message: 'Successfully created auto test',
             });
         } catch (error) {
-            console.log(error,'err');
+            console.log(error, 'err');
             await transact.rollback();
             return sendError(res, error.message);
         }
@@ -339,7 +339,15 @@ const testsController = {
     // update test question
     updateTestQuestion: async (req, res) => {
         try {
+            console.log(req.body, 'body');
+            // update to tm_test_question_set
             let [_updateRes] = await testsModel.updateTestQuestion(req.body);
+
+            // update to mega_question_set
+
+            if (req.query?.isMasterUpdate == 'true') {
+                let [__updateRes] = await testsModel.updateMegaTestQuestion(req.body);
+            }
 
             return sendSuccess(res, 'Successfully updated question');
         } catch (error) {

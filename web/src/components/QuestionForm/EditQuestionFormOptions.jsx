@@ -355,7 +355,7 @@ function AnswerOptionRadioBox({ value, className }) {
 			type="radio"
 			name="correct_option"
 			value={value.toUpperCase()}
-			checked={_formData.correct_option.toUpperCase() == value.toUpperCase() ? true : false}
+			checked={_formData?.correct_option?.toUpperCase() == value?.toUpperCase() ? true : false}
 			onChange={handleOptionChange}
 		/>
 	);

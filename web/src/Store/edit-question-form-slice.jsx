@@ -5,6 +5,7 @@ import { loaderActions } from './loader-slice.jsx';
 
 let initialState = {
     data: {
+        mqs_id: null,
         question_id: null,
         post_id: null,
         post_name: null,
@@ -38,6 +39,8 @@ let initialState = {
     isEdit: false,
     isQuestionPreview: false,
     edit_test_type: null,
+    isUpdateToMaster: false,
+    isUpdateToMasterPersist: false,
 };
 const EditQuestionFormSlice = createSlice({
     name: 'question-form-slice',
@@ -50,6 +53,11 @@ const EditQuestionFormSlice = createSlice({
         // question preview
         toggleQuestionPreview(state, action) {
             state.isQuestionPreview = !state.isQuestionPreview;
+        },
+
+        setUpdateToMaster(state, action) {
+            state.isUpdateToMaster = action.payload.isUpdateToMaster;
+            state.isUpdateToMasterPersist = action.payload.isUpdateToMasterPersist;
         },
 
         handleInputChange(state, action) {
@@ -121,13 +129,12 @@ const EditQuestionFormSlice = createSlice({
         },
 
         setEditQuestionDetails(state, action) {
-            console.log(action.payload, '==action.payload==========');
             let pl = action.payload.el;
             state.edit_test_type = action.payload.edit_for;
             state.isEdit = true;
-            console.log(action.payload);
             state.questionNumber = pl.id; // setting up question id of tm_test_question_sets
             state.data = {
+                mqs_id: pl.q_id,
                 question_id: pl.id,
                 post_id: null,
                 post_name: null,
@@ -150,7 +157,6 @@ const EditQuestionFormSlice = createSlice({
                 month: pl.mqs_ask_in_month,
                 year: pl.mqs_ask_in_year,
             };
-            console.log(state.data, '==state.data==');
         },
 
         setEditingFalse(state, action) {

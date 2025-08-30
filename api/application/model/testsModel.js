@@ -624,8 +624,6 @@ const testsModel = {
 
     // update test question
     updateTestQuestion: async (data) => {
-        console.log(data, '==data to update question==');
-
         let trans = await sequelize.transaction();
         try {
             let _updateRes = tm_test_question_sets.update(
@@ -648,6 +646,40 @@ const testsModel = {
                 {
                     where: {
                         id: data.question_id,
+                    },
+                },
+                { transaction: trans }
+            );
+            await trans.commit();
+            return _updateRes;
+        } catch (error) {
+            trans.rollback();
+            console.log(error, '==error==');
+        }
+    },
+
+    updateMegaTestQuestion: async (data) => {
+        let trans = await sequelize.transaction();
+        try {
+            let _updateRes = tm_mega_question_set.update(
+                {
+                    mqs_question: data.question_content,
+                    mqs_opt_one: data.option_A,
+                    mqs_opt_two: data.option_B,
+                    mqs_opt_three: data.option_C,
+                    mqs_opt_four: data.option_D,
+                    mqs_opt_five: data.option_E,
+                    mqs_ans: data.correct_option,
+                    mqs_solution: data.explanation,
+                    msq_publication_name: data.pub_name,
+                    msq_book_name: data.book_name,
+                    maq_page_number: data.pg_no,
+                    mqs_ask_in_year: data.year,
+                    mqs_leval: data.difficulty,
+                },
+                {
+                    where: {
+                        id: data.mqs_id,
                     },
                 },
                 { transaction: trans }

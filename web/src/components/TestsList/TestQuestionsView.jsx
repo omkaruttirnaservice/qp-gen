@@ -8,15 +8,16 @@ import { FaSpinner } from 'react-icons/fa6';
 import { useNavigate } from 'react-router-dom';
 import { EditQuestionFormActions } from '../../Store/edit-question-form-slice.jsx';
 import { ModalActions } from '../../Store/modal-slice.jsx';
-import {
-    getQuestionsListThunk,
-    testsSliceActions
-} from '../../Store/tests-slice.jsx';
+import { getQuestionsListThunk, testsSliceActions } from '../../Store/tests-slice.jsx';
 import PDFGenerator from '../Reports/GenerateRports/PDFGen.jsx';
 import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
 import { H2 } from '../UI/Headings.jsx';
-import { EDIT_QUESTION_OF_GENERATED_TEST } from '../Utils/Constants.jsx';
+import {
+    EDIT_QUESTION_OF_GENERATED_TEST,
+    EDIT_QUESTION_OF_PUBLISHED_TEST,
+    TEST_LIST_MODE,
+} from '../Utils/Constants.jsx';
 import EditQuestionView from './EditQuestionView.jsx';
 
 function TestQuestionsView() {
@@ -37,12 +38,22 @@ function TestQuestionsView() {
     }, []);
 
     const handleEditQuestion = (el) => {
-        dispatch(
-            EditQuestionFormActions.setEditQuestionDetails({
-                el,
-                edit_for: EDIT_QUESTION_OF_GENERATED_TEST,
-            })
-        );
+        if (testDetails.mode == TEST_LIST_MODE.TEST_LIST) {
+            dispatch(
+                EditQuestionFormActions.setEditQuestionDetails({
+                    el,
+                    edit_for: EDIT_QUESTION_OF_GENERATED_TEST,
+                })
+            );
+        }
+        if (testDetails.mode == TEST_LIST_MODE.PUBLISHED_TEST_LIST) {
+            dispatch(
+                EditQuestionFormActions.setEditQuestionDetails({
+                    el,
+                    edit_for: EDIT_QUESTION_OF_PUBLISHED_TEST,
+                })
+            );
+        }
         dispatch(ModalActions.toggleModal('edit-que-modal'));
     };
 
@@ -138,6 +149,7 @@ function TestQuestionsView() {
 }
 
 function QuestionSplitView({ questionsList, renderTopicHeader, handleEditQuestion }) {
+    console.log(questionsList,'=questionsList');
     return (
         <>
             <div className="container mx-auto columns-2">

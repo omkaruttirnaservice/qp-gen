@@ -35,6 +35,7 @@ const TEST_INITIAL_STATE = {
         test_creation_type: null,
         test_created_on: null,
         todays_date: null,
+        mode: null,
     },
     questionsList: [],
 
@@ -123,9 +124,11 @@ const testsSlice = createSlice({
 
         setTestDetails: (state, { payload }) => {
             if (payload.mode == TEST_LIST_MODE.TEST_LIST) {
+                state.testDetails.mode = TEST_LIST_MODE.TEST_LIST;
                 state.testDetails.test_id = payload.id;
             }
             if (payload.mode == TEST_LIST_MODE.PUBLISHED_TEST_LIST) {
+                state.testDetails.mode = TEST_LIST_MODE.PUBLISHED_TEST_LIST;
                 state.testDetails.test_id = payload.ptl_test_id;
             }
             state.testDetails.test_name = payload.mt_name;

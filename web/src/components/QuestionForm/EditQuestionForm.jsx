@@ -1,23 +1,24 @@
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
-import { useDispatch, useSelector } from 'react-redux';
 
 import { FaAngleRight, FaGripLinesVertical } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import {
-	EditQuestionFormActions,
-	getBooksListThunk,
-	getPublicationsListThunk,
-	getSubjectsListThunk,
-	getTopicsListThunk,
+    EditQuestionFormActions,
+    getBooksListThunk,
+    getPublicationsListThunk,
+    getSubjectsListThunk,
+    getTopicsListThunk,
 } from '../../Store/edit-question-form-slice.jsx';
 import { ModalActions } from '../../Store/modal-slice.jsx';
-import { getPublishedTestQuestionsListThunk, getTestQuestionsListThunk } from '../../Store/tests-slice.jsx';
+import { getQuestionsListThunk } from '../../Store/tests-slice.jsx';
 import useHttp from '../Hooks/use-http';
 import CButton from '../UI/CButton.jsx';
+import CModal from '../UI/CModal.jsx';
 import AddBookModal from './AddBook/AddBookModal.jsx';
 import AddPublicationModal from './AddPublication/AddPublicationModal.jsx';
 import BookNameDropdown from './BookNameDropdown/BookNameDropdown.jsx';
@@ -29,133 +30,222 @@ import QuestionMonthDropdown from './QuestionMonthDropdown/QuestionMonthDropdown
 import QuestionPgNo from './QuestionPgNo/QuestionPgNo.jsx';
 import QuestionYearDropdown from './QuestionYearDropdown/QuestionYearDropdown.jsx';
 import editQuestionFormSchemaYUP from './editQuestionFormSchemaYUP.jsx';
-import { EDIT_QUESTION_OF_GENERATED_TEST, EDIT_QUESTION_OF_PUBLISHED_TEST } from '../Utils/Constants.jsx';
 
 const EditAddQuestionForm = () => {
-	const dispatch = useDispatch();
-	const navigate = useNavigate();
-	const { sendRequest } = useHttp();
-	let { data: _formData, edit_test_type } = useSelector((state) => state.questionForm);
-	const { previewTestDetails, previewPublishedTestDetails } = useSelector((state) => state.tests);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { sendRequest } = useHttp();
 
-	const [showNewInputField, setShowNewInputField] = useState(false);
+    let {
+        data: _formData,
+        isUpdateToMaster,
+        isUpdateToMasterPersist,
+    } = useSelector((state) => state.questionForm);
+    const { testDetails } = useSelector((state) => state.tests);
 
-	useEffect(() => {
-		dispatch(getPublicationsListThunk(sendRequest));
-	}, []);
+    const [showNewInputField, setShowNewInputField] = useState(false);
 
-	useEffect(() => {
-		dispatch(getSubjectsListThunk(_formData.post_id, sendRequest));
-	}, [_formData.post_id]);
+    useEffect(() => {
+        dispatch(getPublicationsListThunk(sendRequest));
+    }, []);
 
-	useEffect(() => {
-		dispatch(getTopicsListThunk(_formData.subject_id, sendRequest));
-	}, [_formData.subject_id]);
+    useEffect(() => {
+        dispatch(getSubjectsListThunk(_formData.post_id, sendRequest));
+    }, [_formData.post_id]);
 
-	useEffect(() => {
-		dispatch(getBooksListThunk(_formData.pub_name, sendRequest));
-	}, [_formData.pub_name]);
+    useEffect(() => {
+        dispatch(getTopicsListThunk(_formData.subject_id, sendRequest));
+    }, [_formData.subject_id]);
 
-	const handleUpdateQuestion = async (e) => {
-		e.preventDefault();
-		try {
-			await editQuestionFormSchemaYUP.validate(_formData, {
-				abortEarly: false,
-			});
-			postQuestionData();
+    useEffect(() => {
+        dispatch(getBooksListThunk(_formData.pub_name, sendRequest));
+    }, [_formData.pub_name]);
 
-			dispatch(EditQuestionFormActions.setErrors({}));
-		} catch (error) {
-			const errorsObj = {};
-			error.inner.forEach((el) => {
-				errorsObj[el.path] = el.message;
-			});
-			dispatch(EditQuestionFormActions.setErrors(errorsObj));
-		}
-	};
+    const handleUpdateQuestion = async (e) => {
+        e.preventDefault();
+        try {
+            await editQuestionFormSchemaYUP.validate(_formData, {
+                abortEarly: false,
+            });
 
-	async function postQuestionData() {
-		let reqData = {
-			url: SERVER_IP + '/api/test/update-test-question',
-			method: 'PUT',
-			body: JSON.stringify(_formData),
-		};
-		sendRequest(reqData, (data) => {
-			if (data.success == 1) {
-				toast('Successfully updated question');
-				Swal.fire({
-					title: 'Success',
-					text: 'Updated question details',
-					icon: 'success',
-				});
+            if (isUpdateToMaster && !isUpdateToMasterPersist) {
+                dispatch(ModalActions.toggleModal('confirm-update-to-master-modal'));
+            } else {
+                postQuestionData();
+            }
+            dispatch(EditQuestionFormActions.setErrors({}));
+        } catch (error) {
+            const errorsObj = {};
+            error.inner.forEach((el) => {
+                errorsObj[el.path] = el.message;
+            });
+            dispatch(EditQuestionFormActions.setErrors(errorsObj));
+        }
+    };
 
-				dispatch(ModalActions.toggleModal('edit-que-modal'));
+    async function postQuestionData() {
+        let reqData = {
+            url: `${SERVER_IP}/api/test/update-test-question?isMasterUpdate=${isUpdateToMaster}`,
+            method: 'PUT',
+            body: JSON.stringify(_formData),
+        };
+        sendRequest(reqData, (data) => {
+            if (data.success == 1) {
+                toast('Successfully updated question');
+                Swal.fire({
+                    title: 'Success',
+                    text: 'Updated question details',
+                    icon: 'success',
+                });
 
-				if (edit_test_type == EDIT_QUESTION_OF_PUBLISHED_TEST) {
-					dispatch(getPublishedTestQuestionsListThunk(previewPublishedTestDetails.test_id, sendRequest, navigate));
-				}
+                dispatch(getQuestionsListThunk(testDetails.test_id, sendRequest, navigate));
+                dispatch(ModalActions.toggleModal('edit-que-modal'));
+                dispatch(EditQuestionFormActions.resetFormData());
+                dispatch(
+                    EditQuestionFormActions.setUpdateToMaster({
+                        isUpdateToMaster: isUpdateToMasterPersist,
+                        isUpdateToMasterPersist: isUpdateToMasterPersist,
+                    })
+                );
+            }
+        });
+    }
 
-				if (edit_test_type == EDIT_QUESTION_OF_GENERATED_TEST) {
-					dispatch(getTestQuestionsListThunk(previewTestDetails.test_id, sendRequest, navigate));
-				}
-				dispatch(EditQuestionFormActions.resetFormData());
-			}
-		});
-	}
+    return (
+        <>
+            <AddPublicationModal />
+            <AddBookModal />
+            <div className="container mx-auto border  relative">
+                <form id="add-question-form" className="grid gap-6">
+                    <div className={`bg-white sticky top-0 z-30`}>
+                        <div className="container mx-auto mb-3">
+                            <div className="bg-cyan-100  border-t-sky-700 border-t-4 p-3">
+                                <div className="grid grid-cols-4 items-center gap-1">
+                                    <div className="flex items-center gap-1">
+                                        <FaGripLinesVertical />
+                                        <p>Subject Name</p>
+                                        <FaAngleRight />
+                                        <span className="underline">{_formData.subject_name}</span>
+                                    </div>
 
-	return (
-		<>
-			<AddPublicationModal />
-			<AddBookModal />
-			<div className="container mx-auto">
-				<form id="add-question-form" className="grid gap-6" onSubmit={handleUpdateQuestion}>
-					<div className={`bg-white sticky top-0 z-30`}>
-						<div className="container mx-auto mb-3">
-							<div className="bg-cyan-100  border-t-sky-700 border-t-4 p-3">
-								<div className="grid grid-cols-4 items-center gap-1">
-									<div className="flex items-center gap-1">
-										<FaGripLinesVertical />
-										<p>Subject Name</p>
-										<FaAngleRight />
-										<span className="underline">{_formData.subject_name}</span>
-									</div>
+                                    <div className="flex items-center gap-1">
+                                        <FaGripLinesVertical />
+                                        <p>Topic Name</p>
+                                        <FaAngleRight />
+                                        <span className="underline">{_formData.topic_name}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-5 gap-3">
+                            <DifficultyLevelDropdown />
+                            <PublicationNameDropdown />
+                            <BookNameDropdown />
+                            <QuestionPgNo />
+                            <QuestionMonthDropdown />
+                            <QuestionYearDropdown />
+                        </div>
+                    </div>
 
-									<div className="flex items-center gap-1">
-										<FaGripLinesVertical />
-										<p>Topic Name</p>
-										<FaAngleRight />
-										<span className="underline">{_formData.topic_name}</span>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div className="grid grid-cols-5 gap-3">
-							<DifficultyLevelDropdown />
-							<PublicationNameDropdown />
-							<BookNameDropdown />
-							<QuestionPgNo />
-							<QuestionMonthDropdown />
-							<QuestionYearDropdown />
-						</div>
-					</div>
+                    <hr />
 
-					<hr />
+                    <div className="flex flex-col gap-3">
+                        <EditQuestionOptionsInput
+                            showNewInputField={showNewInputField}
+                            setShowNewInputField={setShowNewInputField}
+                        />
+                    </div>
 
-					<div className="flex flex-col gap-3">
-						<EditQuestionOptionsInput showNewInputField={showNewInputField} setShowNewInputField={setShowNewInputField} />
-					</div>
+                    <hr />
 
-					<hr />
+                    <EditQuestionExplanationInput />
 
-					<EditQuestionExplanationInput />
+                    <div className="sticky bottom-5 right-0">
+                        <div className="flex justify-end gap-4">
+                            <div className="flex items-center gap-3 ">
+                                <label htmlFor="master-update" className="cursor-pointer">
+                                    Update to master
+                                </label>
+                                <input
+                                    type="checkbox"
+                                    id="master-update"
+                                    className="cursor-pointer"
+                                    checked={isUpdateToMaster}
+                                    onClick={(e) => {
+                                        dispatch(
+                                            EditQuestionFormActions.setUpdateToMaster({
+                                                isUpdateToMaster: e.currentTarget.checked,
+                                                isUpdateToMasterPersist: isUpdateToMasterPersist,
+                                            })
+                                        );
+                                    }}
+                                />
+                            </div>
+                            <CButton
+                                onClick={handleUpdateQuestion}
+                                className="w-[10%] flex justify-center items-center "
+                                type="button"
+                                isLoading={useSelector((state) => state.loader.isLoading)}>
+                                Update
+                            </CButton>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
-					<CButton className="w-[10%] flex justify-center items-center" type="submit" isLoading={useSelector((state) => state.loader.isLoading)}>
-						Update
-					</CButton>
-				</form>
-			</div>
-		</>
-	);
+            <ConfirmUpdateToMasterModal postQuestionData={postQuestionData} />
+        </>
+    );
 };
+
+function ConfirmUpdateToMasterModal({ postQuestionData }) {
+    const dispatch = useDispatch();
+
+    return (
+        <>
+            <CModal id={'confirm-update-to-master-modal'} title={'Warning'}>
+                <p>The question will also get updated to master question.</p>
+                <p>Do you want to continue?</p>
+
+                <div className="flex gap-3 justify-center mt-3">
+                    <CButton
+                        onClick={() => {
+                            dispatch(
+                                EditQuestionFormActions.setUpdateToMaster({
+                                    isUpdateToMaster: false,
+                                    isUpdateToMasterPersist: false,
+                                })
+                            );
+                            dispatch(ModalActions.toggleModal('confirm-update-to-master-modal'));
+                            postQuestionData();
+                        }}>
+                        Allow once
+                    </CButton>
+                    <CButton
+                        className={'btn--success'}
+                        onClick={() => {
+                            dispatch(
+                                EditQuestionFormActions.setUpdateToMaster({
+                                    isUpdateToMaster: true,
+                                    isUpdateToMasterPersist: true,
+                                })
+                            );
+                            dispatch(ModalActions.toggleModal('confirm-update-to-master-modal'));
+                            postQuestionData();
+                        }}>
+                        Don't ask again and continue
+                    </CButton>
+                    <CButton
+                        className={'btn--warning text-gray-800 '}
+                        onClick={() => {
+                            dispatch(ModalActions.toggleModal('confirm-update-to-master-modal'));
+                        }}>
+                        No
+                    </CButton>
+                </div>
+            </CModal>
+        </>
+    );
+}
 
 export default EditAddQuestionForm;
