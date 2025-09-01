@@ -10,8 +10,18 @@ import tm_test_question_sets from '../schemas/tm_test_question_sets.js';
 import tm_test_user_master_list from '../schemas/tm_test_user_master_list.js';
 import tn_student_list from '../schemas/tn_student_list.js';
 import { toYYYYMMDD } from '../utils/help.js';
+import { TEST_LIST_MODE } from '../config/constants.js';
 
 const testsModel = {
+    getTestById: async (id, type) => {
+        if (type == TEST_LIST_MODE.TEST_LIST) {
+            return tm_test_user_master_list.findOne({ where: { id: id }, raw: true });
+        }
+        if (type == TEST_LIST_MODE.PUBLISHED_TEST_LIST) {
+            return tm_test_user_master_list.findOne({ where: { id: id }, raw: true });
+        }
+    },
+
     getList: async () => {
         return tm_test_user_master_list.findAll(
             {

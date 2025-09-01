@@ -41,7 +41,6 @@ const EditAddQuestionForm = () => {
         isUpdateToMaster,
         isUpdateToMasterPersist,
     } = useSelector((state) => state.questionForm);
-    // console.log(isUpdateToMaster, isUpdateToMasterPersist, '=this');
     const { testDetails } = useSelector((state) => state.tests);
 
     const [showNewInputField, setShowNewInputField] = useState(false);
@@ -85,12 +84,7 @@ const EditAddQuestionForm = () => {
     };
 
     async function postQuestionData() {
-        // dispatch(
-        //     EditQuestionFormActions.setUpdateToMaster({
-        //         isUpdateToMaster: isUpdateToMasterPersist,
-        //         isUpdateToMasterPersist: isUpdateToMasterPersist,
-        //     })
-        // );
+   
 
         let reqData = {
             url: `${SERVER_IP}/api/test/update-test-question?isMasterUpdate=${isUpdateToMaster}`,

@@ -16,6 +16,16 @@ const testsController = {
             return sendError(res, error.message);
         }
     },
+    getTestDetailsById: async (req, res, next) => {
+        try {
+            const { testId, type } = req.params;
+
+            const _testDetails = await testsModel.getTestById(testId, type);
+            return sendSuccess(res, _testDetails);
+        } catch (error) {
+            next(error);
+        }
+    },
 
     getPublishedList: async (req, res) => {
         try {
@@ -334,7 +344,7 @@ const testsController = {
 
             return sendSuccess(res, _testsList);
         } catch (error) {
-            console.log(error,'er');
+            console.log(error, 'er');
             return sendError(res, error.message);
         }
     },

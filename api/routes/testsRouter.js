@@ -3,6 +3,8 @@ import testsController from '../application/controllers/testsController.js';
 import express from 'express';
 let testsRouter = express.Router();
 
+testsRouter.get('/details/:testId/:type', testsController.getTestDetailsById);
+
 testsRouter.get('/list', testsController.getList);
 testsRouter.get('/list-published', testsController.getPublishedList);
 

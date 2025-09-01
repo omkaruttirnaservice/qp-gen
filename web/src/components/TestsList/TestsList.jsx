@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { FaEye, FaTrash } from 'react-icons/fa6';
+import { FaEye, FaPencil, FaTrash } from 'react-icons/fa6';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -46,7 +46,7 @@ function TestsList() {
     // prettier-ignore
     const [publishExamForm, setPublishExamForm] = useState(initialStatePublishForm);
     const [errors, setErrors] = useState({});
-    const { sendRequest } = useHttp();
+    const { sendRequest, isLoading } = useHttp();
     const dispatch = useDispatch();
     const [testsList, setTestsList] = useState([]);
 
@@ -123,6 +123,26 @@ function TestsList() {
                 let updatedTestList = testsList.filter((el) => el.id != id);
                 setTestsList(updatedTestList);
             }
+        });
+    };
+
+    const handleEditTestDetails = async (id) => {
+        if (!id) return false;
+
+        let reqData = {
+            url: SERVER_IP + `/api/test/details/${id}/${TEST_LIST_MODE.TEST_LIST}`,
+        };
+
+        sendRequest(reqData, (data) => {
+            console.log(data, 'data');
+            // if (success == 1) {
+            //     Swal.fire({
+            //         title: 'Success!',
+            //         text: 'Deleted successfully',
+            //         icon: 'success',
+            //     });
+
+            // }
         });
     };
 
@@ -302,6 +322,12 @@ function TestsList() {
                         className="btn--danger m-0"
                         onClick={handleDeleteTest.bind(null, row.id)}
                         icon={<FaTrash />}></CButton>
+
+                    <CButton
+                        className="btn--success m-0"
+                        isLoading={isLoading}
+                        onClick={handleEditTestDetails.bind(null, row.id)}
+                        icon={<FaPencil />}></CButton>
                     <CButton
                         className="btn--info m-0"
                         onClick={handleViewQuestions.bind(null, row)}
