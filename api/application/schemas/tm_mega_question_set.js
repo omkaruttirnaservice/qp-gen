@@ -49,6 +49,7 @@ const tm_mega_question_set = sequelize.define('tm_mega_question_set', {
     },
     mqs_ask_in_year: {
         type: JSON,
+        defaultValue: [],
     },
 
     mqs_ans: {

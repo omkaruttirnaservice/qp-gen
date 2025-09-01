@@ -41,6 +41,7 @@ const EditAddQuestionForm = () => {
         isUpdateToMaster,
         isUpdateToMasterPersist,
     } = useSelector((state) => state.questionForm);
+    // console.log(isUpdateToMaster, isUpdateToMasterPersist, '=this');
     const { testDetails } = useSelector((state) => state.tests);
 
     const [showNewInputField, setShowNewInputField] = useState(false);
@@ -84,6 +85,13 @@ const EditAddQuestionForm = () => {
     };
 
     async function postQuestionData() {
+        // dispatch(
+        //     EditQuestionFormActions.setUpdateToMaster({
+        //         isUpdateToMaster: isUpdateToMasterPersist,
+        //         isUpdateToMasterPersist: isUpdateToMasterPersist,
+        //     })
+        // );
+
         let reqData = {
             url: `${SERVER_IP}/api/test/update-test-question?isMasterUpdate=${isUpdateToMaster}`,
             method: 'PUT',
@@ -101,12 +109,6 @@ const EditAddQuestionForm = () => {
                 dispatch(getQuestionsListThunk(testDetails.test_id, sendRequest, navigate));
                 dispatch(ModalActions.toggleModal('edit-que-modal'));
                 dispatch(EditQuestionFormActions.resetFormData());
-                dispatch(
-                    EditQuestionFormActions.setUpdateToMaster({
-                        isUpdateToMaster: isUpdateToMasterPersist,
-                        isUpdateToMasterPersist: isUpdateToMasterPersist,
-                    })
-                );
             }
         });
     }
@@ -117,7 +119,7 @@ const EditAddQuestionForm = () => {
             <AddBookModal />
             <div className="container mx-auto border  relative">
                 <form id="add-question-form" className="grid gap-6">
-                    <div className={`bg-white sticky top-0 z-30`}>
+                    <div className={`bg-white sticky top-0 z-10`}>
                         <div className="container mx-auto mb-3">
                             <div className="bg-cyan-100  border-t-sky-700 border-t-4 p-3">
                                 <div className="grid grid-cols-4 items-center gap-1">
@@ -203,7 +205,10 @@ function ConfirmUpdateToMasterModal({ postQuestionData }) {
 
     return (
         <>
-            <CModal id={'confirm-update-to-master-modal'} title={'Warning'}>
+            <CModal
+                id={'confirm-update-to-master-modal'}
+                title={'Warning'}
+                className="!w-[14rem] h-fit">
                 <p>The question will also get updated to master question.</p>
                 <p>Do you want to continue?</p>
 

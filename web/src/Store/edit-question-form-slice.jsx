@@ -25,8 +25,7 @@ let initialState = {
         correct_option: null,
         explanation: null,
         difficulty: null,
-        month: null,
-        year: null,
+        year: [],
         showNewInputField: false,
     },
     publicationsList: [],
@@ -56,6 +55,7 @@ const EditQuestionFormSlice = createSlice({
         },
 
         setUpdateToMaster(state, action) {
+            console.log(action, '-action');
             state.isUpdateToMaster = action.payload.isUpdateToMaster;
             state.isUpdateToMasterPersist = action.payload.isUpdateToMasterPersist;
         },
@@ -77,7 +77,6 @@ const EditQuestionFormSlice = createSlice({
             state.data.correct_option = null;
             state.data.explanation = null;
             state.data.difficulty = null;
-            state.data.month = null;
             state.data.year = null;
         },
 

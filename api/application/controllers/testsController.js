@@ -327,11 +327,14 @@ const testsController = {
     // getting test questions list
     getTestQuestionsList: async (req, res) => {
         try {
+            console.log('11');
             const { testId } = req.body;
             let _testsList = await testsModel.getTestQuestionsList(testId);
+            console.log(_testsList, '=_testsList');
 
             return sendSuccess(res, _testsList);
         } catch (error) {
+            console.log(error,'er');
             return sendError(res, error.message);
         }
     },

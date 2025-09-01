@@ -30,19 +30,32 @@ export default function CModal({ id, children, title, showCloseBtn = true, class
                 <>
                     <ModalBackdrop></ModalBackdrop>
                     <div
-                        className={`bg-white  z-50 transition-all duration-300 fixed overflow-y-auto shadow-xl min-h-[10rem] max-h-[95vh] left-[50%] translate-x-[-50%] translate-y-[-50%] ${
-                            _isModalOpen
-                                ? `top-[50%] opacity-100 visible`
-                                : `top-[55%] opacity-0 invisible`
-                        } 
-						top-[50%] p-4 min-w-[40vw] w-auto
-						${className}
-						`}>
-                        <ModalHeader id={id} showCloseBtn={showCloseBtn}>
-                            {title}
-                        </ModalHeader>
+                        // className={`bg-white  z-[100] transition-all duration-300 fixed overflow-y-auto shadow-xl min-h-[10rem]  left-[50%] translate-x-[-50%] translate-y-[-50%] ${
+                        //     _isModalOpen
+                        //         ? `top-[50%] opacity-100 visible`
+                        //         : `top-[55%] opacity-0 invisible`
+                        // }
+                        // top-[50%] p-4 min-w-[40vw] w-auto
+                        // ${className}
+                        // `}
+                        className={`bg-white z-50
+                                    fixed inset-0 overflow-y-auto 
+                                    shadow-xl 
+                                    m-auto
+                                    p-4 
+                                    min-w-[40vw]
+                                    !min-h-[10rem]
+                                    max-h-[100vh]
+                                    max-2-[100vw]
+                                    ${className}
+                                    `}>
+                        <div>
+                            <ModalHeader id={id} showCloseBtn={showCloseBtn}>
+                                {title}
+                            </ModalHeader>
 
-                        <div className="pt-4">{children}</div>
+                            <div className="pt-4">{children}</div>
+                        </div>
                     </div>
                 </>
             )}
@@ -52,7 +65,8 @@ export default function CModal({ id, children, title, showCloseBtn = true, class
 
 export function ModalBackdrop() {
     return (
-        <div className="fixed inset-0 z-40 h-[100vh] w-[100vw]  bg-black/50 backdrop-blur-sm"></div>
+        // <div className="fixed inset-0  h-[100vh] w-[100vw]  bg-black/50 backdrop-blur-sm"></div>
+        <div className="fixed inset-0 z-10 flex items-center justify-center bg-black/50 backdrop-blur-sm"></div>
     );
 }
 
@@ -62,7 +76,7 @@ export function ModalTitle({ children }) {
 
 export function ModalHeader({ children, id, showCloseBtn }) {
     return (
-        <div className="border-b border-slate-400 h-10 w-100 flex justify-between items-center pb-4">
+        <div className="border-b border-slate-400 h-10 w-100 flex justify-between items-center pb-4 bg-white">
             <div className={'mb-0'}>{children}</div>
             {showCloseBtn && <ModalCloseBtn id={id} showCloseBtn={showCloseBtn} />}
         </div>
