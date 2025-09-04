@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 
+import authSlice from './auth-slice.jsx';
 import QuestionFormSlice from './edit-question-form-slice.jsx';
 import { loaderSlice } from './loader-slice.jsx';
 import modalSlice from './modal-slice.jsx';
 import reportsSlice from './reports-slice.jsx';
 import studentAreaSlice from './student-area-slice.jsx';
 import testsSlice from './tests-slice.jsx';
-import authSlice from './auth-slice.jsx';
 export const store = configureStore({
     reducer: {
         auth: authSlice.reducer,

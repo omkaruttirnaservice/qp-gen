@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
     FaArrowAltCircleLeft,
     FaArrowAltCircleRight,
@@ -5,15 +6,15 @@ import {
     FaEye,
     FaPrint,
 } from 'react-icons/fa';
-import { GoPencil } from 'react-icons/go';
-import { useDispatch, useSelector } from 'react-redux';
-import useHttp from '../Hooks/use-http.jsx';
-import { useEffect, useState } from 'react';
 import { FaListUl, FaSpinner } from 'react-icons/fa6';
+import { GoPencil } from 'react-icons/go';
+import { IoGridOutline } from 'react-icons/io5';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { EditQuestionFormActions } from '../../Store/edit-question-form-slice.jsx';
 import { ModalActions } from '../../Store/modal-slice.jsx';
-import { getQuestionsListThunk, testsSliceActions } from '../../Store/tests-slice.jsx';
+import { getQuestionsListThunk } from '../../Store/tests-slice.jsx';
+import useHttp from '../Hooks/use-http.jsx';
 import PDFGenerator from '../Reports/GenerateRports/PDFGen.jsx';
 import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
@@ -24,7 +25,6 @@ import {
     TEST_LIST_MODE,
 } from '../Utils/Constants.jsx';
 import EditQuestionView from './EditQuestionView.jsx';
-import { IoGridOutline } from 'react-icons/io5';
 
 const _questionListView = {
     LIST: 'LIST',
@@ -45,7 +45,7 @@ function TestQuestionsView() {
 
     useEffect(() => {
         return () => {
-            dispatch(testsSliceActions.cleanupPreviewTestDetails());
+            // dispatch(testsSliceActions.cleanupPreviewTestDetails());
         };
     }, []);
 

@@ -1,10 +1,9 @@
-import React from 'react';
-import CButton from '../../UI/CButton.jsx';
+import { FaPlus } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { ModalActions } from '../../../Store/modal-slice.jsx';
-import { FaPlus } from 'react-icons/fa';
 import { EditQuestionFormActions } from '../../../Store/edit-question-form-slice.jsx';
+import { ModalActions } from '../../../Store/modal-slice.jsx';
+import CButton from '../../UI/CButton.jsx';
 
 function SubjectListDropdown({ isShowAddNewBtn = true, className }) {
 	const dispatch = useDispatch();
@@ -26,11 +25,11 @@ function SubjectListDropdown({ isShowAddNewBtn = true, className }) {
 	};
 	return (
 		<div className={`flex flex-col gap-1 relative ${className}`}>
-			<label htmlFor="">Subject</label>
+			<label htmlFor="subject-id">Subject</label>
 			<div className="flex">
 				{isShowAddNewBtn && <CButton onClick={handleSubjectAddModal} icon={<FaPlus />} />}
 				<select id="subject-id" className="input-el grow w-48" name="subject_id" onChange={handleChange}>
-					<option value="" className="" name="subject_id">
+					<option value="" className="">
 						-- Select --
 					</option>
 					{subjectsList.length >= 1 &&

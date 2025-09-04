@@ -1,5 +1,5 @@
 let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { BiReset } from 'react-icons/bi';
 import { CiViewList } from 'react-icons/ci';
 import { FaEdit, FaGripLinesVertical, FaPlus, FaTrash } from 'react-icons/fa';
@@ -22,22 +22,32 @@ import Swal from 'sweetalert2';
 import { ModalActions } from '../../Store/modal-slice.jsx';
 import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
-import AddTestFormAuto from '../AddTestFormAuto/AddTestFormAuto.jsx';
-import { AUTO_TEST } from '../Dashboard/Dashboard.jsx';
 import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
 import { H3 } from '../UI/Headings.jsx';
 import InfoContainer from '../UI/InfoContainer.jsx';
 import Spinner from '../UI/Spinner.jsx';
+import { TEST_LIST_MODE } from '../Utils/Constants.jsx';
 
 function QuestionsListAutoTest() {
+    useLayoutEffect(() => {
+        if (!isTestDetailsFilled) {
+            navigate('/tests/create/form');
+            dispatch(testsSliceActions.resetTestDetails());
+            dispatch(EditQuestionFormActions.reset());
+            dispatch(testsSliceActions.setTestDetailsFilled(false));
+        }
+    }, []);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { sendRequest } = useHttp();
 
-    const { test, topicList, selectedTopicList, isTestDetailsFilled } = useSelector(
-        (state) => state.tests
-    );
+    const {
+        testDetails: test,
+        topicList,
+        selectedTopicList,
+        isTestDetailsFilled,
+    } = useSelector((state) => state.tests);
 
     const {
         data: _formData,
@@ -45,6 +55,9 @@ function QuestionsListAutoTest() {
         subjectsList,
         topicsList,
     } = useSelector((state) => state.questionForm);
+
+    console.log(_formData, '=_formData');
+
     const { isLoading } = useSelector((state) => state.loader);
 
     useEffect(() => {
@@ -69,6 +82,9 @@ function QuestionsListAutoTest() {
     }, [_formData.subject_id]);
 
     const getTopicAndQuestionCount = (subjectId) => {
+        console.log(_formData, '=_formData');
+        console.log(subjectId);
+        if (!subjectId) return;
         let reqData = {
             url: SERVER_IP + '/api/topics/get-topic-list-and-question-count',
             method: 'POST',
@@ -87,7 +103,7 @@ function QuestionsListAutoTest() {
             Swal.fire('Warning', 'Please select subject');
             return false;
         }
-        getTopicAndQuestionCount();
+        getTopicAndQuestionCount(subjectId);
     };
 
     const topicListCheckboxHandler = (e) => {
@@ -172,14 +188,12 @@ function QuestionsListAutoTest() {
         updateTotalQuestionsCount(updatedList);
     };
     function updateTotalQuestionsCount(list) {
-        // console.log(list, '==list==');
         let count = 0;
         list.forEach((item1) => {
             item1._topicsList.forEach((el) => {
                 count += el.selectedCount;
             });
         });
-        // console.log(count, '==count==');
         dispatch(testsSliceActions.updateTotalQuestionsCount_AUTO_TEST(count));
     }
 
@@ -278,14 +292,11 @@ function QuestionsListAutoTest() {
     };
 
     const finalTestSubmitHandler = async () => {
-        // console.log(selectedTopicList, '==selectedTopicList==');
         const __allTopicListToCreateExam = [];
 
         selectedTopicList.forEach((item1) => {
             __allTopicListToCreateExam.push(...item1._topicsList);
         });
-
-        // console.log(__allTopicListToCreateExam, '==__allTopicListToCreateExam==');
 
         const isConfirm = await confirmDialouge({
             title: 'Are you sure?',
@@ -301,12 +312,15 @@ function QuestionsListAutoTest() {
             }),
         };
         sendRequest(rD, ({ success, data }) => {
-            // console.log(data, '==data after auto test==');
             if (success == 1) {
                 Swal.fire('Success', 'Test has been generated!');
 
-                dispatch(testsSliceActions.setPreviewTestDetailsId(data.testDetails.id));
-                dispatch(testsSliceActions.setPreviewTestDetails(data.testDetails));
+                const updated = { ...data.testDetails };
+                // updated is test details cloned variable
+                updated.mode = TEST_LIST_MODE.TEST_LIST;
+
+                dispatch(testsSliceActions.setTestDetails(updated));
+                dispatch(testsSliceActions.setTestDetailsId(updated.id));
 
                 setTimeout(() => {
                     navigate('/tests/list/questions');
@@ -317,31 +331,15 @@ function QuestionsListAutoTest() {
 
     useEffect(() => {
         return () => {
-            dispatch(testsSliceActions.resetTest());
+            dispatch(ModalActions.toggleModal('create-exam-preview-modal'));
             dispatch(EditQuestionFormActions.reset());
-
             dispatch(testsSliceActions.setTestDetailsFilled(false));
-            // alert('Resetting');
         };
     }, []);
 
-    const handleCreateTest = () => {
-        dispatch(ModalActions.toggleModal('create-test-modal-auto'));
-        dispatch(testsSliceActions.setTestCreationType(AUTO_TEST));
-    };
-
-    // console.log(selectedTopicList, '==selectedTopicList==')
-    // console.log(selectedQuestionsList, '==selectedQuestionsList==')
-
     return (
         <>
-            <div className="mt-6">
-                <AddTestFormAuto />
-            </div>
-
             <CreatePreSubmitView test={test} finalTestSubmitHandler={finalTestSubmitHandler} />
-
-            {!isTestDetailsFilled && <CButton onClick={handleCreateTest}>Create Test</CButton>}
 
             {isTestDetailsFilled && (
                 <>

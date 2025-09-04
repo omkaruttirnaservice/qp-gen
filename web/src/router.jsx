@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
+import CreateTestForm from './components/CreateTestForm.jsx';
 import Dashboard from './components/Dashboard/Dashboard.jsx';
 import LoginPage from './components/Login/Login.jsx';
 import Logout from './components/Logout/Logout.jsx';
@@ -6,7 +7,6 @@ import CreateMockForm from './components/MockTest/CreateMockForm.jsx';
 import MockTestHome from './components/MockTest/MockTestHome.jsx';
 import MockTestReport from './components/MockTestsList/MockTestReport.jsx';
 import MockTestsList from './components/MockTestsList/MockTestsList.jsx';
-import PublishedTestQuestionsView from './components/PublishedTestsList/PublishedTestQuestionsView.jsx';
 import PublishedTestsList from './components/PublishedTestsList/PublishedTestsList.jsx';
 import QuestionsList from './components/QuestionsList/QuestionsList.jsx';
 import QuestionsListAutoTest from './components/QuestionsListAutoTest/QuestionsListAutoTest.jsx';
@@ -31,9 +31,18 @@ export const _router = createBrowserRouter([
             // test area
             { path: '/tests/list', element: <TestsList /> },
             { path: '/tests/published', element: <PublishedTestsList /> },
-            { path: '/tests/create/manual', element: <QuestionsList /> },
-            { path: '/tests/create/auto', element: <QuestionsListAutoTest /> },
             { path: '/tests/list/questions', element: <TestQuestionsView /> },
+
+            // create test
+            {
+                path: '/tests/create',
+                children: [
+                    { path: 'form', element: <CreateTestForm /> },
+                    { path: 'manual', element: <QuestionsList /> },
+                    { path: 'auto', element: <QuestionsListAutoTest /> },
+                ],
+            },
+
             {
                 path: '/tests/published/questions',
                 element: <TestQuestionsView />,

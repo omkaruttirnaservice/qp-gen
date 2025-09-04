@@ -1,9 +1,7 @@
 import { CgProfile } from 'react-icons/cg';
 
 import { FaList, FaRegArrowAltCircleRight } from 'react-icons/fa';
-import { FaChartLine } from 'react-icons/fa6';
 import { FiFilePlus } from 'react-icons/fi';
-import { LuBookPlus } from 'react-icons/lu';
 import { NavLink, useLocation } from 'react-router-dom';
 
 import { GrTest } from 'react-icons/gr';
@@ -14,11 +12,9 @@ import { MdLogout, MdOutlineChecklist, MdOutlineMenuBook } from 'react-icons/md'
 
 import { MdDashboard } from 'react-icons/md';
 
-import { useState } from 'react';
-import { PiStudentBold } from 'react-icons/pi';
+import { useEffect, useState } from 'react';
 import { H3 } from '../UI/Headings.jsx';
 import './MenuBar.css';
-import { useEffect } from 'react';
 
 function MenuBar({ isSidebarOpen }) {
     const auth = useSelector((state) => state.auth);
@@ -43,6 +39,11 @@ function MenuBar({ isSidebarOpen }) {
             isChildrensOpen: false,
             childrens: [
                 {
+                    childrenTitle: 'Create Test',
+                    _url: '/tests/create/form',
+                    icon: <FiFilePlus className="text-xl" />,
+                },
+                {
                     childrenTitle: 'Tests List',
                     _url: '/tests/list',
                     icon: <FaList className="text-xl" />,
@@ -52,16 +53,16 @@ function MenuBar({ isSidebarOpen }) {
                     _url: '/tests/published',
                     icon: <MdOutlineChecklist className="text-xl" />,
                 },
-                {
-                    childrenTitle: 'Create Test (Manual)',
-                    _url: '/tests/create/manual',
-                    icon: <LuBookPlus className="text-xl" />,
-                },
-                {
-                    childrenTitle: 'Create Test (Auto)',
-                    _url: '/tests/create/auto',
-                    icon: <FiFilePlus className="text-xl" />,
-                },
+                // {
+                //     childrenTitle: 'Create Test (Manual)',
+                //     _url: '/tests/create/manual',
+                //     icon: <LuBookPlus className="text-xl" />,
+                // },
+                // {
+                //     childrenTitle: 'Create Test (Auto)',
+                //     _url: '/tests/create/auto',
+                //     icon: <FiFilePlus className="text-xl" />,
+                // },
             ],
         },
         {

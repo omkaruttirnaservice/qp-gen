@@ -61,7 +61,7 @@ function AddTestFormAuto() {
 	const createTestSubmitHandler = async (e) => {
 		e.preventDefault();
 		try {
-			await createTestFormAutoSchema.validate({ ...test }, { abortEarly: false });
+			// await createTestFormAutoSchema.validate({ ...test }, { abortEarly: false });
 
 			dispatch(ModalActions.toggleModal('create-test-modal-auto'));
 

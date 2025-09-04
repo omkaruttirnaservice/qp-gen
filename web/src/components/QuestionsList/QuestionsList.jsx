@@ -24,18 +24,30 @@ import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
 
 import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
-import AddTestForm from '../AddTestForm/AddTestForm.jsx';
 import { MANUAL_TEST } from '../Dashboard/Dashboard.jsx';
+import { TEST_LIST_MODE } from '../Utils/Constants.jsx';
 import './QuestionsList.css';
 
 const ALL_QUESTION = 'all-question';
 const SELECTED_QUESTION = 'selected-question';
 
 function QuestionsList() {
+    useLayoutEffect(() => {
+        if (!isTestDetailsFilled) {
+            navigate('/tests/create/form');
+            dispatch(testsSliceActions.resetTestDetails());
+            dispatch(EditQuestionFormActions.reset());
+            dispatch(testsSliceActions.setTestDetailsFilled(false));
+        }
+    }, []);
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { test, selectedQuestionsList, sortedSelectedQuestionsList, isTestDetailsFilled } =
-        useSelector((state) => state.tests);
+    const {
+        testDetails: test,
+        selectedQuestionsList,
+        isTestDetailsFilled,
+    } = useSelector((state) => state.tests);
 
     const [temp_QuestionList, set_temp_QuestionList] = useState([]);
     const [showList, setShowList] = useState(ALL_QUESTION);
@@ -101,7 +113,6 @@ function QuestionsList() {
     }
 
     const handleAddQuestionToList = (_addEl) => {
-        console.log(_addEl, '==_addEl==');
         let insertArray = [...selectedQuestionsList];
 
         let _index = insertArray.findIndex((el) => el.q_id == _addEl.q_id);
@@ -136,7 +147,6 @@ function QuestionsList() {
         };
 
         sendRequest(requestData, ({ success, data }) => {
-            console.log(data, '==data after create test==');
             if (success) {
                 Swal.fire({
                     title: 'Success!',
@@ -144,9 +154,13 @@ function QuestionsList() {
                     icon: 'success',
                 });
 
+                const updated = { ...data.testDetails };
+                // updated is test details cloned variable
+                updated.mode = TEST_LIST_MODE.TEST_LIST;
+
                 dispatch(ModalActions.toggleModal('create-exam-preview-modal'));
-                dispatch(testsSliceActions.setPreviewTestDetailsId(data.testDetails.id));
-                dispatch(testsSliceActions.setPreviewTestDetails(data.testDetails));
+                dispatch(testsSliceActions.setTestDetails(updated));
+                dispatch(testsSliceActions.setTestDetailsId(updated.id));
 
                 setTimeout(() => {
                     navigate('/tests/list/questions');
@@ -180,9 +194,7 @@ function QuestionsList() {
 
     useEffect(() => {
         return () => {
-            dispatch(testsSliceActions.resetTest());
             dispatch(EditQuestionFormActions.reset());
-
             dispatch(testsSliceActions.setTestDetailsFilled(false));
         };
     }, []);
@@ -196,20 +208,9 @@ function QuestionsList() {
         getQuestions();
     };
 
-    console.log(1, '==1==');
-    console.log(test, '==test==');
-    console.log(selectedQuestionsList, '==selectedQuestionsList==');
-    console.log(1, '==1==');
-
     return (
         <>
-            <div className="mt-6">
-                <AddTestForm />
-            </div>
-
             <CreatePreSubmitView test={test} finalTestSubmitHandler={finalTestSubmitHandler} />
-
-            {!isTestDetailsFilled && <CButton onClick={handleCreateTest}>Create Test</CButton>}
 
             {isTestDetailsFilled && (
                 <>
@@ -227,7 +228,7 @@ function QuestionsList() {
                                     <FaGripLinesVertical />
                                     <p>Test Name</p>
                                     <FaAngleRight />
-                                    <span className="underline">{test.test_name}</span>
+                                    <span className="underline">{test?.test_name}</span>
                                 </div>
 
                                 <div className="flex items-center gap-1">
@@ -373,7 +374,7 @@ function CreatePreSubmitView({ test, finalTestSubmitHandler }) {
                             Name of exam
                         </td>
                         <td className="border p-2" width="50%">
-                            {test.test_name}
+                            {test?.test_name}
                         </td>
                     </tr>
                     <tr>
@@ -404,6 +405,7 @@ function CreatePreSubmitView({ test, finalTestSubmitHandler }) {
                     </tr>
                 </tbody>
             </table>
+            <p>Note: pleae confirm the test details for creating test.</p>
             <div className="flex justify-center mt-4">
                 <CButton isLoading={isLoading} onClick={finalTestSubmitHandler}>
                     Submit
