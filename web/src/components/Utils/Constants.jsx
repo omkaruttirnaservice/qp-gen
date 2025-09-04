@@ -18,3 +18,9 @@ export const TEST_LIST_MODE = {
     TEST_LIST: 'TEST_LIST',
     PUBLISHED_TEST_LIST: 'PUBLISHED_TEST_LIST',
 };
+
+export const _questionListView = {
+    LIST: 'LIST',
+    SPLIT: 'SPLIT',
+    EXAM_THEME_1: 'EXAM_THEME_1',
+};

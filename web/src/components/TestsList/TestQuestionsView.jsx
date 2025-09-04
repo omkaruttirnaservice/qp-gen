@@ -20,17 +20,12 @@ import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
 import { H2 } from '../UI/Headings.jsx';
 import {
+    _questionListView,
     EDIT_QUESTION_OF_GENERATED_TEST,
     EDIT_QUESTION_OF_PUBLISHED_TEST,
     TEST_LIST_MODE,
 } from '../Utils/Constants.jsx';
 import EditQuestionView from './EditQuestionView.jsx';
-
-const _questionListView = {
-    LIST: 'LIST',
-    SPLIT: 'SPLIT',
-    EXAM_THEME_1: 'EXAM_THEME_1',
-};
 
 function TestQuestionsView() {
     const [questionListView, setQuestionListView] = useState(_questionListView.SPLIT);
@@ -42,12 +37,6 @@ function TestQuestionsView() {
     useEffect(() => {
         dispatch(getQuestionsListThunk(testDetails.test_id, sendRequest, navigate));
     }, [testDetails.test_id]);
-
-    useEffect(() => {
-        return () => {
-            // dispatch(testsSliceActions.cleanupPreviewTestDetails());
-        };
-    }, []);
 
     const handleEditQuestion = (el) => {
         if (testDetails.mode == TEST_LIST_MODE.TEST_LIST) {
