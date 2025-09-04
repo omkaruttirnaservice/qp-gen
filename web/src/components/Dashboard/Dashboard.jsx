@@ -8,10 +8,7 @@ import { H3 } from '../UI/Headings.jsx';
 function Dashboard() {
     const navigate = useNavigate();
 
-    const createTestHandler = () => {
-        navigate('/tests/create/form');
-    };
-
+    const createTestHandler = () => navigate('/tests/create/form');
     const testsListHandler = () => navigate('/tests/list');
     const publishedTestsListHandler = () => navigate('/tests/published');
 

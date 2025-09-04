@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { reportsAction } from '../../../Store/reports-slice.jsx';
 import CButton from '../../UI/CButton.jsx';
@@ -36,9 +35,6 @@ function GenerateRports() {
 }
 
 function TestDetails({ el: details, idx, refetch }) {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-
     // START: generate result===============
     const {
         mutate: _generateResult,
