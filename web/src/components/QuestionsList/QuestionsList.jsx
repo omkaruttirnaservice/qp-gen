@@ -24,7 +24,6 @@ import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
 
 import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
-import { MANUAL_TEST } from '../Dashboard/Dashboard.jsx';
 import { TEST_LIST_MODE } from '../Utils/Constants.jsx';
 import './QuestionsList.css';
 
@@ -198,11 +197,6 @@ function QuestionsList() {
             dispatch(testsSliceActions.setTestDetailsFilled(false));
         };
     }, []);
-
-    const handleCreateTest = () => {
-        dispatch(ModalActions.toggleModal('create-test-modal'));
-        dispatch(testsSliceActions.setTestCreationType(MANUAL_TEST));
-    };
 
     const searchQuestions = () => {
         getQuestions();

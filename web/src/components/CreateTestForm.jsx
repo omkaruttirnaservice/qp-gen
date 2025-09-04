@@ -4,14 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { testsSliceActions } from '../Store/tests-slice';
 import CButton from './UI/CButton';
+import { H3 } from './UI/Headings';
 import Input from './UI/Input';
+import { TEST_CREATE_TYPE } from './Utils/Constants';
 
 function CreateTestForm() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { testDetails: test, errors } = useSelector((state) => state.tests);
-
-    console.log(test, '=tes=');
 
     const createTestFormAutoSchema = Yup.object().shape({
         test_name: Yup.string().required('Test name required'),
@@ -45,7 +45,7 @@ function CreateTestForm() {
             }),
 
         test_creation_type: Yup.string()
-            .oneOf(['manual', 'auto'], 'Invalid test type')
+            .oneOf([TEST_CREATE_TYPE.AUTO, TEST_CREATE_TYPE.MANUAL], 'Invalid test type')
             .required('Test type is required'),
     });
 
@@ -76,28 +76,28 @@ function CreateTestForm() {
             dispatch(testsSliceActions.setTestDetailsFilled(true));
             dispatch(testsSliceActions.setErrors({}));
 
-            if (test.test_creation_type == 'manual') {
+            if (test.test_creation_type == TEST_CREATE_TYPE.MANUAL) {
                 navigate('/tests/create/manual');
-            } else if (test.test_creation_type == 'auto') {
+            } else if (test.test_creation_type == TEST_CREATE_TYPE.AUTO) {
                 navigate('/tests/create/auto');
             } else {
                 alert('No test mode selected');
             }
         } catch (error) {
-            console.log(error);
             let __err = {};
-            error.inner.forEach((el) => {
+            error?.inner?.forEach((el) => {
                 __err[el.path] = el.message;
             });
 
             dispatch(testsSliceActions.setErrors(__err));
-
             dispatch(testsSliceActions.setTestDetailsFilled(false));
         }
     };
 
     return (
-        <div>
+        <div className="mt-3">
+            <H3>Create Test</H3>
+
             <form action="" id="create-test-form-auto" onSubmit={createTestSubmitHandler}>
                 <div className="grid grid-cols-3 gap-6 mb-5">
                     <div className="relative">
@@ -196,10 +196,14 @@ function CreateTestForm() {
                             value={test.test_creation_type}
                             onChange={inputChangeHandler}
                             className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300">
-                            <option value="manual" selected={test.test_creation_type == 'manual'}>
+                            <option
+                                value="manual"
+                                selected={test.test_creation_type == TEST_CREATE_TYPE.MANUAL}>
                                 Manual
                             </option>
-                            <option value="auto" selected={test.test_creation_type == 'auto'}>
+                            <option
+                                value="auto"
+                                selected={test.test_creation_type == TEST_CREATE_TYPE.AUTO}>
                                 Auto
                             </option>
                         </select>

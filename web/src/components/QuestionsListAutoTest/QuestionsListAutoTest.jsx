@@ -330,6 +330,7 @@ function QuestionsListAutoTest() {
     };
 
     useEffect(() => {
+        // This is cleanup of states when component unmounts
         return () => {
             dispatch(ModalActions.toggleModal('create-exam-preview-modal'));
             dispatch(EditQuestionFormActions.reset());

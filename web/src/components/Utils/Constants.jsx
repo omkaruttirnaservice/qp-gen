@@ -1,6 +1,3 @@
-export const AUTO_TEST = 'Auto';
-export const MANUAL_TEST = 'Manual';
-
 export const EDIT_QUESTION_OF_GENERATED_TEST = 1;
 export const EDIT_QUESTION_OF_PUBLISHED_TEST = 2;
 
@@ -23,4 +20,9 @@ export const _questionListView = {
     LIST: 'LIST',
     SPLIT: 'SPLIT',
     EXAM_THEME_1: 'EXAM_THEME_1',
+};
+
+export const TEST_CREATE_TYPE = {
+    MANUAL: 'manual',
+    AUTO: 'auto',
 };

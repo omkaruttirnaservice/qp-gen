@@ -224,11 +224,6 @@ function ExamThemeView({ testDetails, questionsList, handleEditQuestion }) {
         setCurrentQuestion(questionsList[idx]);
     }, [idx, questionsList]);
 
-    // const topicHeader = renderTopicHeader(
-    //     currentQuestion?.main_topic_name || '-',
-    //     currentQuestion?.sub_topic_section || '-'
-    // );
-
     return (
         <>
             {/* Trigger button */}
