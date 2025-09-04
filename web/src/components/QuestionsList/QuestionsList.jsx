@@ -194,6 +194,7 @@ function QuestionsList() {
     useEffect(() => {
         return () => {
             dispatch(EditQuestionFormActions.reset());
+            dispatch(testsSliceActions.reset());
             dispatch(testsSliceActions.setTestDetailsFilled(false));
         };
     }, []);
