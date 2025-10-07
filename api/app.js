@@ -49,6 +49,10 @@ sequelize
     .then()
     .catch((err) => console.log(err, '==1=======database connection======================err=='));
 
+app.get('/', (req, res) => {
+    res.send('API is running....');
+});
+
 app.use('/api', indexRoutes);
 
 import legacyRoutes from './routes/remoteRouterLegacy.js';
