@@ -21,19 +21,23 @@ const remoteControllerLegacy = {
          * }
          */
 
-        const data = req.body;
-        let _examsList = await remoteModelLegacy.getTodaysExamList(data);
+        try {
+            const data = req.body;
+            let _examsList = await remoteModelLegacy.getTodaysExamList(data);
 
-        if (_examsList.length == 0)
-            return res.status(400).json({
-                call: 0,
-                data: {},
+            if (_examsList.length == 0)
+                return res.status(400).json({
+                    call: 0,
+                    data: {},
+                });
+
+            return res.status(200).json({
+                call: 1,
+                data: _examsList,
             });
-
-        return res.status(200).json({
-            call: 1,
-            data: _examsList,
-        });
+        } catch (error) {
+            console.log(error, '==error==');
+        }
     }),
 
     downloadExam: asyncHandler(async (req, res) => {

@@ -400,7 +400,7 @@ function CreatePreSubmitView({ test, finalTestSubmitHandler }) {
                     </tr>
                 </tbody>
             </table>
-            <p>Note: pleae confirm the test details for creating test.</p>
+            <p>Note: Pleaes confirm the test details for creating test.</p>
             <div className="flex justify-center mt-4">
                 <CButton isLoading={isLoading} onClick={finalTestSubmitHandler}>
                     Submit

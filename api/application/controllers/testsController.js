@@ -409,7 +409,6 @@ const testsController = {
 
             // check if mock test exsists with same center_code, exam_date
             const [duplicateTest] = await testsModel.checkForDuplicateTest(testData);
-            console.log(duplicateTest, '=duplicateTest');
 
             if (duplicateTest.length > 0) {
                 console.log(
@@ -430,9 +429,10 @@ const testsController = {
 
             // get last insert roll number of studetns
             const [lastRollNumber] = await testsModel.getLastInsertRollNumber();
-            console.log(lastRollNumber, '=lastRollNumber');
             if (lastRollNumber.length > 0) {
                 testData.start_roll_number = lastRollNumber[0].id + 1;
+            } else {
+                testData.start_roll_number = 1001;
             }
 
             // generate dummy students

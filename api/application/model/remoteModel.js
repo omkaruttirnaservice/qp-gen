@@ -76,6 +76,7 @@ const remoteModel = {
 
         // this is temp removed
         // AND center_code = '${data.center_code}'
+
         return results;
     },
 

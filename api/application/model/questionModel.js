@@ -251,7 +251,6 @@ const questionModel = {
 							ON 
 							questions.q_id = tqs.q_id
 						GROUP BY q_id;`;
-		console.log(q, '==q==');
 		return db.query(q);
 	},
 

@@ -106,7 +106,7 @@ function CreateMockForm() {
         };
         sendRequest(rD, (data) => {
             console.log(data, '=data');
-            navigate('/mock-list');
+            navigate('/mock/list');
         });
     }
 

@@ -23,15 +23,19 @@ const remoteController = {
 		 * 
 		 */
 
-        const data = req.body;
-        console.log(data, '=data');
-        let _examsList = await remoteModel.getTodaysExamList(data);
-        console.log(_examsList, '==_examsList==');
+        try {
+            const data = req.body;
+            console.log(data, '=data');
+            let _examsList = await remoteModel.getTodaysExamList(data);
+            console.log(_examsList, '==_examsList==');
 
-        if (_examsList.length == 0)
-            throw new ApiError(400, 'No exams list found', 'No new exams list found in qp-gen');
+            if (_examsList.length == 0)
+                throw new ApiError(400, 'No exams list found', 'No new exams list found in qp-gen');
 
-        return res.status(200).json(new ApiResponse(200, _examsList));
+            return res.status(200).json(new ApiResponse(200, _examsList));
+        } catch (error) {
+            console.log(error);
+        }
     }),
 
     downloadExam: asyncHandler(async (req, res) => {

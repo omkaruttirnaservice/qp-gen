@@ -6,8 +6,12 @@ import indexRoutes from './routes/indexRoutes.js';
 import cors from 'cors';
 import sequelize from './application/config/db-connect-migration.js';
 import { errorHandler } from './middlewares/errorMiddleware.js';
+import morgan from 'morgan';
 
 const app = express();
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
+
 dotenv.config();
 app.use(express.static('public'));
 

@@ -19,7 +19,7 @@ const tm_publish_test_list = sequelize.define(
             allowNull: true,
         },
         ptl_link: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING(50),
             allowNull: false,
             unique: false,
         },
