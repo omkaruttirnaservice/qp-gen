@@ -14,9 +14,14 @@ const app = express();
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 
 const allowedOrigins = [
+    'http://localhost:5173',
     'http://localhost:3000',
+
     'https://qpgen.uttirna.in',
     'https://www.qpgen.uttirna.in',
+
+    'https://qpgen105.uttirna.in',
+    'https://www.qpgen105.uttirna.in',
 ];
 
 // ✅ CORS setup with dynamic origin checking
