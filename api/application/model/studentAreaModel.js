@@ -181,7 +181,7 @@ const studentAreaModel = {
 					'center',GROUP_CONCAT(DISTINCT cl_name)
 				) AS filters
 
-				FROM utr_question_paper.tn_student_list sl
+				FROM tn_student_list sl
 
 				INNER JOIN tn_center_list cl
 				ON sl.sl_center_code = cl.cl_number `;
