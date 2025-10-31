@@ -20,4 +20,11 @@ remoteRouterLegacy.get('/DownloadStudentBatch/:cc/:batch', remoteControllerLegac
  */
 remoteRouterLegacy.post('/saveUploadedExam', remoteControllerLegacy.saveExamData);
 
+
+/**
+ * This route will get all of center details from tn_center_list table
+ * As per center number given in post request
+ */
+remoteRouterLegacy.get('/getCenterData/:centerCode', remoteControllerLegacy.getCenterData)
+
 export default remoteRouterLegacy;

@@ -5,6 +5,7 @@ import tm_publish_test_list from '../../schemas/tm_publish_test_list.js';
 import tm_student_question_paper from '../../schemas/tm_student_question_paper.js';
 import tm_student_test_list from '../../schemas/tm_student_test_list.js';
 import tm_test_question_sets from '../../schemas/tm_test_question_sets.js';
+import tn_center_list from '../../schemas/tn_center_list.js';
 import tn_student_list from '../../schemas/tn_student_list.js';
 import ApiError from '../../utils/ApiError.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
@@ -272,6 +273,39 @@ const remoteControllerLegacy = {
             console.log(error, '==error==');
             await transact.rollback();
             throw new ApiError(424, error?.message || 'Something went wrong on server');
+        }
+    }),
+
+    getCenterData: asyncHandler(async (req, res) => {
+        const centerCode = req.params.centerCode;
+        console.log(centerCode, 'centerCode');
+
+        const centerDetails = await tn_center_list.findOne({
+            where: {
+                cl_number: centerCode,
+            },
+            attributes: [
+                ['id', 'id'],
+                ['cl_user_name', 'a_master_name'],
+                ['cl_password', 'a_master_password'],
+                ['cl_number', 'a_code'],
+                ['cl_number', 'a_app_code'],
+                ['cl_name', 'a_center_name'],
+                ['cl_address', 'a_center_address'],
+            ],
+            raw: true,
+        });
+        console.log(centerDetails);
+        res.status(200).json({
+            call: 1,
+            data: [centerDetails],
+        });
+        // return
+        if (!centerDetails) {
+            return res.status(200).json({
+                call: 0,
+                message: 'Center details not found',
+            });
         }
     }),
 };
