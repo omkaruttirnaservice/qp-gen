@@ -2,6 +2,31 @@ let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 import { createSlice } from '@reduxjs/toolkit';
 import Swal from 'sweetalert2';
 import { TEST_LIST_MODE } from '../components/Utils/Constants';
+import { isDevEnv } from '../components/Utils/utils';
+
+const INITIAL_STATE_DEV = {
+    isTestDetailsFilled: true,
+    testDetails: {
+        test_id: '',
+        test_name: 'test',
+        test_duration: '90',
+        marks_per_question: '1',
+        total_questions: '',
+        is_negative_marking: 0,
+        negative_mark: 0,
+        test_passing_mark: '20',
+        test_creation_type: 'manual',
+        test_created_on: '',
+        todays_date: '',
+        mode: '',
+    },
+    topicList: [],
+    selectedTopicList: [],
+    errors: {},
+    selectedQuestionsList: [],
+    sortedSelectedQuestionsList: [],
+    questionsList: [],
+};
 
 const TEST_INITIAL_STATE = {
     isTestDetailsFilled: false,
@@ -32,7 +57,7 @@ const TEST_INITIAL_STATE = {
 
 const testsSlice = createSlice({
     name: 'tests-slice',
-    initialState: TEST_INITIAL_STATE,
+    initialState: isDevEnv() ? INITIAL_STATE_DEV : TEST_INITIAL_STATE,
 
     reducers: {
         setTestDetailsFilled: (state, action) => {
