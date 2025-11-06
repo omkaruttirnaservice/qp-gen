@@ -73,9 +73,6 @@ const testsSlice = createSlice({
             state.selectedTopicList = action.payload;
         },
 
-        updateTotalQuestionsCount: (state, action) => {
-            state.testDetails.total_questions = state.selectedQuestionsList.length;
-        },
         updateTotalQuestionsCount_AUTO_TEST: (state, action) => {
             state.testDetails.total_questions = action.payload;
         },
@@ -90,6 +87,7 @@ const testsSlice = createSlice({
 
         setSelectedQuestionsList: (state, action) => {
             state.selectedQuestionsList = action.payload;
+            state.testDetails.total_questions = state.selectedQuestionsList.length;
         },
 
         // for view questions of the test
