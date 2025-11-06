@@ -63,10 +63,10 @@ function StudentsList() {
 
             dispatch(
                 StudentAreaActions.setFiltersData({
-                    center: center.split(','),
-                    post: post.split(','),
-                    exam_date: exam_date.split(','),
-                    batch: batch.split(','),
+                    center: center?.split(','),
+                    post: post?.split(','),
+                    exam_date: exam_date?.split(','),
+                    batch: batch?.split(','),
                 })
             );
         }
