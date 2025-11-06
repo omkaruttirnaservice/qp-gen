@@ -54,9 +54,9 @@ function SelectRandomQuestion({ temp_QuestionList }) {
 
     return (
         <>
-            <div className="text-xs cursor-pointer" onClick={handleToggleSelectRandomQuestions}>
+            <CButton className={'btn--success'} onClick={handleToggleSelectRandomQuestions}>
                 Select Random
-            </div>
+            </CButton>
 
             {isShowRandommInput && (
                 <>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import {
     FaArrowAltCircleLeft,
     FaArrowAltCircleRight,
@@ -26,6 +26,7 @@ import {
     TEST_LIST_MODE,
 } from '../Utils/Constants.jsx';
 import EditQuestionView from './EditQuestionView.jsx';
+import { renderTopicHeader } from './utils.js';
 
 function TestQuestionsView() {
     const [questionListView, setQuestionListView] = useState(_questionListView.SPLIT);
@@ -56,25 +57,6 @@ function TestQuestionsView() {
             );
         }
         dispatch(ModalActions.toggleModal('edit-que-modal'));
-    };
-
-    let lastMainName = '';
-    let lastSub = '';
-
-    const renderTopicHeader = (mainTopicName, subTopicSection) => {
-        let header = null;
-        if (subTopicSection !== lastSub) {
-            lastSub = subTopicSection;
-            header = (
-                <div className="bg-gradient-to-r from-green-200 to-green-400 text-gray-800 font-semibold py-2 px-4 rounded-t-md shadow-sm">
-                    {mainTopicName} :: {subTopicSection}
-                </div>
-            );
-        }
-        if (mainTopicName !== lastMainName) {
-            lastMainName = mainTopicName;
-        }
-        return header;
     };
 
     return (
@@ -189,7 +171,7 @@ function TestInfoHeader({ testDetails, questionListView, setQuestionListView }) 
     );
 }
 
-function QuestionSplitView({ questionsList, renderTopicHeader, handleEditQuestion }) {
+const QuestionSplitView = memo(({ questionsList, renderTopicHeader, handleEditQuestion }) => {
     return (
         <div className="container mx-auto columns-1 md:columns-2 gap-6">
             {questionsList.map((el, idx) => {
@@ -213,9 +195,9 @@ function QuestionSplitView({ questionsList, renderTopicHeader, handleEditQuestio
             })}
         </div>
     );
-}
+});
 
-function ExamThemeView({ testDetails, questionsList, handleEditQuestion }) {
+export function ExamThemeView({ testDetails, questionsList, handleEditQuestion, isEdit = true }) {
     const dispatch = useDispatch();
     const [idx, setIdx] = useState(0);
     const [currentQuestion, setCurrentQuestion] = useState(questionsList[idx]);
@@ -230,6 +212,7 @@ function ExamThemeView({ testDetails, questionsList, handleEditQuestion }) {
             <div className="flex justify-center">
                 <CButton
                     icon={<FaEye />}
+                    disabled={questionsList.length === 0}
                     onClick={() => {
                         dispatch(ModalActions.toggleModal('exam-theme-1-modal'));
                     }}>
@@ -259,12 +242,14 @@ function ExamThemeView({ testDetails, questionsList, handleEditQuestion }) {
                                     onClick={() => setIdx((prev) => prev - 1)}>
                                     Prev
                                 </CButton>
-                                <CButton
-                                    icon={<GoPencil />}
-                                    onClick={handleEditQuestion.bind(null, currentQuestion)}
-                                    className="bg-yellow-400 hover:bg-yellow-500 text-sm px-4 py-2 rounded">
-                                    Edit
-                                </CButton>
+                                {isEdit && (
+                                    <CButton
+                                        icon={<GoPencil />}
+                                        onClick={handleEditQuestion.bind(null, currentQuestion)}
+                                        className="bg-yellow-400 hover:bg-yellow-500 text-sm px-4 py-2 rounded">
+                                        Edit
+                                    </CButton>
+                                )}
                                 <CButton
                                     disabled={questionsList.length === idx + 1}
                                     className="bg-blue-500 text-white hover:bg-blue-600"

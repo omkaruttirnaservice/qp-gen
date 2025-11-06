@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { testsSliceActions } from '../../Store/tests-slice';
+import CButton from '../UI/CButton';
 
 function SelectAllQuestionBtn({ temp_QuestionList }) {
     const dispatch = useDispatch();
@@ -15,9 +16,9 @@ function SelectAllQuestionBtn({ temp_QuestionList }) {
     };
     return (
         <>
-            <div className="text-xs cursor-pointer" onClick={handleSelectAllQuestions}>
+            <CButton className={'btn--success'} onClick={handleSelectAllQuestions}>
                 Select All
-            </div>
+            </CButton>
         </>
     );
 }
