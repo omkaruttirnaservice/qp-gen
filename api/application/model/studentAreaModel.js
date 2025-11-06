@@ -1,14 +1,12 @@
-import { Sequelize } from 'sequelize';
-import aouth from '../schemas/aouth.js';
-import tn_student_list from '../schemas/tn_student_list.js';
-import ApiError from '../utils/ApiError.js';
-import tn_center_list from '../schemas/tn_center_list.js';
+import { Op, Sequelize } from 'sequelize';
+import sequelize from '../config/db-connect-migration.js';
+import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
 import tm_server_ip_list from '../schemas/tm_server_ip_list.js';
 import tm_student_question_paper from '../schemas/tm_student_question_paper.js';
-import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
 import tm_test_question_sets from '../schemas/tm_test_question_sets.js';
-import db from '../config/db.connect.js';
-import sequelize from '../config/db-connect-migration.js';
+import tn_center_list from '../schemas/tn_center_list.js';
+import tn_student_list from '../schemas/tn_student_list.js';
+import ApiError from '../utils/ApiError.js';
 
 const studentAreaModel = {
     getServerIP: async () => {
@@ -40,6 +38,21 @@ const studentAreaModel = {
                 id: id,
             },
         });
+    },
+
+    deleteAllExsistingStudentsList: async (_data, transact) => {
+        try {
+            const deleteIds = _data.map((item) => item.id);
+            return await tn_student_list.destroy({
+                where: {
+                    id: {
+                        [Op.in]: deleteIds,
+                    },
+                },
+            });
+        } catch (error) {
+            throw new ApiError(500, error?.message || 'Something went wrong');
+        }
     },
 
     saveAllStudentsList: (_data, transact) => {

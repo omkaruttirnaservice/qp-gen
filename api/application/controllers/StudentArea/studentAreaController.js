@@ -148,6 +148,39 @@ const StudentAreaController = {
         }
     },
 
+    getAllStudentsList_3: async (req, res, next) => {
+        /**
+         * This is version 3 of the API to get students list from form filling server
+         * It will download students list and before saving it will delete existing students with same roll numbers
+         */
+        let transact = await sequelize.transaction();
+        try {
+            let { ip } = req.body;
+
+            if (!ip) throw new ApiError(404, 'Invalid IP address');
+
+            const [error, data] = await StudentAreaController.downloadStudentsFromFormFilling(ip);
+
+            if (error) {
+                throw new ApiError(400, error);
+            }
+
+            if (data.length === 0) {
+                throw new ApiError(400, 'Students list empty.');
+            }
+
+            await studentAreaModel.deleteAllExsistingStudentsList(data, transact);
+
+            await studentAreaModel.saveAllStudentsList(data, transact);
+
+            await transact.commit();
+            return res.status(200).json(new ApiResponse(200, '', 'Students list'));
+        } catch (error) {
+            await transact.rollback();
+            next(error);
+        }
+    },
+
     downloadStudentsFromFormFilling: async (ip) => {
         try {
             let _res = await fetch(`${ip}/api/student-data/data-download`);

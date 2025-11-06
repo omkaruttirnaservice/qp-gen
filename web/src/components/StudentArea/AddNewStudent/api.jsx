@@ -43,7 +43,7 @@ export const getServerIP = async () => {
 
 export const getStudentsList = async (ip) => {
 	console.log(ip, '==ip==');
-	const url = SERVER_IP + '/api/students-area/all-list';
+	const url = SERVER_IP + '/api/students-area/v3/all-list';
 	return await axios.post(url, { ip });
 };
 

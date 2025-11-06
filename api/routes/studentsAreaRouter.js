@@ -8,6 +8,8 @@ studentsAreaRouter.put('/update-server-ip', StudentAreaController.updateFormFill
 studentsAreaRouter.delete('/delete-server-ip/:id', StudentAreaController.deleteFormFillingIP);
 
 studentsAreaRouter.post('/all-list', StudentAreaController.getAllStudentsList_1); // this is to get list from form filling server
+studentsAreaRouter.post('/v3/all-list', StudentAreaController.getAllStudentsList_3); // this is to get list from form filling server
+
 studentsAreaRouter.get('/all-list', StudentAreaController.getAllStudentsList_2); // this is to get list from local server
 
 studentsAreaRouter.get('/v2/all-list', StudentAreaController.getAllStudentsList_v2); // this is to get list from local server
