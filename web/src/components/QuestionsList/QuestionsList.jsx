@@ -26,6 +26,8 @@ import CModal from '../UI/CModal.jsx';
 import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
 import { TEST_LIST_MODE } from '../Utils/Constants.jsx';
 import './QuestionsList.css';
+import SelectAllQuestionBtn from './SelectAllQuestionBtn.jsx';
+import SelectRandomQuestion from './SelectRandomQuestion.jsx';
 
 const ALL_QUESTION = 'all-question';
 const SELECTED_QUESTION = 'selected-question';
@@ -123,7 +125,6 @@ function QuestionsList() {
         }
 
         dispatch(testsSliceActions.setSelectedQuestionsList(insertArray));
-        dispatch(testsSliceActions.updateTotalQuestionsCount());
     };
 
     const viewQuestionListChangeHandler = (type) => {
@@ -284,17 +285,20 @@ function QuestionsList() {
                         </div>
                     </div>
 
-                    <div className="container mx-auto flex justify-center gap-4 mt-5 sticky top-0">
+                    <div className="container mx-auto flex items-center justify-center gap-4 mt-5 sticky top-0">
                         <CButton
                             className={''}
                             onClick={viewQuestionListChangeHandler.bind(null, ALL_QUESTION)}>
-                            All Questions
+                            All Questions ( {temp_QuestionList.length} )
                         </CButton>
                         <CButton
                             className={'btn--danger'}
                             onClick={viewQuestionListChangeHandler.bind(null, SELECTED_QUESTION)}>
                             Question Paper ( {selectedQuestionsList.length} )
                         </CButton>
+
+                        <SelectAllQuestionBtn temp_QuestionList={temp_QuestionList} />
+                        <SelectRandomQuestion temp_QuestionList={temp_QuestionList} />
                     </div>
 
                     <div className="container mx-auto mt-6">
@@ -525,7 +529,6 @@ function SelectedQuestionPreview({ el, idx, topicHeader }) {
         let index = selectedQuestionsList.findIndex((_el) => _el.q_id == el.q_id);
         updatedList.splice(index, 1);
         dispatch(testsSliceActions.setSelectedQuestionsList(updatedList));
-        dispatch(testsSliceActions.updateTotalQuestionsCount());
     };
     return (
         <>
