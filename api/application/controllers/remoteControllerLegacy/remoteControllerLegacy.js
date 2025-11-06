@@ -41,6 +41,37 @@ const remoteControllerLegacy = {
         }
     }),
 
+    getNewExamListV2: asyncHandler(async (req, res) => {
+        console.log(req.body);
+        /**
+         * This API used to get exam list based on the date provided
+         * Exam panel will send which exams id it has already downloaded
+         * And also the exam date for which it wants the exam list
+         * eg req.body
+         * {
+         *     { exam_list: { exam_list: [ 9, 10, 11 ], examDate: '2025-11-06' } }
+         * }
+         */
+
+        try {
+            const data = req.body;
+            let _examsList = await remoteModelLegacy.getExamListV2(data);
+
+            if (_examsList.length == 0)
+                return res.status(400).json({
+                    call: 0,
+                    data: {},
+                });
+
+            return res.status(200).json({
+                call: 1,
+                data: _examsList,
+            });
+        } catch (error) {
+            console.log(error, '==error==');
+        }
+    }),
+
     downloadExam: asyncHandler(async (req, res) => {
         /**
          * This API used to download all exam details for the given published test id

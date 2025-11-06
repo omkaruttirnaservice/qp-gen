@@ -10,6 +10,7 @@ const remoteRouterLegacy = Router();
  */
 
 remoteRouterLegacy.post('/getNewExamList', remoteControllerLegacy.getTodaysExamList);
+remoteRouterLegacy.post('/v2/getNewExamList', remoteControllerLegacy.getNewExamListV2);
 remoteRouterLegacy.get('/DownloadExam/:ptId', remoteControllerLegacy.downloadExam);
 
 remoteRouterLegacy.get('/DownloadStudentBatch/:cc/:batch', remoteControllerLegacy.downloadStudent);
