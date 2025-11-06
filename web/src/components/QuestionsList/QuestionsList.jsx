@@ -216,7 +216,7 @@ function QuestionsList() {
                                     <FaGripLinesVertical />
                                     <p>Test Type</p>
                                     <FaAngleRight />
-                                    <span className="underline">{test.test_creation_type}</span>
+                                    <span className="underline">{test?.test_creation_type}</span>
                                 </div>
 
                                 <div className="flex items-center gap-1">
@@ -230,14 +230,14 @@ function QuestionsList() {
                                     <FaGripLinesVertical />
                                     <p>Test Duration</p>
                                     <FaAngleRight />
-                                    <span className="underline">{test.test_duration}</span>
+                                    <span className="underline">{test?.test_duration}</span>
                                 </div>
 
                                 <div className="flex items-center gap-1">
                                     <FaGripLinesVertical />
                                     <p>Marks Per Question</p>
                                     <FaAngleRight />
-                                    <span className="underline">{test.marks_per_question}</span>
+                                    <span className="underline">{test?.marks_per_question}</span>
                                 </div>
                             </div>
 
@@ -265,10 +265,7 @@ function QuestionsList() {
                             </div>
 
                             <div className="grid grid-cols-5 gap-3 ">
-                                <PostListDropdown
-                                    isShowAddNewBtn={false}
-                                    disabled={selectedQuestionsList.length >= 1}
-                                />
+                                <PostListDropdown isShowAddNewBtn={false} disabled={false} />
                                 <SubjectListDropdown isShowAddNewBtn={false} />
                                 <TopicListDropdown isShowAddNewBtn={false} />
 
@@ -276,7 +273,7 @@ function QuestionsList() {
                                     Search
                                 </CButton>
 
-                                {test.total_questions >= 1 && (
+                                {test?.total_questions >= 1 && (
                                     <CButton
                                         className={'btn--success w-fit h-fit self-end'}
                                         onClick={createExamHandler}>
@@ -377,7 +374,7 @@ function CreatePreSubmitView({ test, finalTestSubmitHandler }) {
                             Exam duration
                         </td>
                         <td className="border p-2" width="50%">
-                            {test.test_duration}
+                            {test?.test_duration}
                         </td>
                     </tr>
 
@@ -386,7 +383,7 @@ function CreatePreSubmitView({ test, finalTestSubmitHandler }) {
                             Marks per question
                         </td>
                         <td className="border p-2" width="50%">
-                            {test.marks_per_question}
+                            {test?.marks_per_question}
                         </td>
                     </tr>
 
@@ -395,12 +392,12 @@ function CreatePreSubmitView({ test, finalTestSubmitHandler }) {
                             Total questions
                         </td>
                         <td className="border p-2" width="50%">
-                            {test.total_questions}
+                            {test?.total_questions}
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <p>Note: Pleaes confirm the test details for creating test.</p>
+            <p>Note: Pleaes confirm the test details for creating test?.</p>
             <div className="flex justify-center mt-4">
                 <CButton isLoading={isLoading} onClick={finalTestSubmitHandler}>
                     Submit
