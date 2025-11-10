@@ -121,7 +121,7 @@ const remoteModelLegacy = {
 				mt_added_time,
 				ptl_link_1,
 				tm_allow_to,
-				ptl_test_mode,
+				IF(ptl_test_mode='EXAM',1,0) AS ptl_test_mode,
 				is_test_loaded,
 				is_student_added,
 				ptl_master_exam_id,

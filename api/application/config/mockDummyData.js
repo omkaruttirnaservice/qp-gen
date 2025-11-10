@@ -73,7 +73,7 @@ const mockDummyData = {
                 sl_mother_name: 'DEMO',
                 sl_address: 'DEMO Address',
                 sl_mobile_number_parents: '9999999999',
-                sl_tenth_marks: '-',
+                sl_tenth_marks: 0,
                 sl_contact_number: '9999999999',
                 sl_class: '-',
                 sl_roll_number: roll_n_id,

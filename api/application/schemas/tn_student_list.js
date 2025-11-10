@@ -51,8 +51,9 @@ const tn_student_list = sequelize.define(
             allowNull: true,
         },
         sl_tenth_marks: {
-            type: DataTypes.STRING(1024),
+            type: DataTypes.INTEGER,
             allowNull: true,
+            defaultValue: 0,
         },
         sl_contact_number: {
             type: DataTypes.STRING(1024),
@@ -84,7 +85,7 @@ const tn_student_list = sequelize.define(
             allowNull: true,
         },
         sl_date: {
-            type: DataTypes.DATE,
+            type: DataTypes.DATEONLY,
             allowNull: true,
         },
         sl_time_stamp: {

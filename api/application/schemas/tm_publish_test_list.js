@@ -164,9 +164,10 @@ const tm_publish_test_list = sequelize.define(
             defaultValue: 0,
         },
         ptl_test_mode: {
-            type: DataTypes.ENUM('MOCK', 'EXAM'),
+            type: DataTypes.ENUM('MOCK', 'EXAM', '1', '0'),
+            // type: DataTypes.ENUM('1', '0'),
             allowNull: false,
-            defaultValue: 'EXAM',
+            defaultValue: 'MOCK',
         },
         tm_allow_to: {
             type: DataTypes.INTEGER,
