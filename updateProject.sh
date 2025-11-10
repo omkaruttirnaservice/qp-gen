@@ -18,7 +18,7 @@ ssh dev-server-2 << EOF
     cd /var/www/ydcc-qp-de/de/web
     rm -r dist
 
-    cd /var/www/ydcc-qp-de/qp/web
+    cd /var/www/ydcc-qp-de/de/web
     npm run build
 
     pm2 restart api.ydcc.de.uttirna.in
