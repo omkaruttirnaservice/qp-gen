@@ -11,6 +11,8 @@ import tm_publish_test_list from '../application/schemas/tm_publish_test_list.js
 
 import tm_exam_to_question from '../application/schemas/tm_exam_to_question.js';
 import tn_student_list from '../application/schemas/tn_student_list.js';
+import tn_mock_student_list from '../application/schemas/tn_mock_student_list.js';
+
 import tn_center_list from '../application/schemas/tn_center_list.js';
 import aouth from '../application/schemas/aouth.js';
 

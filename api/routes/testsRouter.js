@@ -1,3 +1,4 @@
+import mockTestsController from '../application/controllers/mockTestsController.js';
 import testsController from '../application/controllers/testsController.js';
 
 import express from 'express';
@@ -30,12 +31,14 @@ testsRouter.post('/questions', testsController.getTestQuestionsList);
 // update test question
 testsRouter.put('/update-test-question', testsController.updateTestQuestion);
 
-// mock exam
-testsRouter.post('/create-mock', testsController.createMock);
+/**
+ * Following are mock exam routes
+ */
+testsRouter.post('/create-mock', mockTestsController.createMock);
 
 // save mock report This report will be push from exam panel
-testsRouter.post('/upload-mock-report', testsController.saveMockReport)
-testsRouter.get('/mock-test-report', testsController.getMockTestReport)
+testsRouter.post('/upload-mock-report', mockTestsController.saveMockReport)
+testsRouter.get('/mock-test-report', mockTestsController.getMockTestReport)
 
 
 

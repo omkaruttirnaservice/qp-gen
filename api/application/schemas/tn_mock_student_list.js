@@ -1,13 +1,13 @@
 import sequelize from '../config/db-connect-migration.js';
 import { studentTableColumns } from './studentTableColumns.js';
 
-const tn_student_list = sequelize.define(
-    'tn_student_list',
+const tn_mock_student_list = sequelize.define(
+    'tn_mock_student_list',
     studentTableColumns,
     {
-        tableName: 'tn_student_list',
+        tableName: 'tn_mock_student_list',
         timestamps: false,
     }
 );
 
-export default tn_student_list;
+export default tn_mock_student_list;
