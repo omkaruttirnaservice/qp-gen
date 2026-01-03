@@ -7,6 +7,7 @@ import { store } from './Store/redux-store.jsx';
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import axios from 'axios';
+axios.defaults.withCredentials = true;
 
 const axiosInstance = axios.create({
     baseUrl: 'http://129.23.4.1:3403/api/',

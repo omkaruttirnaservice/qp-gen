@@ -25,7 +25,9 @@ const useHttp = () => {
                     throw new Error('Not found');
                 } else {
                     const data = await res.json();
-                    throw new Error(data?.usrMsg || 'Request failed');
+                    throw new Error(
+                        data?.usrMsg || data?.message || data?.message || 'Request failed'
+                    );
                 }
             }
             const data = await res.json();

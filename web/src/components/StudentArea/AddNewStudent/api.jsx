@@ -31,7 +31,9 @@ export const deleteServerIP = async (id) => {
 };
 
 export const getServerIP = async () => {
-	let _res = await fetch(SERVER_IP + '/api/students-area/get-server-ip');
+	let _res = await fetch(SERVER_IP + '/api/students-area/get-server-ip', {
+		credentials: 'include',
+	});
 	if (!_res.ok) {
 		const errorData = await _res.json();
 		const error = new Error(errorData?.message || `Server error.`);

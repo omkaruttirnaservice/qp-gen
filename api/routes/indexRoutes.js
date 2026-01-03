@@ -12,18 +12,19 @@ import testsRouter from './testsRouter.js';
 
 import subjectRouter from './subjectRouter.js';
 import topicRouter from './topicRouter.js';
+import { authenticateJWT } from './authMiddleware.js';
 
-router.use('/topics', topicRouter);
-router.use('/subject', subjectRouter);
+router.use('/topics', authenticateJWT, topicRouter);
+router.use('/subject', authenticateJWT, subjectRouter);
 
-router.use('/questions', questionRoutes);
-router.use('/test', testsRouter);
+router.use('/questions', authenticateJWT, questionRoutes);
+router.use('/test', authenticateJWT, testsRouter);
 
-router.use('/posts', postsRoutes);
+router.use('/posts', authenticateJWT, postsRoutes);
 
-router.use('/students-area', studentsAreaRouter);
-router.use('/reports', reportsRouter);
-router.use('/exams', saveExamsRouter);
+router.use('/students-area', authenticateJWT, studentsAreaRouter);
+router.use('/reports', authenticateJWT, reportsRouter);
+router.use('/exams', authenticateJWT, saveExamsRouter);
 
 router.use('/remote', remoteRouter);
 router.use('/auth', authRoutes);

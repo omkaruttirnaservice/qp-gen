@@ -215,7 +215,9 @@ export const getPostListThunk = () => {
     return async (dispatch) => {
         try {
             dispatch(loaderActions.showLoader());
-            let response = await fetch(SERVER_IP + '/api/posts/list');
+            let response = await fetch(SERVER_IP + '/api/posts/list', {
+                credentials: 'include',
+            });
             console.log('getting post list');
             console.log(response);
             let { success, data } = await response.json();

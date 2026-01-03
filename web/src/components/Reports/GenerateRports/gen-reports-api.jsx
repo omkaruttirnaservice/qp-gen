@@ -1,6 +1,8 @@
 let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 export const getPublishedTestLists = async (ip) => {
-    let _res = await fetch(SERVER_IP + '/api/reports/get-published-tests');
+    let _res = await fetch(SERVER_IP + '/api/reports/get-published-tests', {
+        credentials: 'include',
+    });
     return _res.json();
 };
 
@@ -12,6 +14,7 @@ export const generateResult = async (props) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(props),
+        credentials: 'include',
     });
 
     return await _res.json();
@@ -22,6 +25,7 @@ export const getExamDates = async () => {
         headers: {
             'Content-Type': 'application/json',
         },
+        credentials: 'include',
     });
 
     if (!_res.ok) {
@@ -37,6 +41,7 @@ export const getResultBatchesList = async () => {
         headers: {
             'Content-Type': 'application/json',
         },
+        credentials: 'include',
     });
 
     if (!_res.ok) {
@@ -55,6 +60,7 @@ export const getResultViewData = async (viewResultBy) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(viewResultBy),
+        credentials: 'include',
     });
 
     if (!_res.ok) {
@@ -75,6 +81,7 @@ export const getResultExcel = async (testId) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ testId }),
+        credentials: 'include',
     });
     const _blob = await _res.blob();
     console.log(_blob, '==_blob==');
@@ -98,6 +105,7 @@ export const getCustomResultExcel = async (data) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
+        credentials: 'include',
     });
 
     if (!_res.ok) {
@@ -124,7 +132,10 @@ export const singleCandiatePaper = async ({ studentRollNumber, publishedTestId }
     console.log(publishedTestId, '==publishedTestId==');
 
     let _res = await fetch(
-        `${SERVER_IP}/api/exams/single-candidate-paper?stud_roll=${studentRollNumber}&pub_test_id=${publishedTestId}`
+        `${SERVER_IP}/api/exams/single-candidate-paper?stud_roll=${studentRollNumber}&pub_test_id=${publishedTestId}`,
+        {
+            credentials: 'include',
+        }
     );
     return await _res.json();
 };

@@ -13,36 +13,20 @@ const app = express();
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 
-// const allowedOrigins = [
-//     'http://localhost:5173',
-//     'http://localhost:3000',
-
-//     'https://qpgen.uttirna.in',
-//     'https://www.qpgen.uttirna.in',
-
-//     'https://qpgen105.uttirna.in',
-//     'https://www.qpgen105.uttirna.in',
-// ];
-
-// ✅ CORS setup with dynamic origin checking
+// CORS setup with dynamic origin checking
 const corsOptions = {
     origin: function (origin, callback) {
+        console.log(origin, '=origin');
         // Allow requests with no origin (like mobile apps, curl)
         if (!origin) return callback(null, true);
-        console.log(origin, 'origin');
-        if (origin.includes('uttirna.in') || origin.includes('localhost')) {
+
+        if (origin.includes('uttirna.in') || origin.includes('localhost') || origin.includes('192.168.1.5')) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
         }
-
-        // if (allowedOrigins.includes(origin)) {
-        //     callback(null, true);
-        // } else {
-        //     callback(new Error('Not allowed by CORS'));
-        // }
     },
-    credentials: true, // ✅ allow cookies or auth headers
+    credentials: true, // allow cookies or auth headers
 };
 
 app.use(cors(corsOptions));

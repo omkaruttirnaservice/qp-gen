@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import authModel from '../model/authModel.js';
 import { sendError, sendSuccess } from '../utils/commonFunctions.js';
+import { getPool, dbStore } from '../config/db.connect.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
@@ -8,45 +9,56 @@ const loginController = {
     login: async (req, res) => {
         console.log('login controller');
         try {
-            const { username, password } = req.body;
+            const { username, password, dbConfig } = req.body;
 
-            if (!username || !password) {
-                return sendError(res, 'Username and password required');
+            if (!username || !password || !dbConfig) {
+                throw new Error('Username, password and Database are required');
             }
 
-            const [result] = await authModel.checkUserCredentials(username, password);
+            const { poolPromise } = await getPool(dbConfig.dbServerId, dbConfig.dbName);
+            if (!poolPromise) {
+                throw new Error('Invalid Database Configuration');
+            }
 
-            if (result.length === 0) {
-                return sendError(res, 'Invalid username or password');
+            let result;
+
+            // Run authentication in the context of the selected DB
+            await dbStore.run({ pool: poolPromise }, async () => {
+                [result] = await authModel.checkUserCredentials(username, password);
+            });
+
+            if (!result || result.length === 0) {
+                throw new Error('Invalid username or password');
             }
 
             const user = result[0];
-            console.log({ user }, '===================');
             const token = jwt.sign(
                 {
                     id: user.userId,
                     username: user.username,
                     role: user.role,
+                    dbConfig,
                 },
                 JWT_SECRET,
                 { expiresIn: '7d' }
             );
 
             res.cookie('token', token, {
-                maxAge: 36000000,
                 httpOnly: true,
-                secure: true,
-                sameSite: 'Strict',
+                secure: false, // local dev
+                sameSite: 'lax', // now works
+                maxAge: 60 * 60 * 1000,
+                path: '/',
             });
-            // return sendSuccess(res, token);
+
             return sendSuccess(res, {
                 id: user.userId,
                 username: user.username,
                 role: user.role,
             });
         } catch (error) {
-            console.error(error);
-            return sendError(res, error);
+            console.log(error, '=message================');
+            return sendError(res, error?.message, error);
         }
     },
 };

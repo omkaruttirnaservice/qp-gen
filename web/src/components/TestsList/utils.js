@@ -23,6 +23,7 @@ export const validateTestKey = async (testKey) => {
             method: _req.method,
             headers: _req.headers,
             body: _req.body,
+            credentials: 'include',
         });
         let _data = await _res.json();
         return _data._success !== 2;
@@ -66,11 +67,9 @@ export const renderTopicHeader = (mainTopicName, subTopicSection) => {
     let header = null;
     if (subTopicSection !== lastSub) {
         lastSub = subTopicSection;
-        header = (
-            `<div className="bg-gradient-to-r from-green-200 to-green-400 text-gray-800 font-semibold py-2 px-4 rounded-t-md shadow-sm">
+        header = `<div className="bg-gradient-to-r from-green-200 to-green-400 text-gray-800 font-semibold py-2 px-4 rounded-t-md shadow-sm">
                 {mainTopicName} :: {subTopicSection}
-            </div>`
-        );
+            </div>`;
     }
     if (mainTopicName !== lastMainName) {
         lastMainName = mainTopicName;

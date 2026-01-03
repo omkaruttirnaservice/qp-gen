@@ -20,6 +20,7 @@ import AddNewStudent from './components/StudentArea/AddNewStudent/AddNewStudent.
 import StudentsList from './components/StudentArea/StudentsList/StudentsList.jsx';
 import TestQuestionsView from './components/TestsList/TestQuestionsView.jsx';
 import TestsList from './components/TestsList/TestsList.jsx';
+import { ToastContainer } from 'react-toastify';
 
 export const _router = createBrowserRouter([
     {
@@ -86,7 +87,12 @@ export const _router = createBrowserRouter([
     },
     {
         path: '/login',
-        element: <LoginPage />,
+        element: (
+            <>
+                <ToastContainer autoClose={2000} />
+                <LoginPage />
+            </>
+        ),
     },
     {
         path: '/logout',

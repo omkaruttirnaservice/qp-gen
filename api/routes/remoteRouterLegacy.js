@@ -17,6 +17,7 @@ remoteRouterLegacy.get('/DownloadStudentBatch/:cc/:batch', remoteControllerLegac
 
 /**
  * This will save the answers given by the student in the exam
+ * and the students who have given exam 
  * It will be called from the exam panel
  */
 remoteRouterLegacy.post('/saveUploadedExam', remoteControllerLegacy.saveExamData);
