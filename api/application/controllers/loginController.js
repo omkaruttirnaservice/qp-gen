@@ -15,7 +15,10 @@ const loginController = {
                 throw new Error('Username, password and Database are required');
             }
 
-            const { poolPromise } = await getPool(dbConfig.dbServerId, dbConfig.dbName);
+            const { poolPromise, sequelizeInstance } = await getPool(
+                dbConfig.dbServerId,
+                dbConfig.dbName
+            );
             if (!poolPromise) {
                 throw new Error('Invalid Database Configuration');
             }
@@ -23,9 +26,11 @@ const loginController = {
             let result;
 
             // Run authentication in the context of the selected DB
-            await dbStore.run({ pool: poolPromise }, async () => {
+            await dbStore.run({ pool: poolPromise, sequelizeInstance }, async () => {
                 [result] = await authModel.checkUserCredentials(username, password);
             });
+
+            console.log(result,'result================')
 
             if (!result || result.length === 0) {
                 throw new Error('Invalid username or password');

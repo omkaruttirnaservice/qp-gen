@@ -39,10 +39,10 @@ app.use(json({ limit: '1024mb' }));
 app.use(urlencoded({ extended: true, limit: '1024mb' }));
 app.use(cookieParser());
 
-sequelize
-    .authenticate()
-    .then()
-    .catch((err) => console.log(err, '==1=======database connection======================err=='));
+// sequelize
+//     .authenticate()
+//     .then()
+//     .catch((err) => console.log(err, '==1=======database connection======================err=='));
 
 app.get('/', (req, res) => {
     res.send('API is running....');

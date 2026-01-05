@@ -6,6 +6,8 @@ dotenv.config();
 
 const __poolsMap = new Map();
 
+import Sequelize from 'sequelize';
+
 export async function getPool(dbId, dbName) {
     if (!dbName || !dbName) return undefined;
 
@@ -14,10 +16,12 @@ export async function getPool(dbId, dbName) {
     }
 
     const poolKey = `${dbId}:${dbName}`;
+    console.log(poolKey, 'poolKey');
+    console.log(__poolsMap, '__poolsMap');
 
     if (__poolsMap.has(poolKey)) {
-        const pool = __poolsMap.get(poolKey);
-        return { pool, poolPromise: pool.promise() };
+        const cached = __poolsMap.get(poolKey);
+        return cached;
     }
 
     const cfg = databaseCredentialsMap[dbId];
@@ -32,10 +36,36 @@ export async function getPool(dbId, dbName) {
         queueLimit: 0,
     });
 
-    // await useDb(pool, dbName); // Not needed as createPool sets the DB
+    // Create Sequelize instance for this specific DB
+    const sequelizeInstance = new Sequelize(dbName, cfg.DB_USER, cfg.DB_PASSWORD, {
+        host: cfg.DB_HOST,
+        dialect: 'mysql',
+        logging: true,
+        define: {
+            freezeTableName: true,
+            charset: 'utf8mb4',
+            dialectOptions: {
+                collate: 'utf8mb4_0900_ai_ci',
+            },
+            timestamps: true,
+        },
+        timezone: '+05:30',
+    });
 
-    __poolsMap.set(poolKey, pool);
-    return { pool, poolPromise: pool.promise() };
+    console.log(sequelizeInstance, '============sequelizeInstance=============');
+    try {
+        await sequelizeInstance.authenticate();
+        console.log('Sequelize authenticate() success');
+    } catch (error) {
+        console.log('Sequelize authenticate() error');
+        console.log(error, 'authenticate()=error');
+    }
+
+    const result = { pool, poolPromise: pool.promise(), sequelizeInstance };
+    // const result = { sequelizeInstance };
+    __poolsMap.set(poolKey, result);
+
+    return result;
 }
 
 // async function useDb(pool, dbName) {
@@ -48,6 +78,7 @@ const dbProxy = new Proxy(
     {
         get(target, prop) {
             const store = dbStore.getStore();
+            console.log(store,'-store')
             if (store && store.pool) {
                 return Reflect.get(store.pool, prop);
             }

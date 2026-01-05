@@ -5,9 +5,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 export const authenticateJWT = (req, res, next) => {
     try {
-        console.log(req.cookies);
+        console.log(req.cookies, '-cookies');
         const authHeader = req.cookies.token;
-        console.log({ authHeader });
+        // console.log({ authHeader });
 
         if (!authHeader) {
             return res.status(403).json(sendError(res, null, 'Invalid token'));
@@ -21,15 +21,29 @@ export const authenticateJWT = (req, res, next) => {
 
             if (user.dbConfig) {
                 try {
-                    const { poolPromise } = await getPool(
+                    const { poolPromise, sequelizeInstance } = await getPool(
                         user.dbConfig.dbServerId,
                         user.dbConfig.dbName
                     );
+
+                    try {
+                        await sequelizeInstance.authenticate();
+                        console.log('Sequelize authenticate() success')
+                    } catch (error) {
+                        console.log('Sequelize authenticate() error');
+                        console.log(error, 'authenticate()=error');
+                    }
+
+                    // console.log(sequelizeInstance,'sequelizeInstance============')
                     if (poolPromise) {
                         req.db = poolPromise;
 
+                        // console.log(
+                        //     `[authenticateJWT] Setting DB Context: ${user.dbConfig.dbName}`
+                        // );
+
                         // Run next() within the context of the selected DB
-                        dbStore.run({ pool: poolPromise }, () => {
+                        dbStore.run({ pool: poolPromise, sequelizeInstance }, () => {
                             next();
                         });
                         return; // Ensure we don't call next() twice

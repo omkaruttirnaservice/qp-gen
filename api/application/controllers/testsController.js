@@ -11,8 +11,11 @@ const testsController = {
     getList: async (req, res) => {
         try {
             let _testsList = await testsModel.getList();
+            console.log(_testsList, 'testsList=');
+
             return sendSuccess(res, _testsList);
         } catch (error) {
+            console.log(error, 'error=');
             return sendError(res, error.message);
         }
     },
