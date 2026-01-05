@@ -1,35 +1,35 @@
 import { Sequelize } from 'sequelize';
-import sequelize from '../config/db-connect-migration.js';
+// import sequelize from '../config/db-connect-migration.js';
 import db from '../config/db.connect.js';
 import mockDummyData from '../config/mockDummyData.js';
 import { myDate } from '../config/utils.js';
-import tm_mega_question_set from '../schemas/tm_mega_question_set.js';
-import tm_publish_test_by_post from '../schemas/tm_publish_test_by_post.js';
-import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
-import tm_test_question_sets from '../schemas/tm_test_question_sets.js';
-import tm_test_user_master_list from '../schemas/tm_test_user_master_list.js';
-import tn_student_list from '../schemas/tn_student_list.js';
+// import tm_mega_question_set from '../schemas/tm_mega_question_set.js';
+// import tm_publish_test_by_post from '../schemas/tm_publish_test_by_post.js';
+// import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
+// import tm_test_question_sets from '../schemas/tm_test_question_sets.js';
+// import tm_test_user_master_list from '../schemas/tm_test_user_master_list.js';
+// import tn_student_list from '../schemas/tn_student_list.js';
 import { toYYYYMMDD } from '../utils/help.js';
 import { TEST_LIST_MODE } from '../config/constants.js';
 
 const testsModel = {
     getTestById: async (id, type) => {
         if (type == TEST_LIST_MODE.TEST_LIST) {
-            return tm_test_user_master_list.findOne({ where: { id: id }, raw: true });
+            return db.tm_test_user_master_list.findOne({ where: { id: id }, raw: true });
         }
         if (type == TEST_LIST_MODE.PUBLISHED_TEST_LIST) {
-            return tm_test_user_master_list.findOne({ where: { id: id }, raw: true });
+            return db.tm_test_user_master_list.findOne({ where: { id: id }, raw: true });
         }
     },
 
     getList: async () => {
-        return tm_test_user_master_list.findAll(
+        return db.tm_test_user_master_list.findAll(
             {
                 // prettier-ignore
                 attributes: [
 					'id',
 					'mt_name',
-					[sequelize.fn('DATE_FORMAT', sequelize.col('mt_added_date'), '%d-%m-%Y'), 'mt_added_date'],
+					[db.fn('DATE_FORMAT', db.col('mt_added_date'), '%d-%m-%Y'), 'mt_added_date'],
 					'mt_descp',
 					'mt_added_time',
 					'mt_is_live',
@@ -52,7 +52,7 @@ const testsModel = {
     },
 
     getPublishedList: async (type = 'EXAM') => {
-        return await sequelize.query(
+        return await db.query(
             `SELECT 
 				JSON_ARRAYAGG(
 					JSON_OBJECT(
@@ -101,7 +101,7 @@ const testsModel = {
 				is_test_generated,
 				post_id, post_name, published_test_id
 			FROM tm_publish_test_list
-
+ 
 			INNER JOIN
 				tm_publish_test_by_post
 			ON tm_publish_test_list.id = tm_publish_test_by_post.published_test_id
@@ -181,10 +181,10 @@ const testsModel = {
     },
 
     deleteTest: async (deleteId) => {
-        let transact = await sequelize.transaction();
+        let transact = await db.transaction();
         try {
-            await tm_test_user_master_list.destroy({ where: { id: +deleteId } });
-            await tm_test_question_sets.destroy({
+            await db.tm_test_user_master_list.destroy({ where: { id: +deleteId } });
+            await db.tm_test_question_sets.destroy({
                 where: { tqs_test_id: +deleteId },
             });
 
@@ -199,9 +199,9 @@ const testsModel = {
     },
 
     createTest: async (_t, _q) => {
-        let transact = await sequelize.transaction();
+        let transact = await db.transaction();
         try {
-            let _masterTest = await tm_test_user_master_list.create(
+            let _masterTest = await db.tm_test_user_master_list.create(
                 {
                     mt_name: _t.test_name,
                     mt_added_date: myDate.getDate(),
@@ -276,7 +276,7 @@ const testsModel = {
                     mqs_leval: _q.mqs_leval,
                 });
             });
-            await tm_test_question_sets.bulkCreate(questionsData, {
+            await db.tm_test_question_sets.bulkCreate(questionsData, {
                 transaction: transact,
             });
 
@@ -355,7 +355,7 @@ const testsModel = {
     },
 
     createMasterTest: async (_t) => {
-        return await tm_test_user_master_list.create({
+        return await db.tm_test_user_master_list.create({
             mt_name: _t.test_name,
             mt_added_date: myDate.getDate(),
             mt_descp: 'TEST',
@@ -428,7 +428,7 @@ const testsModel = {
             });
         });
         return questionsData;
-        // return await tm_test_question_sets.bulkCreate(questionsData);
+        // return await db.tm_test_question_sets.bulkCreate(questionsData);
     },
 
     saveExamQuestions: async (q, masterTestId, _t) => {
@@ -484,12 +484,12 @@ const testsModel = {
             });
         });
         console.log(questionsData, '====');
-        return await tm_test_question_sets.bulkCreate(questionsData);
+        return await db.tm_test_question_sets.bulkCreate(questionsData);
     },
 
     // _q?.mqs_ask_in_year.length > 0 ? _q.mqs_ask_in_year : null
     updateTestQueSelectionStatus: (id) => {
-        return tm_mega_question_set.update(
+        return db.tm_mega_question_set.update(
             {
                 is_que_selected_previously: 1,
             },
@@ -503,7 +503,7 @@ const testsModel = {
 
     // tests key
     checkForDuplicateTestKey: (testKey) => {
-        return tm_publish_test_list.findAll({
+        return db.tm_publish_test_list.findAll({
             where: {
                 ptl_link_1: testKey,
             },
@@ -588,10 +588,10 @@ const testsModel = {
 
         console.log(insertData, 'insertData for publish exam');
 
-        let trans = await sequelize.transaction();
+        let trans = await db.transaction();
 
         try {
-            let _publishTestInsert = await tm_publish_test_list.create(insertData, {
+            let _publishTestInsert = await db.tm_publish_test_list.create(insertData, {
                 transaction: trans,
             });
 
@@ -606,7 +606,9 @@ const testsModel = {
             console.log(postTestMappingList, '==postTestMappingList==');
 
             // map published test id with post in new table
-            await tm_publish_test_by_post.bulkCreate(postTestMappingList);
+            await db.tm_publish_test_by_post.bulkCreate(postTestMappingList, {
+                transaction: trans,
+            });
 
             await trans.commit();
 
@@ -617,7 +619,7 @@ const testsModel = {
     },
 
     unpublishTest: async (id) => {
-        return tm_publish_test_list.destroy({
+        return db.tm_publish_test_list.destroy({
             where: {
                 id: id,
             },
@@ -627,7 +629,7 @@ const testsModel = {
     // getting test questions list
 
     getTestQuestionsList: async (testId) => {
-        return tm_test_question_sets.findAll({
+        return db.tm_test_question_sets.findAll({
             where: { tqs_test_id: testId },
             attributes: [
                 'id',
@@ -688,9 +690,9 @@ const testsModel = {
 
     // update test question
     updateTestQuestion: async (data) => {
-        let trans = await sequelize.transaction();
+        let trans = await db.transaction();
         try {
-            let _updateRes = tm_test_question_sets.update(
+            let _updateRes = db.tm_test_question_sets.update(
                 {
                     q: data.question_content,
                     q_a: data.option_A,
@@ -723,9 +725,9 @@ const testsModel = {
     },
 
     updateMegaTestQuestion: async (data) => {
-        let trans = await sequelize.transaction();
+        let trans = await db.transaction();
         try {
-            let _updateRes = tm_mega_question_set.update(
+            let _updateRes = db.tm_mega_question_set.update(
                 {
                     mqs_question: data.question_content,
                     mqs_opt_one: data.option_A,
@@ -761,7 +763,7 @@ const testsModel = {
 
         console.log(d, '-mock test data');
 
-        return await tm_publish_test_list.create({
+        return await db.tm_publish_test_list.create({
             ptl_active_date: d.ptl_active_date,
             ptl_time: d.ptl_time,
             ptl_link: d.ptl_link,
@@ -816,7 +818,7 @@ const testsModel = {
     },
 
     publishTestByPost: async (testData) => {
-        return await tm_publish_test_by_post.create({
+        return await db.tm_publish_test_by_post.create({
             post_id: 1,
             post_name: testData.post_name,
             published_test_id: testData.published_test_id,
@@ -839,7 +841,7 @@ const testsModel = {
     },
 
     getPublishedTestById: async function (ptid) {
-        return await tm_publish_test_list.findOne({ where: { id: ptid }, raw: true });
+        return await db.tm_publish_test_list.findOne({ where: { id: ptid }, raw: true });
     },
 
     removeDuplicateTestData: async function (duplicateTestDetails) {
@@ -882,13 +884,13 @@ const testsModel = {
     generateMockStudents: async (testData) => {
         let students = mockDummyData.studentDummyData(testData);
 
-        return await tn_student_list.bulkCreate(students);
+        return await db.tn_student_list.bulkCreate(students);
     },
 
     generateMockquestions: async (testData) => {
         const questions = mockDummyData.getDummyQuestion(testData);
 
-        return await tm_test_question_sets.bulkCreate(questions);
+        return await db.tm_test_question_sets.bulkCreate(questions);
     },
 
     getMockExamReport: async (testDetails) => {
@@ -910,7 +912,7 @@ const testsModel = {
 
                     WHERE sl.sl_exam_date = '${testDetails.ptl_active_date}'
                     AND sl.sl_center_code = ${testDetails.center_code}`;
-        return sequelize.query(q, {
+        return db.query(q, {
             type: Sequelize.QueryTypes.SELECT,
         });
     },

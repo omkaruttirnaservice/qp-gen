@@ -7,18 +7,16 @@ dotenv.config();
 const __poolsMap = new Map();
 
 import Sequelize from 'sequelize';
+import { registerModels } from './modelLoader.js';
 
 export async function getPool(dbId, dbName) {
-    if (!dbName || !dbName) return undefined;
+    if (!dbId || !dbName) return undefined;
 
     if (!databaseCredentialsMap[dbId]) {
         throw new Error(`Unknown DB id: ${dbId}`);
     }
 
     const poolKey = `${dbId}:${dbName}`;
-    console.log(poolKey, 'poolKey');
-    console.log(__poolsMap, '__poolsMap');
-
     if (__poolsMap.has(poolKey)) {
         const cached = __poolsMap.get(poolKey);
         return cached;
@@ -52,25 +50,24 @@ export async function getPool(dbId, dbName) {
         timezone: '+05:30',
     });
 
-    console.log(sequelizeInstance, '============sequelizeInstance=============');
+    console.log('============Initializing SeqInstance Models=============');
     try {
         await sequelizeInstance.authenticate();
         console.log('Sequelize authenticate() success');
+
+        // Register all models on this instance
+        registerModels(sequelizeInstance);
+        console.log('Models registered on dynamic instance');
     } catch (error) {
-        console.log('Sequelize authenticate() error');
+        console.log('Sequelize authenticate() or registration error');
         console.log(error, 'authenticate()=error');
     }
 
     const result = { pool, poolPromise: pool.promise(), sequelizeInstance };
-    // const result = { sequelizeInstance };
     __poolsMap.set(poolKey, result);
 
     return result;
 }
-
-// async function useDb(pool, dbName) {
-//     await pool.promise().query(`USE ${dbName}`);
-// }
 
 export const dbStore = new AsyncLocalStorage();
 const dbProxy = new Proxy(
@@ -78,11 +75,32 @@ const dbProxy = new Proxy(
     {
         get(target, prop) {
             const store = dbStore.getStore();
-            console.log(store,'-store')
-            if (store && store.pool) {
-                return Reflect.get(store.pool, prop);
+            if (!store) {
+                throw new Error(
+                    'No database connection available. Please login to select a database.'
+                );
             }
-            throw new Error('No database connection available. Please login to select a database.');
+
+            const { pool, sequelizeInstance } = store;
+
+            // 1. Check if looking for a Sequelize model by name
+            if (sequelizeInstance && sequelizeInstance.models[prop]) {
+                return sequelizeInstance.models[prop];
+            }
+
+            // 2. Try to get property from pool (mysql2)
+            if (pool && prop in pool) {
+                const value = Reflect.get(pool, prop);
+                return typeof value === 'function' ? value.bind(pool) : value;
+            }
+
+            // 3. Fallback to sequelizeInstance methods
+            if (sequelizeInstance && prop in sequelizeInstance) {
+                const value = Reflect.get(sequelizeInstance, prop);
+                return typeof value === 'function' ? value.bind(sequelizeInstance) : value;
+            }
+
+            return undefined;
         },
     }
 );

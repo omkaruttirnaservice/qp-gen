@@ -1,6 +1,6 @@
-import sequelize from '../config/db-connect-migration.js';
-import aouth from '../schemas/aouth.js';
-import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
+import db from '../config/db.connect.js';
+// import aouth from '../schemas/aouth.js';
+// import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
 
 export const DATES_LIST = 'dates';
 export const BATCH_LIST = 'batchs';
@@ -14,7 +14,7 @@ const reportsModel = {
 					DATE_FORMAT(sl_exam_date,'%d-%m-%Y') as sl_exam_date  
 				FROM tn_student_list 
 				GROUP BY sl_exam_date`;
-            return await sequelize.query(q);
+            return await db.query(q);
         }
 
         if (type === BATCH_LIST) {
@@ -22,7 +22,7 @@ const reportsModel = {
 					sl_batch_no 
 				FROM tn_student_list 
 				GROUP BY sl_batch_no`;
-            return await sequelize.query(q);
+            return await db.query(q);
         }
 
         if (type === POST_LIST) {
@@ -30,7 +30,7 @@ const reportsModel = {
 					sl_post
 				FROM tn_student_list 
 				GROUP BY sl_post`;
-            return await sequelize.query(q);
+            return await db.query(q);
         }
     },
 
@@ -107,13 +107,13 @@ const reportsModel = {
 				`;
         }
 
-        console.log(q,'=q');
+        console.log(q, '=q');
 
-        return await sequelize.query(q);
+        return await db.query(q);
     },
 
     getExamServerIP: async () => {
-        return await aouth.findOne({
+        return await db.aouth.findOne({
             attributes: ['exam_server_ip'],
             where: {
                 id: 1,
@@ -123,11 +123,11 @@ const reportsModel = {
     },
 
     saveExamServerIP: async (ip) => {
-        return await aouth.update({ exam_server_ip: ip }, { where: { id: 1 } });
+        return await db.aouth.update({ exam_server_ip: ip }, { where: { id: 1 } });
     },
 
     getPublishedTests: async () => {
-        return await tm_publish_test_list.findAll({ raw: true });
+        return await db.tm_publish_test_list.findAll({ raw: true });
     },
 
     generateResult: async (publishedTestId, transact) => {
@@ -195,7 +195,7 @@ const reportsModel = {
                  ) as main_result
                 GROUP BY main_result.student_id`;
 
-        return await sequelize.query(query, { transaction: transact });
+        return await db.query(query, { transaction: transact });
     },
 
     deleteResultsData: async () => {
@@ -208,7 +208,7 @@ const reportsModel = {
 							set_1.id < set_2.id AND (
 							set_1.sfrs_publish_id = set_2.sfrs_publish_id
 							AND set_1.sfrs_student_id = set_2.sfrs_student_id )`;
-        return await sequelize.query(query);
+        return await db.query(query);
     },
 
     getTestDetails: async (testId) => {
@@ -221,7 +221,7 @@ const reportsModel = {
 					tm_master_test_list as post_list 
 				ON test.mt_pattern_type = post_list.id
 				WHERE test.id = ${testId} LIMIT 1`;
-        return await sequelize.query(q);
+        return await db.query(q);
     },
 
     getTestReportsForExcel: async (testId) => {
@@ -256,7 +256,7 @@ const reportsModel = {
                          main_test_list.id = ${testId}
                           GROUP BY student_paper.sfrs_student_id
                         ORDER BY roll_number`;
-        return await sequelize.query(q);
+        return await db.query(q);
     },
 
     updatePercentileResult: async (data) => {
@@ -273,7 +273,7 @@ const reportsModel = {
         q += ` END `;
         q += ` WHERE sfrs_student_id IN (${[...ids]})`;
 
-        return await sequelize.query(q);
+        return await db.query(q);
     },
 };
 

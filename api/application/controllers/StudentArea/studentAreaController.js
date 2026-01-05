@@ -2,7 +2,8 @@ import Joi from 'joi';
 import extractZip from 'extract-zip';
 import fs from 'fs';
 import path from 'path';
-import sequelize from '../../config/db-connect-migration.js';
+// import sequelize from '../../config/db-connect-migration.js';
+import db from '../../config/db.connect.js';
 import studentAreaModel from '../../model/studentAreaModel.js';
 import ApiError from '../../utils/ApiError.js';
 import ApiResponse from '../../utils/ApiResponse.js';
@@ -56,7 +57,7 @@ const StudentAreaController = {
     }),
 
     getAllStudentsList_1: async (req, res, next) => {
-        let transact = await sequelize.transaction();
+        let transact = await db.transaction();
         try {
             let { ip } = req.body;
 
@@ -153,7 +154,7 @@ const StudentAreaController = {
          * This is version 3 of the API to get students list from form filling server
          * It will download students list and before saving it will delete existing students with same roll numbers
          */
-        let transact = await sequelize.transaction();
+        let transact = await db.transaction();
         try {
             let { ip } = req.body;
 

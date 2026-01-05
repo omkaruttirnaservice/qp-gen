@@ -1,25 +1,24 @@
-import { Op, Sequelize } from 'sequelize';
-import sequelize from '../config/db-connect-migration.js';
-import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
-import tm_server_ip_list from '../schemas/tm_server_ip_list.js';
-import tm_student_question_paper from '../schemas/tm_student_question_paper.js';
-import tm_test_question_sets from '../schemas/tm_test_question_sets.js';
-import tn_center_list from '../schemas/tn_center_list.js';
-import tn_student_list from '../schemas/tn_student_list.js';
+import db from '../config/db.connect.js';
+// import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
+// import tm_server_ip_list from '../schemas/tm_server_ip_list.js';
+// import tm_student_question_paper from '../schemas/tm_student_question_paper.js';
+// import tm_test_question_sets from '../schemas/tm_test_question_sets.js';
+// import tn_center_list from '../schemas/tn_center_list.js';
+// import tn_student_list from '../schemas/tn_student_list.js';
 import ApiError from '../utils/ApiError.js';
 
 const studentAreaModel = {
     getServerIP: async () => {
-        return tm_server_ip_list.findAll({ raw: true });
+        return db.tm_server_ip_list.findAll({ raw: true });
     },
     addFormFillingIP: ({ form_filling_server_ip, exam_panel_server_ip }) => {
-        return tm_server_ip_list.create({
+        return db.tm_server_ip_list.create({
             form_filling_server_ip,
             exam_panel_server_ip,
         });
     },
     updateFormFillingIP: ({ form_filling_server_ip, exam_panel_server_ip }, id) => {
-        return tm_server_ip_list.update(
+        return db.tm_server_ip_list.update(
             {
                 form_filling_server_ip,
                 exam_panel_server_ip,
@@ -33,7 +32,7 @@ const studentAreaModel = {
     },
 
     deleteFormFillingIP: (id) => {
-        return tm_server_ip_list.destroy({
+        return db.tm_server_ip_list.destroy({
             where: {
                 id: id,
             },
@@ -43,10 +42,10 @@ const studentAreaModel = {
     deleteAllExsistingStudentsList: async (_data, transact) => {
         try {
             const deleteIds = _data.map((item) => item.id);
-            return await tn_student_list.destroy({
+            return await db.tn_student_list.destroy({
                 where: {
                     id: {
-                        [Op.in]: deleteIds,
+                        [db.Op.in]: deleteIds,
                     },
                 },
             });
@@ -57,7 +56,7 @@ const studentAreaModel = {
 
     saveAllStudentsList: (_data, transact) => {
         try {
-            return tn_student_list.bulkCreate(_data, { transaction: transact });
+            return db.tn_student_list.bulkCreate(_data, { transaction: transact });
         } catch (error) {
             throw new ApiError(500, error?.message || 'Something went wrong');
         }
@@ -65,7 +64,7 @@ const studentAreaModel = {
 
     getAllStudentsList_2: () => {
         try {
-            return tn_student_list.findAll(
+            return db.tn_student_list.findAll(
                 {
                     attributes: [
                         'id',
@@ -92,11 +91,7 @@ const studentAreaModel = {
                         'sl_added_by_login_id',
                         'sl_is_live',
                         [
-                            Sequelize.fn(
-                                'DATE_FORMAT',
-                                Sequelize.col('sl_date_of_birth'),
-                                '%d-%m-%Y'
-                            ),
+                            db.fn('DATE_FORMAT', db.col('sl_date_of_birth'), '%d-%m-%Y'),
                             'sl_date_of_birth',
                         ],
                         'sl_school_name',
@@ -160,7 +155,7 @@ const studentAreaModel = {
 			`;
             console.log(candidateListQuery);
 
-            const [candidateList] = await sequelize.query(candidateListQuery);
+            const [candidateList] = await db.query(candidateListQuery);
             returnData['candidateList'] = candidateList?.length > 0 ? candidateList : [];
 
             let paginationDataQuery = `SELECT
@@ -176,7 +171,7 @@ const studentAreaModel = {
             tn_student_list sl
 			${where}
             `;
-            const [pagination] = await sequelize.query(paginationDataQuery);
+            const [pagination] = await db.query(paginationDataQuery);
             returnData['pagination'] = pagination[0].pagination.pagination;
 
             return returnData;
@@ -199,13 +194,13 @@ const studentAreaModel = {
 				INNER JOIN tn_center_list cl
 				ON sl.sl_center_code = cl.cl_number `;
 
-        const [filters] = await sequelize.query(q);
+        const [filters] = await db.query(q);
         return filters;
     },
 
     getStudentsListByFilter: async (data) => {
         try {
-            let _result = await tn_student_list.findAll({
+            let _result = await db.tn_student_list.findAll({
                 attributes: [
                     'id',
                     'sl_f_name',
@@ -231,7 +226,7 @@ const studentAreaModel = {
                     'sl_added_by_login_id',
                     'sl_is_live',
                     [
-                        Sequelize.fn('DATE_FORMAT', Sequelize.col('sl_date_of_birth'), '%d-%m-%Y'),
+                        db.fn('DATE_FORMAT', db.col('sl_date_of_birth'), '%d-%m-%Y'),
                         'sl_date_of_birth',
                     ],
                     'sl_school_name',
@@ -261,7 +256,7 @@ const studentAreaModel = {
 
     deleteCentersListOld: () => {
         try {
-            return tn_center_list.destroy({
+            return db.tn_center_list.destroy({
                 truncate: true,
             });
         } catch (error) {
@@ -271,7 +266,7 @@ const studentAreaModel = {
 
     saveCentersList: (centersList) => {
         try {
-            return tn_center_list.bulkCreate(centersList);
+            return db.tn_center_list.bulkCreate(centersList);
         } catch (error) {
             throw new ApiError(500, error?.message || 'Something went wrong');
         }
@@ -279,7 +274,7 @@ const studentAreaModel = {
 
     getCentersList: async () => {
         try {
-            const result = await tn_center_list.findAll({
+            const result = await db.tn_center_list.findAll({
                 group: ['cl_number'],
                 raw: true,
             });
@@ -291,7 +286,7 @@ const studentAreaModel = {
 
     getBatchList: async () => {
         try {
-            const results = await tn_student_list.findAll({
+            const results = await db.tn_student_list.findAll({
                 attributes: ['sl_batch_no'],
                 group: ['sl_batch_no'],
                 order: [['sl_batch_no', 'ASC']],
@@ -305,7 +300,7 @@ const studentAreaModel = {
     },
     getPostsList: async () => {
         try {
-            const _results = await tn_student_list.findAll({
+            const _results = await db.tn_student_list.findAll({
                 attributes: ['sl_post'],
                 group: ['sl_post'],
                 raw: true,
@@ -319,7 +314,7 @@ const studentAreaModel = {
     // save downlaoded students question paper from exam panel
     saveStudentQuestionPaper: async (questionPapers) => {
         try {
-            const result = tm_student_question_paper.bulkCreate(questionPapers);
+            const result = db.tm_student_question_paper.bulkCreate(questionPapers);
             return result;
         } catch (error) {
             throw new ApiError(500, error?.message || 'Server errror.');
@@ -329,7 +324,7 @@ const studentAreaModel = {
     // get individual published test details
     getPublishedTestById: async (id) => {
         try {
-            const result = tm_publish_test_list.findAll({
+            const result = db.tm_publish_test_list.findAll({
                 where: {
                     id,
                 },
@@ -345,7 +340,7 @@ const studentAreaModel = {
     // get individual question paper by published test id
     getQuestionPaperByPublishedTestId: async (test_id) => {
         try {
-            const result = tm_test_question_sets.findAll({
+            const result = db.tm_test_question_sets.findAll({
                 where: {
                     tqs_test_id: test_id,
                 },
