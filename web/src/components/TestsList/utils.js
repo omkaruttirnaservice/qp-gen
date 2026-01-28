@@ -67,9 +67,12 @@ export const renderTopicHeader = (mainTopicName, subTopicSection) => {
     let header = null;
     if (subTopicSection !== lastSub) {
         lastSub = subTopicSection;
-        header = `<div className="bg-gradient-to-r from-green-200 to-green-400 text-gray-800 font-semibold py-2 px-4 rounded-t-md shadow-sm">
-                {mainTopicName} :: {subTopicSection}
-            </div>`;
+
+        header = `${mainTopicName} :: ${subTopicSection}`;
+
+        // header = `<div className="bg-gradient-to-r from-green-200 to-green-400 text-gray-800 font-semibold py-2 px-4 rounded-t-md shadow-sm">
+        //         ${mainTopicName} :: ${subTopicSection}
+        //     </div>`;
     }
     if (mainTopicName !== lastMainName) {
         lastMainName = mainTopicName;

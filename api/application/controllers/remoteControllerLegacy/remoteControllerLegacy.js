@@ -1,15 +1,17 @@
 import { Sequelize } from 'sequelize';
 import sequelize from '../../config/db-connect-migration.js';
 import remoteModelLegacy from '../../model/remoteModelLegacy.js';
-import tm_publish_test_by_post from '../../schemas/tm_publish_test_by_post.js';
-import tm_publish_test_list from '../../schemas/tm_publish_test_list.js';
-import tm_student_question_paper from '../../schemas/tm_student_question_paper.js';
-import tm_student_test_list from '../../schemas/tm_student_test_list.js';
-import tm_test_question_sets from '../../schemas/tm_test_question_sets.js';
-import tn_center_list from '../../schemas/tn_center_list.js';
-import tn_student_list from '../../schemas/tn_student_list.js';
+// import tm_publish_test_by_post from '../../schemas/tm_publish_test_by_post.js';
+// import tm_publish_test_list from '../../schemas/tm_publish_test_list.js';
+// import tm_student_question_paper from '../../schemas/tm_student_question_paper.js';
+// import tm_student_test_list from '../../schemas/tm_student_test_list.js';
+// import tm_test_question_sets from '../../schemas/tm_test_question_sets.js';
+// import tn_center_list from '../../schemas/tn_center_list.js';
+// import tn_student_list from '../../schemas/tn_student_list.js';
 import ApiError from '../../utils/ApiError.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
+
+import db from '../../config/db.connect.js';
 
 const remoteControllerLegacy = {
     getTodaysExamList: asyncHandler(async (req, res) => {
@@ -89,7 +91,7 @@ const remoteControllerLegacy = {
             if (!ptId) throw new ApiError(400, 'Exam id required');
 
             // gettting test information
-            const exam_info = await tm_publish_test_list.findAll({
+            const exam_info = await db.tm_publish_test_list.findAll({
                 attributes: [
                     ['id', 'id'],
                     ['ptl_active_date', 'ptl_active_date'],
@@ -203,7 +205,7 @@ const remoteControllerLegacy = {
             const ptl_test_id = exam_info[0].ptl_test_id;
 
             // get post list for the published test
-            const _postsList = await tm_publish_test_by_post.findAll({
+            const _postsList = await db.tm_publish_test_by_post.findAll({
                 where: {
                     published_test_id: ptId,
                 },
@@ -211,7 +213,7 @@ const remoteControllerLegacy = {
             });
 
             // getting question paper
-            let question_paper = await tm_test_question_sets.findAll({
+            let question_paper = await db.tm_test_question_sets.findAll({
                 where: {
                     tqs_test_id: ptl_test_id,
                 },
@@ -250,7 +252,7 @@ const remoteControllerLegacy = {
          */
 
         const { cc, batch } = req.params;
-        const _studentsList = await tn_student_list.findAll({
+        const _studentsList = await db.tn_student_list.findAll({
             where: {
                 sl_center_code: cc,
                 sl_batch_no: batch,
@@ -284,10 +286,10 @@ const remoteControllerLegacy = {
         let transact = await sequelize.transaction();
 
         try {
-            await tm_student_test_list.bulkCreate(student_list, {
+            await db.tm_student_test_list.bulkCreate(student_list, {
                 transaction: transact,
             });
-            await tm_student_question_paper.bulkCreate(exam_paper, {
+            await db.tm_student_question_paper.bulkCreate(exam_paper, {
                 transaction: transact,
             });
             await transact.commit();
@@ -316,7 +318,7 @@ const remoteControllerLegacy = {
         const centerCode = req.params.centerCode;
         console.log(centerCode, 'centerCode');
 
-        const centerDetails = await tn_center_list.findOne({
+        const centerDetails = await db.tn_center_list.findOne({
             where: {
                 cl_number: centerCode,
             },

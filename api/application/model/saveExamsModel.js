@@ -1,8 +1,10 @@
-import sequelize from '../config/db-connect-migration.js';
+// import sequelize from '../config/db-connect-migration.js';
+
+import db from '../config/db.connect.js';
 
 const saveExamsModel = {
-	getStudentExamReportDetails: ({ stud_roll, pub_test_id }) => {
-		let q = `
+    getStudentExamReportDetails: ({ stud_roll, pub_test_id }) => {
+        let q = `
         SELECT 
         *,
         DATE_FORMAT(sl.sl_date_of_birth, '%d-%m-%Y') AS sl_date_of_birth,
@@ -22,11 +24,11 @@ const saveExamsModel = {
             sfrs.sfrs_student_id = ${stud_roll}
         ;`;
 
-		return sequelize.query(q);
-	},
+        return db.query(q);
+    },
 
-	getStudentQuestionPaper: ({ stud_roll, pub_test_id }) => {
-		let q = `
+    getStudentQuestionPaper: ({ stud_roll, pub_test_id }) => {
+        let q = `
         SELECT * 
         FROM 
             tm_student_question_paper sqp
@@ -40,7 +42,7 @@ const saveExamsModel = {
             sqp.sqp_publish_id = ${+pub_test_id}
         
         `;
-		return sequelize.query(q);
-	},
+        return db.query(q);
+    },
 };
 export default saveExamsModel;

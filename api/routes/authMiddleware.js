@@ -5,9 +5,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 export const authenticateJWT = (req, res, next) => {
     try {
-        console.log(req.cookies, '-cookies');
-        const authHeader = req.cookies.token;
-        // console.log({ authHeader });
+        const authHeader = req.cookies.token || req.headers.authorization;
 
         if (!authHeader) {
             return res.status(403).json(sendError(res, null, 'Invalid token'));
@@ -16,9 +14,15 @@ export const authenticateJWT = (req, res, next) => {
         const token = authHeader.replace('Bearer ', '');
 
         jwt.verify(token, JWT_SECRET, async (err, user) => {
-            if (err) return res.status(403).json(sendError(res, err, 'Invalid token'));
+            if (err) {
+                console.log(err,'=err authmiddleware');
+                return res.status(403).json(sendError(res, err, 'Invalid token'));
+
+            } 
+
             req.user = user;
 
+            console.log(req.user, '=req.user in authMiddleware=================');
             if (user.dbConfig) {
                 try {
                     const { poolPromise, sequelizeInstance } = await getPool(
@@ -28,7 +32,7 @@ export const authenticateJWT = (req, res, next) => {
 
                     try {
                         await sequelizeInstance.authenticate();
-                        console.log('Sequelize authenticate() success')
+                        console.log('Sequelize authenticate() success');
                     } catch (error) {
                         console.log('Sequelize authenticate() error');
                         console.log(error, 'authenticate()=error');

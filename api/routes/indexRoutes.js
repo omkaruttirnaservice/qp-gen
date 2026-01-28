@@ -13,12 +13,6 @@ import testsRouter from './testsRouter.js';
 import subjectRouter from './subjectRouter.js';
 import topicRouter from './topicRouter.js';
 import { authenticateJWT } from './authMiddleware.js';
-import { getPool } from '../application/config/db.connect.js';
-
-router.get('/getPool', async (req, res) => {
-    const pool = await getPool('DEV_DB_SERVER_1', '_debug_utr_question_paper_uttirna');
-    console.log(pool,'=pool')
-});
 
 router.use('/topics', authenticateJWT, topicRouter);
 router.use('/subject', authenticateJWT, subjectRouter);
@@ -32,7 +26,7 @@ router.use('/students-area', authenticateJWT, studentsAreaRouter);
 router.use('/reports', authenticateJWT, reportsRouter);
 router.use('/exams', authenticateJWT, saveExamsRouter);
 
-router.use('/remote', remoteRouter);
+router.use('/remote', authenticateJWT, remoteRouter);
 router.use('/auth', authRoutes);
 
 export default router;

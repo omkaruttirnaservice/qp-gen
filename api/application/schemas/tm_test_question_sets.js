@@ -18,7 +18,7 @@ const tm_test_question_sets = sequelize.define(
         q_b: { type: Sequelize.TEXT('long') },
         q_c: { type: Sequelize.TEXT('long') },
         q_d: { type: Sequelize.TEXT('long') },
-        q_e: { type: Sequelize.TEXT('long') },
+        q_e: { type: Sequelize.TEXT('long'), defaultValue: '' },
         q_display_type: { type: Sequelize.INTEGER, defaultValue: 1 },
         q_ask_in: { type: Sequelize.TEXT('long') },
         q_data_type: { type: Sequelize.INTEGER() },
@@ -54,7 +54,7 @@ const tm_test_question_sets = sequelize.define(
     },
     {
         timestamps: false,
-    }
+    },
 );
 
 export default tm_test_question_sets;

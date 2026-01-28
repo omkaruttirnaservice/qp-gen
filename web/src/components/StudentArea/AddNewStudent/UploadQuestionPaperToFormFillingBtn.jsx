@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { ModalActions } from '../../../Store/modal-slice';
 import CButton from '../../UI/CButton';
 import CModal from '../../UI/CModal';
-import { getPublishedTestList, uploadPublishedTestToFormFilling } from './api';
+import { getPublishedTestList, uploadPresentStudentsToFormFilling, uploadPublishedTestToFormFilling } from './api';
 
 function UploadQuestionPaperToFormFillingBtn({ _el }) {
     const dispatch = useDispatch();
@@ -61,6 +61,33 @@ function UploadQuestionPaperToFormFillingBtn({ _el }) {
         });
     };
 
+    const uploadPresentStudentsToFormFillingMutation = useMutation({
+        mutationFn: uploadPresentStudentsToFormFilling,
+        onSuccess: (data) => {
+            console.log(data?.data?.message || 'Successful.', '==data==');
+            toast.success(data?.data?.message || 'Successful.');
+        },
+        onError: (error) => {
+            const er = error?.response?.data?.message || 'Server error.';
+            toast.warn(er);
+        },
+    });
+
+    const handleUploadPresentStudentsToFormFilling = ({ published_test_id, ip_details }) => {
+        if (!published_test_id) {
+            toast.warn('Invalid published test id.');
+            return;
+        }
+        if (!ip_details) {
+            toast.warn('Invalid ip details.');
+            return;
+        }
+        uploadPresentStudentsToFormFillingMutation.mutate({
+            _published_test_id: published_test_id,
+            _ip_details: ip_details,
+        });
+    };
+
     return (
         <>
             <CButton
@@ -68,7 +95,7 @@ function UploadQuestionPaperToFormFillingBtn({ _el }) {
                 type="button"
                 onClick={handleUploadQuestionPaperToFormFilling.bind(
                     null,
-                    _el.exam_panel_server_ip
+                    _el.exam_panel_server_ip,
                 )}
                 isLoading={false}>
                 Upload Question Paper To FF
@@ -115,6 +142,19 @@ function UploadQuestionPaperToFormFillingBtn({ _el }) {
                                                         ip_details: _el,
                                                     })}>
                                                     Upload To Form Filling
+                                                </CButton>
+
+                                                <CButton
+                                                    icon={<FaUpload />}
+                                                    isLoading={
+                                                        uploadPublishedTestToFormFillingMutation.isPending
+                                                    }
+                                                    className={'text-xs'}
+                                                    onClick={handleUploadPresentStudentsToFormFilling.bind(null, {
+                                                        published_test_id: _publishedTest.id,
+                                                        ip_details: _el,
+                                                    })}>
+                                                    Upload Present Students Attendance
                                                 </CButton>
                                             </td>
                                         </tr>

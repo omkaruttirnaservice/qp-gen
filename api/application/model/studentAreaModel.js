@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import db from '../config/db.connect.js';
 // import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
 // import tm_server_ip_list from '../schemas/tm_server_ip_list.js';
@@ -6,6 +7,7 @@ import db from '../config/db.connect.js';
 // import tn_center_list from '../schemas/tn_center_list.js';
 // import tn_student_list from '../schemas/tn_student_list.js';
 import ApiError from '../utils/ApiError.js';
+import runQuery from '../utils/runQuery.js';
 
 const studentAreaModel = {
     getServerIP: async () => {
@@ -27,7 +29,7 @@ const studentAreaModel = {
                 where: {
                     id: id,
                 },
-            }
+            },
         );
     },
 
@@ -45,10 +47,12 @@ const studentAreaModel = {
             return await db.tn_student_list.destroy({
                 where: {
                     id: {
-                        [db.Op.in]: deleteIds,
+                        [Op.in]: deleteIds,
                     },
                 },
             });
+            // const q = `DELETE FROM tn_student_list WHERE id IN (${deleteIds.join(',')})`;
+            // return await runQuery(db, q, []);
         } catch (error) {
             throw new ApiError(500, error?.message || 'Something went wrong');
         }
@@ -106,7 +110,7 @@ const studentAreaModel = {
                         'sl_password',
                     ],
                 },
-                { raw: true }
+                { raw: true },
             );
         } catch (error) {
             throw new ApiError(500, error?.message || 'Something went wrong');
@@ -249,7 +253,7 @@ const studentAreaModel = {
             });
             return _result;
         } catch (error) {
-            console.log(error, '==error==');
+            // console.log(error?.message, '==error==');
             throw new ApiError(500, error || 'Something went wrong');
         }
     },
@@ -351,6 +355,23 @@ const studentAreaModel = {
         } catch (error) {
             throw new ApiError(500, error?.message || 'Server errror.');
         }
+    },
+
+    getPresentStudents: async (published_test_id) => {
+        const q = `
+        SELECT 
+            sl.id AS id
+        FROM tn_student_list AS sl
+        INNER JOIN tm_publish_test_list ptl 
+        ON sl.sl_batch_no  = ptl.tm_allow_to
+
+        INNER JOIN tm_student_final_result_set sfrs 
+        ON sfrs.sfrs_publish_id = ptl.id AND sfrs.sfrs_student_id = sl.id
+
+        WHERE ptl.id = ?
+        `;
+
+        return await db.query(q, [published_test_id]);
     },
 };
 

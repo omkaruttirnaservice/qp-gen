@@ -47,11 +47,11 @@ const testsModel = {
 					'mt_total_test_question',
 				],
             },
-            { raw: true }
+            { raw: true },
         );
     },
 
-    getPublishedList: async (type = 'EXAM') => {
+    getPublishedList: async (type = 'EXAM', mode = 'NEW') => {
         return await db.query(
             `SELECT 
 				JSON_ARRAYAGG(
@@ -107,77 +107,13 @@ const testsModel = {
 			ON tm_publish_test_list.id = tm_publish_test_by_post.published_test_id
 			
 			WHERE 
-				ptl_active_date >= CURDATE()
-            AND ptl_test_mode = '${type}'
+                ${mode !== 'ALL' ? 'ptl_active_date >= CURDATE() AND' : ''}
+            ptl_test_mode = '${type}'
 			GROUP BY tm_publish_test_list.id`,
             {
                 type: Sequelize.QueryTypes.SELECT,
-            }
+            },
         );
-
-        // let today = new Date();
-        // today.setHours(0, 0, 0, 0);
-
-        // return tm_publish_test_list.findAll(
-        // 	{
-        // 		attributes: [
-        // 			'id',
-        // 			[
-        // 				sequelize.fn(
-        // 					'DATE_FORMAT',
-        // 					sequelize.col('ptl_active_date'),
-        // 					'%d-%m-%Y'
-        // 				),
-        // 				'ptl_active_date',
-        // 			],
-        // 			'ptl_time',
-        // 			'ptl_link',
-        // 			'ptl_test_id',
-        // 			'ptl_added_date',
-        // 			'ptl_added_time',
-        // 			'ptl_time_stamp',
-        // 			'ptl_test_description',
-        // 			'ptl_is_live',
-        // 			'ptl_aouth_id',
-        // 			'ptl_is_test_done',
-        // 			'ptl_test_info',
-        // 			'mt_name',
-        // 			'mt_added_date',
-        // 			'mt_descp',
-        // 			'mt_is_live',
-        // 			'mt_time_stamp',
-        // 			'mt_type',
-        // 			'tm_aouth_id',
-        // 			'mt_test_time',
-        // 			'mt_total_test_takan',
-        // 			'mt_is_negative',
-        // 			'mt_negativ_mark',
-        // 			'mt_mark_per_question',
-        // 			'mt_passing_out_of',
-        // 			'mt_total_marks',
-        // 			'mt_pattern_type',
-        // 			'mt_total_test_question',
-        // 			'mt_added_time',
-        // 			'ptl_link_1',
-        // 			'tm_allow_to',
-        // 			'ptl_test_mode',
-        // 			'is_test_loaded',
-        // 			'is_student_added',
-        // 			'ptl_master_exam_id',
-        // 			'ptl_master_exam_name',
-        // 			'is_test_generated',
-        // 			'is_push_done',
-        // 		],
-
-        // 		where: {
-        // 			ptl_active_date: {
-        // 				[Op.gte]: today,
-        // 			},
-        // 		},
-        // 		order: [['ptl_active_date', 'ASC']],
-        // 	},
-        // 	{ raw: true }
-        // );
     },
 
     deleteTest: async (deleteId) => {
@@ -221,7 +157,7 @@ const testsModel = {
                     mt_pattern_type: 1,
                     mt_total_test_question: +_t.total_questions,
                 },
-                { transaction: transact }
+                { transaction: transact },
             );
 
             let masterTestId = _masterTest.toJSON().id;
@@ -497,7 +433,7 @@ const testsModel = {
                 where: {
                     id: [...id],
                 },
-            }
+            },
         );
     },
 
@@ -699,7 +635,7 @@ const testsModel = {
                     q_b: data.option_B,
                     q_c: data.option_C,
                     q_d: data.option_D,
-                    q_e: data.option_E,
+                    q_e: data?.option_E || '',
                     q_ans: data.correct_option,
                     q_sol: data.explanation,
                     pub_name: data.pub_name,
@@ -714,7 +650,7 @@ const testsModel = {
                         id: data.question_id,
                     },
                 },
-                { transaction: trans }
+                { transaction: trans },
             );
             await trans.commit();
             return _updateRes;
@@ -734,7 +670,7 @@ const testsModel = {
                     mqs_opt_two: data.option_B,
                     mqs_opt_three: data.option_C,
                     mqs_opt_four: data.option_D,
-                    mqs_opt_five: data.option_E,
+                    mqs_opt_five: data.option_E ?? '',
                     mqs_ans: data.correct_option,
                     mqs_solution: data.explanation,
                     msq_publication_name: data.pub_name,
@@ -748,7 +684,7 @@ const testsModel = {
                         id: data.mqs_id,
                     },
                 },
-                { transaction: trans }
+                { transaction: trans },
             );
             await trans.commit();
             return _updateRes;

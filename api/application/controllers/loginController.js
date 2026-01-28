@@ -10,6 +10,7 @@ const loginController = {
         console.log('login controller');
         try {
             const { username, password, dbConfig } = req.body;
+            console.log(req.body,'=body');
 
             if (!username || !password || !dbConfig) {
                 throw new Error('Username, password and Database are required');

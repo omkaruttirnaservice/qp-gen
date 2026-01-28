@@ -34,4 +34,9 @@ studentsAreaRouter.post(
     StudentAreaController.uploadPublishedTestListToFormFilling
 );
 
+studentsAreaRouter.post(
+    '/upload-present-studetns-to-form-filling',
+    StudentAreaController.uploadPresentStudentsListToFormFilling
+);
+
 export default studentsAreaRouter;

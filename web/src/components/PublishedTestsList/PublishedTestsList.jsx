@@ -37,7 +37,7 @@ function PublishedTestsList() {
     }
 
     function isExamToday(date) {
-        const [e_date, e_month, e_year] = date.split('-');
+        const [e_date, e_month, e_year] = date?.split('-');
         let examDate = new Date(`${e_year}-${e_month}-${e_date}`);
         examDate.setHours(0, 0, 0, 0);
         let examDateTime = examDate.getTime();

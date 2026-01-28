@@ -71,11 +71,7 @@ function LoginPage() {
             if (res.success) {
                 // handle databases list if needed
                 console.log('Databases List:', res.data);
-                if (!isDevEnv()) {
-                    setDatabases(res?.data?.production || []);
-                } else {
-                    setDatabases(res?.data?.developement || []);
-                }
+                setDatabases(res?.data || []);
             }
         });
     }, []);

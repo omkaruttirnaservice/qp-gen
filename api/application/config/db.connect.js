@@ -81,7 +81,7 @@ const dbProxy = new Proxy(
                 );
             }
 
-            const { pool, sequelizeInstance } = store;
+            const { pool, poolPromise, sequelizeInstance } = store;
 
             // 1. Check if looking for a Sequelize model by name
             if (sequelizeInstance && sequelizeInstance.models[prop]) {
@@ -93,6 +93,11 @@ const dbProxy = new Proxy(
                 const value = Reflect.get(pool, prop);
                 return typeof value === 'function' ? value.bind(pool) : value;
             }
+
+            // if (poolPromise && prop in poolPromise) {
+            //     const value = Reflect.get(poolPromise, prop);
+            //     return typeof value === 'function' ? value.bind(poolPromise) : value;
+            // }
 
             // 3. Fallback to sequelizeInstance methods
             if (sequelizeInstance && prop in sequelizeInstance) {

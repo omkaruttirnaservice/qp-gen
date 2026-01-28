@@ -1,9 +1,11 @@
 import { Sequelize } from 'sequelize';
-import sequelize from '../config/db-connect-migration.js';
+// import sequelize from '../config/db-connect-migration.js';
+
+import db from '../config/db.connect.js';
 
 const remoteModelLegacy = {
     getTodaysExamList: async (data) => {
-        const results = await sequelize.query(
+        const results = await db.query(
             `
 			SELECT 
 				JSON_ARRAYAGG(
@@ -79,7 +81,7 @@ const remoteModelLegacy = {
     },
 
     getExamListV2: async (data) => {
-        const results = await sequelize.query(
+        const results = await db.query(
             `
 			SELECT 
 				JSON_ARRAYAGG(
@@ -166,7 +168,7 @@ const remoteModelLegacy = {
 							AND
 						ptl.id = ${published_test_id}
 					`;
-        return await sequelize.query(query, {
+        return await db.query(query, {
             type: Sequelize.QueryTypes.SELECT,
         });
     },

@@ -3,6 +3,21 @@ const KOP_DB_SERVER_1 = 'KOP_DB_SERVER_1';
 
 export const databasesList = {
     production: [
+
+        {
+            dbName: 'utr_question_paper_amalner_mock',
+            processName: 'APMC_Amalner_Mock',
+            isShow: true,
+            dbServerId: KOP_DB_SERVER_1,
+        },
+
+        {
+            dbName: 'utr_question_paper_amalner',
+            processName: 'APMC_Amalner',
+            isShow: true,
+            dbServerId: KOP_DB_SERVER_1,
+        },
+
         {
             dbName: 'utr_question_paper_uttirna',
             processName: 'Uttirna Data Entry',

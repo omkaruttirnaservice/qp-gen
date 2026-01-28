@@ -14,22 +14,33 @@ const app = express();
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 
 // CORS setup with dynamic origin checking
-const corsOptions = {
-    origin: function (origin, callback) {
-        console.log(origin, '=origin');
-        // Allow requests with no origin (like mobile apps, curl)
-        if (!origin) return callback(null, true);
+app.use(
+    cors({
+        origin: function (origin, callback) {
+            // allow non-browser tools like Postman
+            if (!origin || origin === 'null') return callback(null, true);
 
-        if (origin.includes('uttirna.in') || origin.includes('localhost') || origin.includes('192.168.1.5')) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true, // allow cookies or auth headers
-};
+            const allowedOrigins = [
+                'https://psa.atomtech.in',
+                'kopbankasso',
+                'sznsbal',
+                'uttirna',
+                'localhost',
+                '192',
+                '10',
+            ];
 
-app.use(cors(corsOptions));
+            if (allowedOrigins.some((allowedOrigin) => origin.includes(allowedOrigin))) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+    }),
+);
 
 app.use(express.static('public'));
 

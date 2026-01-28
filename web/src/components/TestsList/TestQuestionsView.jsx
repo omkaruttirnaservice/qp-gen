@@ -287,7 +287,7 @@ export function ExamThemeView({ testDetails, questionsList, handleEditQuestion, 
 function QuestionUi({ idx, q }) {
     return (
         <div className="border p-4 rounded-md shadow-sm bg-gray-50">
-            <div className="font-semibold text-lg mb-3 text-gray-900">
+            <div className="text-lg mb-3 text-gray-900 flex">
                 Q {idx + 1}.{' '}
                 <span
                     className="inline-block"

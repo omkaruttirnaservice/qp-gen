@@ -42,7 +42,7 @@ const StudentAreaController = {
 
         await studentAreaModel.updateFormFillingIP(
             { form_filling_server_ip, exam_panel_server_ip },
-            id
+            id,
         );
 
         return res.status(201).json(new ApiResponse(201, null, 'Successfully updated new ip.'));
@@ -191,6 +191,7 @@ const StudentAreaController = {
             // console.log(data, '==data==');
             return [null, data];
         } catch (error) {
+            console.log(error, '=error========');
             if (error.type == 'fetch failed') {
                 return ['fetch failed', null];
             } else {
@@ -253,7 +254,7 @@ const StudentAreaController = {
         let { centerNumber, batchNumber, postName, date } = req.body;
         let { value, error } = await schema.validate(
             { centerNumber, batchNumber, date },
-            { abortEarly: false }
+            { abortEarly: false },
         );
         console.log(error, '==_isValid==');
 
@@ -319,8 +320,8 @@ const StudentAreaController = {
                 new ApiResponse(
                     200,
                     _saveCenterListRes.toJSON(),
-                    'Centers list downloaded successfully'
-                )
+                    'Centers list downloaded successfully',
+                ),
             );
     }),
 
@@ -357,9 +358,8 @@ const StudentAreaController = {
         console.log(exam_panel_server_ip, '==exam_server_ip==');
         if (!exam_panel_server_ip) throw new ApiError(400, 'Please provide exam server ip.');
 
-        const [error, data] = await StudentAreaController.getQuestionPaperFromExamServer(
-            exam_panel_server_ip
-        );
+        const [error, data] =
+            await StudentAreaController.getQuestionPaperFromExamServer(exam_panel_server_ip);
 
         if (error) {
             throw new ApiError(400, error);
@@ -380,7 +380,7 @@ const StudentAreaController = {
         if (!exam_panel_server_ip) return ['Please provide exam panel IP.', null];
         try {
             let _studentQuestionPaperResponse = await fetch(
-                `${exam_panel_server_ip}/api/student/question-paper`
+                `${exam_panel_server_ip}/api/student/question-paper`,
             );
 
             if (!_studentQuestionPaperResponse.ok) {
@@ -428,7 +428,7 @@ const StudentAreaController = {
 
         // 1. Get individual published test detils
         const _publishedTestDetails = await studentAreaModel.getPublishedTestById(
-            data.published_test_id
+            data.published_test_id,
         );
 
         console.log(_publishedTestDetails, '==_publishedTestDetails==');
@@ -438,7 +438,7 @@ const StudentAreaController = {
 
         // 2. Get Question Paper as per published test id.
         const _questionPaper = await studentAreaModel.getQuestionPaperByPublishedTestId(
-            _publishedTestDetails[0].ptl_test_id
+            _publishedTestDetails[0].ptl_test_id,
         );
 
         console.log(_publishedTestDetails.length, '==_publishedTestDetails==');
@@ -452,7 +452,7 @@ const StudentAreaController = {
         // 3. Send data to form filling server
         const [error, result] = await StudentAreaController.uploadPublishedTestAndQuestionPaper(
             data,
-            testDetails
+            testDetails,
         );
 
         if (error) {
@@ -464,8 +464,83 @@ const StudentAreaController = {
                 new ApiResponse(
                     200,
                     null,
-                    'Successfully uploaded published test and question paper to form filling panel.'
-                )
+                    'Successfully uploaded published test and question paper to form filling panel.',
+                ),
+            );
+    }),
+
+    uploadPresentStudentsListToFormFilling: asyncHandler(async function (req, res) {
+        /**
+		 *  This will upload present students to form filling server
+		 *  Sample req.body
+		 *  {
+				ptl_test_id: 2,
+				ip_details: {
+					id: 2,
+					form_filling_server_ip: 'http://localhost:3001',
+					exam_panel_server_ip: 'http://localhost:3050'
+				}
+			}
+		 * */
+        const data = req.body;
+        console.log(data, 'data');
+
+        if (!data?.published_test_id) {
+            throw new ApiError(400, 'Invalid published test id.');
+        }
+        if (!data?.ip_details?.form_filling_server_ip) {
+            throw new ApiError(400, 'Invalid form filling ip.');
+        }
+
+        // 1. Get individual published test detils
+        const [_presentStudents] = await studentAreaModel.getPresentStudents(
+            data.published_test_id,
+        );
+        console.log(_presentStudents);
+
+        if (_presentStudents.length === 0) {
+            throw new ApiError(404, 'No result found for the student');
+        }
+
+        const _sl = _presentStudents.map(({ id }) => id);
+        console.log(_sl, '_sl');
+
+        // if (_sl.length === 0) {
+        //     throw new ApiError(404, 'No result found for the student');
+        // }
+
+        // console.log(_publishedTestDetails, '==_publishedTestDetails==');
+        // if (_publishedTestDetails.length === 0) {
+        //     throw new ApiError(400, `Published test not found with id : ${data.published_test_id}`);
+        // }
+
+        // // 2. Get Question Paper as per published test id.
+        // const _questionPaper = await studentAreaModel.getQuestionPaperByPublishedTestId(
+        //     _publishedTestDetails[0].ptl_test_id,
+        // );
+
+        // console.log(_publishedTestDetails.length, '==_publishedTestDetails==');
+        // console.log(_questionPaper.length, '==_questionPaper==');
+
+        // const testDetails = {
+        //     _publishedTestDetails,
+        //     _questionPaper,
+        // };
+
+        // 3. Send data to form filling server
+        const [error, result] = await StudentAreaController.markPresentStudents(data, _sl);
+
+        if (error) {
+            throw new ApiError(error?.statusCode, error?.message || 'Server error');
+        }
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    null,
+                    `Successfully marked present students Count: ${_sl.length}`,
+                ),
             );
     }),
 
@@ -489,6 +564,38 @@ const StudentAreaController = {
             }
             return [null, _jsonResp];
         } catch (error) {
+            if (error.type == 'fetch failed') {
+                return ['fetch failed', null];
+            } else {
+                return [error, null];
+            }
+        }
+    },
+
+    async markPresentStudents(data, studentsList) {
+        console.log(studentsList, 'studentsList');
+        try {
+            const url = `${data?.ip_details?.form_filling_server_ip}/api/mark-present`;
+            // const url = `http://localhost:3003/api/mark-present`;
+            const _response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ details: { studentsList: studentsList } }),
+            });
+
+            console.log(_response, '==_response==');
+            const _jsonResp = await _response.json();
+            console.log(_jsonResp.statusCode, '==_jsonResp==');
+            if (!_response.ok) {
+                const error = new Error(_jsonResp?.message || 'Server error.');
+                error.statusCode = _jsonResp?.statusCode || 500;
+                throw error;
+            }
+            return [null, _jsonResp];
+        } catch (error) {
+            console.log(error, 'error');
             if (error.type == 'fetch failed') {
                 return ['fetch failed', null];
             } else {

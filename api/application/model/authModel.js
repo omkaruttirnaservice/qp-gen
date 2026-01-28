@@ -2,7 +2,7 @@ import db from '../config/db.connect.js';
 
 const authModel = {
     checkUserCredentials: async (username, password) => {
-        console.log(db,'b========================')
+        console.log(username, password,'username, password');
         const sql = `SELECT 
         id AS userId, 
         a_username AS username,

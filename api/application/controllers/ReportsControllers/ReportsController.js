@@ -1,11 +1,7 @@
-import { Worker } from 'worker_threads';
 import excel from 'exceljs';
-import { Sequelize } from 'sequelize';
-import sequelize from '../../config/db-connect-migration.js';
+import { Worker } from 'worker_threads';
+import db from '../../config/db.connect.js';
 import reportsModel, { DATES_LIST, POST_LIST } from '../../model/reportsModel.js';
-import tm_publish_test_list from '../../schemas/tm_publish_test_list.js';
-import tm_student_final_result_set from '../../schemas/tm_student_final_result_set.js';
-import tn_student_list from '../../schemas/tn_student_list.js';
 import ApiError from '../../utils/ApiError.js';
 import ApiResponse from '../../utils/ApiResponse.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
@@ -31,7 +27,7 @@ const reportsController = {
     }),
 
     generateResult: async (req, res, next) => {
-        const transact = await sequelize.transaction();
+        const transact = await db.transaction();
         try {
             console.log(req.body, '==req.body==');
             let { b64PublishedTestId } = req.body;
@@ -47,7 +43,7 @@ const reportsController = {
                 throw new ApiError(404, 'Could not find the students to generate result');
 
             // update that result has been declared
-            let _updateResultDeclaredRes = await tm_publish_test_list.update(
+            let _updateResultDeclaredRes = await db.tm_publish_test_list.update(
                 {
                     is_test_generated: 1,
                 },
@@ -61,7 +57,7 @@ const reportsController = {
 
             console.log(_resultGeneratedRes, '==_resultGeneratedRes==');
             // save result to tm_student_final_result_set
-            let [_saveResultRes] = await tm_student_final_result_set.bulkCreate(
+            let [_saveResultRes] = await db.tm_student_final_result_set.bulkCreate(
                 _resultGeneratedRes,
                 { transaction: transact }
             );
@@ -70,7 +66,7 @@ const reportsController = {
 
             await transact.commit();
 
-            const _studentsList = await tm_student_final_result_set.findAll({
+            const _studentsList = await db.tm_student_final_result_set.findAll({
                 attributes: ['sfrs_student_id', 'srfs_percentile'],
                 where: {
                     sfrs_publish_id: publishedTestId,

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -18,21 +18,20 @@ import CModal from '../UI/CModal.jsx';
 import { H1 } from '../UI/Headings.jsx';
 import Input, { InputLabel } from '../UI/Input.jsx';
 import InputError from '../UI/InputError.jsx';
-import SelectPostDropdown from './SelectPostDropdown.jsx';
+import { TEST_LIST_MODE } from '../Utils/Constants.jsx';
 import './TestsList.css';
 import { generateTestKey } from './utils.js';
-import { TEST_LIST_MODE } from '../Utils/Constants.jsx';
 
 let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 
 let initialStatePublishForm = {
     test_id_for_publish: null,
-    batch: null,
+    batch: -1,
     publish_date: null,
     test_key: null,
     test_details: null,
-    server_ip_address: null,
-    selected_posts: null,
+    server_ip_address: '0.0.0.0',
+    selected_posts: ['-1'],
     is_show_exam_sections: 'YES',
     is_show_mark_for_review: 'YES',
     is_show_clear_response: 'YES',
@@ -232,10 +231,10 @@ function TestsList() {
                     });
 
                     dispatch(ModalActions.toggleModal('publish-exam-modal'));
-                    // dispatch(
-                    //     testsSliceActions.setPreviewPublishedTestDetailsId(data.testDetails.id)
-                    // );
-                    // dispatch(testsSliceActions.setPreviewPublishedTestDetails(data.testDetails));
+                    dispatch(
+                        testsSliceActions.setPreviewPublishedTestDetailsId(data.testDetails.id)
+                    );
+                    dispatch(testsSliceActions.setPreviewPublishedTestDetails(data.testDetails));
                     setTimeout(() => {
                         navigate('/tests/list/questions');
                     }, 10);
@@ -247,6 +246,7 @@ function TestsList() {
             error.inner.forEach((err) => {
                 _err[err.path] = err.message;
             });
+            console.log({ _err });
             setErrors(_err);
         }
     };
@@ -388,112 +388,6 @@ function TestsList() {
                         </select>
 
                         <InputError error={errors.batch} />
-                    </div>
-
-                    <div className="relative col-span-2">
-                        <InputLabel name="Select IP/URL" htmlFor="server_ip_address" />
-                        <select
-                            name="server_ip_address"
-                            id="server_ip_address"
-                            onChange={handleChange}
-                            value={publishExamForm.server_ip_address}
-                            className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40">
-                            <option value="">-- Select -- </option>
-                            {getServerIPQuery.isLoading && <option>Loading...</option>}
-
-                            {serverIPAddresses?.length > 0 &&
-                                serverIPAddresses.map((el, idx) => {
-                                    return (
-                                        <option key={idx} value={el.id}>
-                                            {el?.form_filling_server_ip}
-                                        </option>
-                                    );
-                                })}
-                        </select>
-
-                        <InputError error={errors.server_ip_address} />
-                    </div>
-
-                    <div className="relative col-span-2">
-                        <SelectPostDropdown
-                            publishExamForm={publishExamForm}
-                            serverIPAddresses={serverIPAddresses}
-                            setPublishExamForm={setPublishExamForm}
-                            errors={errors}
-                        />
-                    </div>
-
-                    <div className="relative col-span-2 flex gap-2 items-center">
-                        <InputLabel name="Show Sections" />
-                        <div className="flex gap-3">
-                            <Input
-                                value="yes"
-                                name="is_show_exam_sections"
-                                type="radio"
-                                label={'Yes'}
-                                className={'flex items-center gap-2 flex-row-reverse'}
-                                onChange={handleChange}></Input>
-                            <Input
-                                value="no"
-                                name="is_show_exam_sections"
-                                type="radio"
-                                label={'No'}
-                                className={'flex items-center gap-2 flex-row-reverse'}
-                                onChange={handleChange}></Input>
-                        </div>
-                        <InputError error={errors.is_show_exam_sections} />
-                    </div>
-
-                    <div className="relative col-span-2 flex gap-2 items-center">
-                        <InputLabel name="Mark For Review" className="" />
-                        <div className="flex gap-3">
-                            <Input
-                                value="yes"
-                                name="is_show_mark_for_review"
-                                type="radio"
-                                label={'Yes'}
-                                className={'flex items-center gap-2 flex-row-reverse'}
-                                onChange={handleChange}></Input>
-                            <Input
-                                value="no"
-                                name="is_show_mark_for_review"
-                                type="radio"
-                                label={'No'}
-                                className={'flex items-center gap-2 flex-row-reverse'}
-                                onChange={handleChange}></Input>
-                        </div>
-                        <InputError error={errors.is_show_mark_for_review} />
-                    </div>
-
-                    <div className="relative col-span-2 flex gap-2 items-center">
-                        <InputLabel name="Show Clear Response" className="" />
-                        <div className="flex gap-3">
-                            <Input
-                                value="yes"
-                                name="is_show_clear_response"
-                                type="radio"
-                                label={'Yes'}
-                                className={'flex items-center gap-2 flex-row-reverse'}
-                                onChange={handleChange}></Input>
-                            <Input
-                                value="no"
-                                name="is_show_clear_response"
-                                type="radio"
-                                label={'No'}
-                                className={'flex items-center gap-2 flex-row-reverse'}
-                                onChange={handleChange}></Input>
-                        </div>
-                        <InputError error={errors.is_show_clear_response} />
-                    </div>
-
-                    <div className="relative">
-                        <Input
-                            label={'End button time'}
-                            name={'end_button_time'}
-                            onChange={handleChange}
-                            value={publishExamForm.end_button_time}
-                        />
-                        <InputError error={errors.end_button_time} />
                     </div>
 
                     <div className="relative">

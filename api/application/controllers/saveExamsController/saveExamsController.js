@@ -1,4 +1,5 @@
 import sequelize from '../../config/db-connect-migration.js';
+import db from '../../config/db.connect.js';
 import saveExamsModel from '../../model/saveExamsModel.js';
 import tm_student_final_result_set from '../../schemas/tm_student_final_result_set.js';
 import tm_student_question_paper from '../../schemas/tm_student_question_paper.js';
@@ -18,16 +19,16 @@ const saveExamsController = {
 
         if (!pub_id) throw new ApiError(204, 'Invalid publish id');
 
-        let transact = await sequelize.transaction();
+        // let transact = await sequelize.transaction();
 
         try {
-            await tm_student_test_list.bulkCreate(student_list, {
-                transaction: transact,
+            await db.tm_student_test_list.bulkCreate(student_list, {
+                // transaction: transact,
             });
-            await tm_student_question_paper.bulkCreate(exam_paper, {
-                transaction: transact,
+            await db.tm_student_question_paper.bulkCreate(exam_paper, {
+                // transaction: transact,
             });
-            await transact.commit();
+            // await transact.commit();
             return res
                 .status(201)
                 .json(
@@ -39,7 +40,7 @@ const saveExamsController = {
                 );
         } catch (error) {
             console.log(error, '==error==');
-            await transact.rollback();
+            // await transact.rollback();
             throw new ApiError(424, error?.message || 'Something went wrong on server');
         }
     }),

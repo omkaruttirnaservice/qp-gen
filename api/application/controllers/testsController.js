@@ -32,9 +32,13 @@ const testsController = {
 
     getPublishedList: async (req, res) => {
         try {
-            const { type } = req.query;
+            // mode => 'ALL' | 'NEW'
+            // ALL => all exams even though ptl_active_date >= CURDATE()
+            // NEW => exams whose ptl_active_date >= CURDATE()
 
-            let _testsListPublished = await testsModel.getPublishedList(type);
+            const { type, mode } = req.query;
+
+            let [_testsListPublished] = await testsModel.getPublishedList(type, mode);
             return sendSuccess(res, _testsListPublished);
         } catch (error) {
             return sendError(res, error.message);
@@ -100,7 +104,7 @@ const testsController = {
                 let [_randQues] = await testsModel.getRandQues(
                     subjectId[idx],
                     topicId[idx],
-                    limit[idx]
+                    limit[idx],
                 );
 
                 if (_randQues.length == 0) {
@@ -121,9 +125,8 @@ const testsController = {
             let _saveQuesRes = await testsModel.saveExamQuestions(ALLDATA, masterTestId, _t);
 
             // updating the question selection status to 1 to indidate that question is selected
-            let _updateTestQuesSelectionStatusRes = await testsModel.updateTestQueSelectionStatus(
-                selectedQueId
-            );
+            let _updateTestQuesSelectionStatusRes =
+                await testsModel.updateTestQueSelectionStatus(selectedQueId);
 
             return sendSuccess(res, 'Successfully created auto test');
         } catch (error) {
@@ -162,7 +165,7 @@ const testsController = {
                 },
                 {
                     transaction: transact,
-                }
+                },
             );
 
             const { id: masterTestId } = _masterTest.toJSON();
@@ -188,7 +191,7 @@ const testsController = {
                     subjectId[idx],
                     topicId[idx],
                     limit[idx],
-                    transact
+                    transact,
                 );
 
                 // if (_randQues.length == 0) {
@@ -228,7 +231,7 @@ const testsController = {
                 },
                 {
                     transaction: transact,
-                }
+                },
             );
 
             await transact.commit();
@@ -415,7 +418,7 @@ const testsController = {
 
             if (duplicateTest.length > 0) {
                 console.log(
-                    `Info: test already available with Date:${testData.exam_date} and Center:${testData.center_code}`
+                    `Info: test already available with Date:${testData.exam_date} and Center:${testData.center_code}`,
                 );
                 console.log('Info: removing the old test data');
                 await testsModel.removeDuplicateTestData(duplicateTest[0]);

@@ -1,7 +1,10 @@
 import { Router } from 'express';
 import remoteControllerLegacy from '../application/controllers/remoteControllerLegacy/remoteControllerLegacy.js';
-import fileUpload from 'express-fileupload';
 const remoteRouterLegacy = Router();
+
+/**
+ * These routes are for Deepak sir old exam panel
+ */
 
 /**
  * This is the legacy remote router for handling exam-related requests.
@@ -17,16 +20,16 @@ remoteRouterLegacy.get('/DownloadStudentBatch/:cc/:batch', remoteControllerLegac
 
 /**
  * This will save the answers given by the student in the exam
- * and the students who have given exam 
+ * and the students who have given exam
  * It will be called from the exam panel
  */
 remoteRouterLegacy.post('/saveUploadedExam', remoteControllerLegacy.saveExamData);
 
-
 /**
  * This route will get all of center details from tn_center_list table
  * As per center number given in post request
+ * Will be called from exam panel
  */
-remoteRouterLegacy.get('/getCenterData/:centerCode', remoteControllerLegacy.getCenterData)
+remoteRouterLegacy.get('/getCenterData/:centerCode', remoteControllerLegacy.getCenterData);
 
 export default remoteRouterLegacy;
