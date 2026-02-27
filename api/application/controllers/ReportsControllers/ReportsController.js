@@ -36,7 +36,7 @@ const reportsController = {
             // generate student result
             let [_resultGeneratedRes] = await reportsModel.generateResult(
                 publishedTestId,
-                transact
+                transact,
             );
             console.log(_resultGeneratedRes, '==_resultGeneratedRes==');
             if (_resultGeneratedRes.length == 0)
@@ -52,14 +52,14 @@ const reportsController = {
                         id: publishedTestId,
                     },
                     transaction: transact,
-                }
+                },
             );
 
             console.log(_resultGeneratedRes, '==_resultGeneratedRes==');
             // save result to tm_student_final_result_set
             let [_saveResultRes] = await db.tm_student_final_result_set.bulkCreate(
                 _resultGeneratedRes,
-                { transaction: transact }
+                { transaction: transact },
             );
 
             console.log(_saveResultRes, '==_saveResultRes==');
@@ -249,7 +249,7 @@ const reportsController = {
         // workSheet.addRows(res_data);
         res.setHeader(
             'Content-Type',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         );
         res.setHeader('Content-Disposition', 'attachment; filename=' + 'valid-candidate-list.xlsx');
         return workbook.xlsx.write(res);
@@ -261,6 +261,7 @@ const reportsController = {
 
     getCustomResultExcel: asyncHandler(async (req, res) => {
         const data = req.body;
+        console.log(data, 'data');
         data.type = 'EXCEL';
 
         const [_resultDetailsRes] = await reportsModel.getResultData(data);
@@ -271,7 +272,7 @@ const reportsController = {
 
         // prettier-ignore
 
-        let file_name = `${data?.resultType || ''}_result`;
+        let file_name = `${data?.postName || ''}_result`;
         file_name = file_name.replace(/[ _-\s]/, '_');
 
         const worker = new Worker(
@@ -281,20 +282,20 @@ const reportsController = {
                     _resultDetailsRes,
                     resultType: data.resultType,
                 },
-            }
+            },
         );
 
         worker.on('message', (data) => {
             res.setHeader(
                 'Content-Type',
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             );
 
             res.setHeader('Access-Control-Expose-Headers', 'x-file-name');
-            res.setHeader('x-file-name', `${file_name}.xlsx`);
+            res.setHeader('x-file-name', `${encodeURIComponent(file_name)}.xlsx`);
             res.setHeader(
                 'Content-Disposition',
-                'attachment; filename=' + 'valid-candidate-list.xlsx'
+                'attachment; filename=' + `${encodeURIComponent(file_name)}.xlsx`,
             );
 
             res.end(data);

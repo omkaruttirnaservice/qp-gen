@@ -119,7 +119,7 @@ export const getCustomResultExcel = async (data) => {
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = _res?.headers?.get('x-file-name') || 'result.xlsx';
+    a.download = decodeURIComponent(_res?.headers?.get('x-file-name')) || 'result.xlsx';
     document.body.appendChild(a);
     a.click();
 
