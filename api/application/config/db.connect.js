@@ -38,7 +38,7 @@ export async function getPool(dbId, dbName) {
     const sequelizeInstance = new Sequelize(dbName, cfg.DB_USER, cfg.DB_PASSWORD, {
         host: cfg.DB_HOST,
         dialect: 'mysql',
-        logging: true,
+        logging: console.log,
         define: {
             freezeTableName: true,
             charset: 'utf8mb4',

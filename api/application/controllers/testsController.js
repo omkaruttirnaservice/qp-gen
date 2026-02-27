@@ -11,7 +11,7 @@ const testsController = {
     getList: async (req, res) => {
         try {
             let _testsList = await testsModel.getList();
-            console.log(_testsList, 'testsList=');
+            console.log(_testsList, 'testsList==========');
 
             return sendSuccess(res, _testsList);
         } catch (error) {
@@ -381,16 +381,17 @@ const testsController = {
 			 * {
                     center_code: '101',
                     examDate: '2025-06-20',
+                    examTime: '10:00 AM TO 01:00 PM',
                     mockName: 'mock-test',
                     totalQuestions: '13',
                     marksPerQuestion: '12',
                     duration: '12',
                     candidates: '21',
-                    defaultPassword: '12'
+                    startingRollNumber: '1001',
+                    defaultPassword: '1111'
                 }
 			 */
             const data = req.body;
-            console.log(data, '=');
 
             let testData = {
                 mt_name: data.mockName,
@@ -402,10 +403,11 @@ const testsController = {
                 marks_per_question: data.marksPerQuestion,
                 total_questions: data.totalQuestions,
                 total_candidates: data.candidates,
-                start_roll_number: 1,
+                // start_id: 0,
+                start_roll_number: data.startingRollNumber,
 
                 exam_date: data.examDate,
-                exam_time: myDate.getTime(),
+                exam_time: data.examTime,
                 exam_date_time: '-',
                 default_password: data.defaultPassword,
                 post_id: '1',
@@ -414,14 +416,14 @@ const testsController = {
             };
 
             // check if mock test exsists with same center_code, exam_date
-            const [duplicateTest] = await testsModel.checkForDuplicateTest(testData);
+            const [duplicateTest] = await testsModel.checkForDuplicateTestMock(testData);
 
             if (duplicateTest.length > 0) {
                 console.log(
                     `Info: test already available with Date:${testData.exam_date} and Center:${testData.center_code}`,
                 );
                 console.log('Info: removing the old test data');
-                await testsModel.removeDuplicateTestData(duplicateTest[0]);
+                await testsModel.removeDuplicateTestDataMock(duplicateTest[0]);
                 console.log('Info: finish removing old test data');
             }
 
@@ -433,15 +435,7 @@ const testsController = {
             // publish test by post
             await testsModel.publishTestByPost(testData);
 
-            // get last insert roll number of studetns
-            const [lastRollNumber] = await testsModel.getLastInsertRollNumber();
-            if (lastRollNumber.length > 0) {
-                testData.start_roll_number = lastRollNumber[0].id + 1;
-            } else {
-                testData.start_roll_number = 1001;
-            }
-
-            // generate dummy students
+            // generate dummy students for mock test and insert into `tn_student_list_mock` table
             const [_generateStudentResp] = await testsModel.generateMockStudents(testData);
 
             // generate questions
@@ -449,8 +443,7 @@ const testsController = {
 
             return sendSuccess(res, null, 'Successfully created mock test');
         } catch (error) {
-            console.log(error, '-error');
-            return sendError(res, error.message);
+            next(error);
         }
     },
 
@@ -478,7 +471,10 @@ const testsController = {
             if (testDetails.length === 0) {
                 throw new Error('No test details found');
             }
-            const mockReport = await testsModel.getMockExamReport(testDetails);
+            const [mockReport] = await testsModel.getMockExamReport(testDetails);
+            if (mockReport.length === 0) {
+                throw new Error('No mock report found');
+            }
             return sendSuccess(res, mockReport, '');
         } catch (error) {
             return sendError(res, error.message);

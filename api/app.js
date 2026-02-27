@@ -17,6 +17,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
 app.use(
     cors({
         origin: function (origin, callback) {
+            console.log(origin,'Origin');
             // allow non-browser tools like Postman
             if (!origin || origin === 'null') return callback(null, true);
 
@@ -62,7 +63,8 @@ app.get('/', (req, res) => {
 app.use('/api', indexRoutes);
 
 import legacyRoutes from './routes/remoteRouterLegacy.js';
-app.use('/gov', legacyRoutes);
+import { authenticateJWT } from './routes/authMiddleware.js';
+app.use('/gov', authenticateJWT, legacyRoutes);
 
 app.use(errorHandler);
 

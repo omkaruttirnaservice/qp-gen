@@ -5,7 +5,7 @@ module.exports = {
             script: 'app.js',
             instances: 1,
             autorestart: true,
-            watch: false,
+            watch: true,
             mode: 'fork',
             max_memory_restart: '2G',
             env: {

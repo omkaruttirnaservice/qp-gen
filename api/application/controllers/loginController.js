@@ -10,7 +10,7 @@ const loginController = {
         console.log('login controller');
         try {
             const { username, password, dbConfig } = req.body;
-            console.log(req.body,'=body');
+            console.log(req.body, '=body');
 
             if (!username || !password || !dbConfig) {
                 throw new Error('Username, password and Database are required');
@@ -18,7 +18,7 @@ const loginController = {
 
             const { poolPromise, sequelizeInstance } = await getPool(
                 dbConfig.dbServerId,
-                dbConfig.dbName
+                dbConfig.dbName,
             );
             if (!poolPromise) {
                 throw new Error('Invalid Database Configuration');
@@ -31,7 +31,7 @@ const loginController = {
                 [result] = await authModel.checkUserCredentials(username, password);
             });
 
-            console.log(result,'result================')
+            console.log(result, 'result================');
 
             if (!result || result.length === 0) {
                 throw new Error('Invalid username or password');
@@ -46,7 +46,7 @@ const loginController = {
                     dbConfig,
                 },
                 JWT_SECRET,
-                { expiresIn: '7d' }
+                { expiresIn: '7d' },
             );
 
             res.cookie('token', token, {
@@ -61,6 +61,7 @@ const loginController = {
                 id: user.userId,
                 username: user.username,
                 role: user.role,
+                token,
             });
         } catch (error) {
             console.log(error, '=message================');

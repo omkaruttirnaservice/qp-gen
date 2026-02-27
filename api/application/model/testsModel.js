@@ -761,7 +761,7 @@ const testsModel = {
         });
     },
 
-    checkForDuplicateTest: async function (testData) {
+    checkForDuplicateTestMock: async function (testData) {
         const q = `SELECT 
             *,
             DATE_FORMAT(ptl_active_date,'%Y-%m-%d') AS ptl_active_date
@@ -802,6 +802,28 @@ const testsModel = {
         }
     },
 
+    removeDuplicateTestDataMock: async function (duplicateTestDetails) {
+        try {
+            const q = `DELETE FROM tm_publish_test_list WHERE id = ${duplicateTestDetails.id}`;
+            const q2 = `DELETE FROM tm_publish_test_by_post WHERE published_test_id = ${duplicateTestDetails.id} AND id >= 1`;
+
+            const q3 = `DELETE FROM tn_student_list_mock 
+                        WHERE sl_center_code = ${duplicateTestDetails.center_code} 
+                        AND sl_batch_no = ${duplicateTestDetails.tm_allow_to}
+                        AND sl_exam_date = '${duplicateTestDetails.ptl_active_date}'
+                        AND id >= 1`;
+            const q4 = `DELETE FROM tm_test_question_sets
+                        WHERE tqs_test_id = ${duplicateTestDetails.ptl_test_id}
+                        AND id >= 1`;
+            await db.query(q);
+            await db.query(q2);
+            await db.query(q3);
+            await db.query(q4);
+        } catch (error) {
+            console.log(error, '=error');
+        }
+    },
+
     truncateTable: async function (table) {
         try {
             console.log(`Truncating : ${table}`);
@@ -820,7 +842,7 @@ const testsModel = {
     generateMockStudents: async (testData) => {
         let students = mockDummyData.studentDummyData(testData);
 
-        return await db.tn_student_list.bulkCreate(students);
+        return await db.tn_student_list_mock.bulkCreate(students);
     },
 
     generateMockquestions: async (testData) => {

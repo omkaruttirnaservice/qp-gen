@@ -15,19 +15,17 @@ export const authenticateJWT = (req, res, next) => {
 
         jwt.verify(token, JWT_SECRET, async (err, user) => {
             if (err) {
-                console.log(err,'=err authmiddleware');
+                console.log(err, '=err authmiddleware');
                 return res.status(403).json(sendError(res, err, 'Invalid token'));
-
-            } 
+            }
 
             req.user = user;
 
-            console.log(req.user, '=req.user in authMiddleware=================');
             if (user.dbConfig) {
                 try {
                     const { poolPromise, sequelizeInstance } = await getPool(
                         user.dbConfig.dbServerId,
-                        user.dbConfig.dbName
+                        user.dbConfig.dbName,
                     );
 
                     try {

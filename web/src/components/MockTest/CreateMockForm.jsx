@@ -37,12 +37,14 @@ function CreateMockForm() {
     const [formData, setFormData] = useState({
         center_code: '',
         examDate: '',
+        examTime: '10:00 AM TO 01:00 PM',
         mockName: '',
         totalQuestions: '',
         marksPerQuestion: '',
         duration: '',
         candidates: '',
-        defaultPassword: '',
+        startingRollNumber: '1001',
+        defaultPassword: '1111',
     });
 
     const [errors, setErrors] = useState({});
@@ -61,9 +63,14 @@ function CreateMockForm() {
         });
     };
 
+    const examTimeRegex = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)\s?TO\s?(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i;
+
     const createMockSchema = Yup.object().shape({
         center_code: Yup.string().required('Center name is required'),
         examDate: Yup.string().required('Exam date is required'),
+        examTime: Yup.string()
+            .required('Exam time is required')
+            .matches(examTimeRegex, 'Invalid format. Use: HH:MM AM TO HH:MM PM'),
         mockName: Yup.string().required('Mock name is required'),
         totalQuestions: Yup.number()
             .typeError('Total Questions must be a number')
@@ -80,6 +87,7 @@ function CreateMockForm() {
             .typeError('Total candidates must be a number')
             .required('Total candidates required')
             .min(1, 'Must be at least 1'),
+        startingRollNumber: Yup.number().required('Enter starting roll number'),
         defaultPassword: Yup.string().required('Default password is required'),
     });
 
@@ -90,6 +98,7 @@ function CreateMockForm() {
             setErrors({});
             submitMock(formData);
         } catch (error) {
+            console.log(error, 'error')
             let __err = {};
             error.inner.forEach((el) => {
                 __err[el.path] = el.message;
@@ -144,6 +153,18 @@ function CreateMockForm() {
                         value={formData.examDate}
                         error={errors.examDate}>
                         <InputError error={errors.examDate} />
+                    </Input>
+
+                    {/* Exam Time */}
+                    <Input
+                        label="Exam Time"
+                        name="examTime"
+                        type="text"
+                        placeholder="e.g. 10:00 AM TO 01:00 PM"
+                        onChange={handleChange}
+                        value={formData.examTime}
+                        error={errors.examTime}>
+                        <InputError error={errors.examTime} />
                     </Input>
 
                     {/* Mock Name */}
@@ -203,6 +224,19 @@ function CreateMockForm() {
                         value={formData.candidates}
                         error={errors.candidates}>
                         <InputError error={errors.candidates} />
+                    </Input>
+
+
+                    {/* Starting Roll Number */}
+                    <Input
+                        label="Starting Roll Number"
+                        name="startingRollNumber"
+                        type="text"
+                        placeholder="e.g. exam2025"
+                        onChange={handleChange}
+                        value={formData.startingRollNumber}
+                        error={errors.startingRollNumber}>
+                        <InputError error={errors.startingRollNumber} />
                     </Input>
 
                     {/* Default Password */}
