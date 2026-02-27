@@ -1,0 +1,60 @@
+name: deploy_qp_generation_panel
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    build_web:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Clone repo
+              uses: actions/checkout@v4
+
+            - name: Setup node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+
+            - name: Install dependencies
+              run: cd web && npm ci
+
+            - name: Build Project (Web)
+              env:
+                  VITE_API_SERVER_IP: https://api.qp.uttirna.in
+                  VITE_S3_BUCKET_URL: 'https://formfillingbucket.s3.ap-south-1.amazonaws.com'
+                  VITE_PROJECT_ENV: 'prod'
+              run: cd web && npm run build
+
+            - name: Copy to VPS
+              uses: appleboy/scp-action@v0.1.7
+              with:
+                  host: ${{ secrets.HOST}}
+                  username: ${{secrets.USER}}
+                  key: ${{ secrets.PRIVATE_KEY}}
+                  source: './web/dist'
+                  target: '/var/www/data-entry/qp/web'
+
+    restart-server:
+        needs: build_web
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Restart server
+              uses: appleboy/ssh-action@v1
+              with:
+                  host: ${{ secrets.HOST}}
+                  username: ${{secrets.USER}}
+                  key: ${{secrets.PRIVATE_KEY}}
+                  script: |
+                      . ~/.nvm/nvm.sh
+                      cd /var/www/data-entry/qp/api
+                      echo "Getting latest changes... "
+                      git pull
+                      echo "Installing dependencies... "
+                      npm install
+                      echo "Restarting server..."
+                      pm2 restart ecosystem.config.cjs --env production
+                      echo "Restarted successfully!"
