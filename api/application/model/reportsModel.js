@@ -52,6 +52,7 @@ const reportsModel = {
         if (type === 'EXCEL') {
             q = `SELECT *,
 					CONCAT(sl_f_name,' ',sl_m_name,' ',sl_l_name) AS full_name,
+                    UPPER(sl_catagory) AS sl_catagory,
 					DATE_FORMAT(sl_date_of_birth,'%d-%m-%Y') AS dob
 					FROM tm_student_final_result_set AS sfrs
 					INNER JOIN tn_student_list sl
