@@ -60,9 +60,9 @@ const mockDummyData = {
     studentDummyData: (_testData) => {
         let insertArray = [];
         for (let i = 0; i < _testData.total_candidates; ++i) {
-            let roll_n_id = _testData.start_roll_number + i;
+            let roll_n_id = Number(_testData.start_roll_number) + i;
+            // id: _testData.start_id + i,
             insertArray.push({
-                id: roll_n_id,
                 sl_f_name: 'DEMO',
                 sl_m_name: 'DEMO',
                 sl_l_name: 'DEMO',
@@ -109,6 +109,7 @@ const mockDummyData = {
                 pc_no: '-',
                 createdAt: myDate.getDateTime(),
                 updatedAt: myDate.getDateTime(),
+                sl_exam_time: _testData.exam_time,
             });
         }
         return insertArray;

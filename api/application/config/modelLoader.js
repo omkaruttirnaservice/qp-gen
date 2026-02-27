@@ -15,6 +15,8 @@ import tm_test_question_sets from '../schemas/tm_test_question_sets.js';
 import tm_test_user_master_list from '../schemas/tm_test_user_master_list.js';
 import tn_center_list from '../schemas/tn_center_list.js';
 import tn_student_list from '../schemas/tn_student_list.js';
+import tn_student_list_mock from '../schemas/tn_student_list_mock.js';
+console.log(tn_student_list_mock,'tn_student_list_mock')
 
 const models = [
     aouth,
@@ -34,9 +36,10 @@ const models = [
     tm_test_user_master_list,
     tn_center_list,
     tn_student_list,
+    tn_student_list_mock,
 ];
 
-export const registerModels = (sequelizeInstance) => {
+export const registerModels = async (sequelizeInstance) => {
     models.forEach((model) => {
         // Define the model on the new instance using the metadata from the static model
         sequelizeInstance.define(model.name, model.rawAttributes, {

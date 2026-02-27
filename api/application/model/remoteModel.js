@@ -5,7 +5,6 @@ import db from '../config/db.connect.js';
 
 const remoteModel = {
     getTodaysExamList: async (data) => {
-        console.log(data.downloadedExamsId, '=data.downloadedExamsId');
         const [results] = await db.query(
             `
 			SELECT 
@@ -62,7 +61,8 @@ const remoteModel = {
 			ON tm_publish_test_list.id = tm_publish_test_by_post.published_test_id
 			
 			WHERE 
-				ptl_active_date >= CURDATE() AND ptl_test_mode = '${data.exam_mode}'
+				ptl_active_date >= CURDATE() 
+			AND ptl_test_mode = '${data.exam_mode}'
 				${
                     data.downloadedExamsId.length > 0
                         ? ` AND tm_publish_test_list.id NOT IN (${data.downloadedExamsId}) `
@@ -73,7 +73,7 @@ const remoteModel = {
 			`,
             {
                 type: Sequelize.QueryTypes.SELECT,
-            }
+            },
         );
 
         // this is temp removed
@@ -83,7 +83,7 @@ const remoteModel = {
     },
 
     getMockStudensList: async (center_code, published_test_id) => {
-        let query = `SELECT * FROM tn_student_list AS sl
+        let query = `SELECT * FROM tn_student_list_mock AS sl
 					INNER JOIN tm_publish_test_list AS ptl
 					ON sl.sl_batch_no = ptl.tm_allow_to 
 						AND

@@ -18,9 +18,7 @@ const remoteController = {
 		 */
 
         const data = req.body;
-        console.log(data, '=data');
         let _examsList = await remoteModel.getTodaysExamList(data);
-        console.log(_examsList, '==_examsList==');
 
         if (_examsList.length == 0)
             throw new ApiError(400, 'No exams list found', 'No new exams list found in qp-gen');
@@ -76,11 +74,15 @@ const remoteController = {
 
         if (exam_mode === 'MOCK') {
             // get students list as well if its mock test
-            const _mockStudents = await remoteModel.getMockStudensList(
+            const [_mockStudents] = await remoteModel.getMockStudensList(
                 center_code,
-                published_test_id
+                published_test_id,
             );
             studentsList = _mockStudents;
+
+            if (studentsList.length === 0) {
+                throw new ApiError(404, 'No students found');
+            }
         }
 
         return res.status(200).json({

@@ -74,13 +74,14 @@ const remoteModelLegacy = {
 			`,
             {
                 type: Sequelize.QueryTypes.SELECT,
-            }
+            },
         );
 
         return results;
     },
 
     getExamListV2: async (data) => {
+		console.log(data.exam_list.exam_list,'data.exam_list')
         const results = await db.query(
             `
 			SELECT 
@@ -138,6 +139,7 @@ const remoteModelLegacy = {
 			
 			WHERE 
 				ptl_active_date = '${data.exam_list.examDate}'
+			AND ptl_test_mode = '${data.exam_list.examMode}'
 				${
                     data.exam_list.exam_list.length > 0
                         ? ` AND tm_publish_test_list.id NOT IN (${data.exam_list.exam_list
@@ -150,7 +152,7 @@ const remoteModelLegacy = {
 			`,
             {
                 type: Sequelize.QueryTypes.SELECT,
-            }
+            },
         );
 
         return results;

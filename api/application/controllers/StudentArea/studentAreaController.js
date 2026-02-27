@@ -172,6 +172,8 @@ const StudentAreaController = {
 
             await studentAreaModel.deleteAllExsistingStudentsList(data, transact);
 
+            console.log(data,'datadata===');
+
             await studentAreaModel.saveAllStudentsList(data, transact);
 
             await transact.commit();
@@ -309,7 +311,7 @@ const StudentAreaController = {
         });
 
         // before saving centers list delete old list
-        await studentAreaModel.deleteCentersListOld();
+        // await studentAreaModel.deleteCentersListOld();
 
         let [_saveCenterListRes] = await studentAreaModel.saveCentersList(centersListToSave);
 

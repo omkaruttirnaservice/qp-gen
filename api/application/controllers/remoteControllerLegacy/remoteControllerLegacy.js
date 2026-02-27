@@ -45,24 +45,24 @@ const remoteControllerLegacy = {
     }),
 
     getNewExamListV2: asyncHandler(async (req, res) => {
-        console.log(req.body);
         /**
          * This API used to get exam list based on the date provided
          * Exam panel will send which exams id it has already downloaded
          * And also the exam date for which it wants the exam list
          * eg req.body
          * {
-         *     { exam_list: { exam_list: [ 9, 10, 11 ], examDate: '2025-11-06' } }
+         *     { exam_list: { exam_list: [ 9, 10, 11 ], examDate: '2025-11-06', examMode: 'EXAM' | 'MOCK' } }
          * }
          */
 
         try {
             const data = req.body;
-            let _examsList = await remoteModelLegacy.getExamListV2(data);
+            let [_examsList] = await remoteModelLegacy.getExamListV2(data);
 
             if (_examsList.length == 0)
-                return res.status(400).json({
+                return res.status(404).json({
                     call: 0,
+                    message: 'No exams found',
                     data: {},
                 });
 
@@ -161,6 +161,7 @@ const remoteControllerLegacy = {
             }
 
             const _examInfo = exam_info[0];
+            console.log(_examInfo, '_examInfo');
             /**
              * Adding ptl_test_info
              * This is to match the old exam panel structure
@@ -226,11 +227,24 @@ const remoteControllerLegacy = {
                 });
             }
 
+            // if test mode is mock then also send students
+            let _mockStudentsList = null;
+            if (_examInfo.ptl_test_mode === 0) {
+                _mockStudentsList = await db.tn_student_list_mock.findAll({
+                    where: {
+                        sl_batch_no: _examInfo.tm_allow_to,
+                        sl_date: _examInfo.ptl_active_date,
+                    },
+                    raw: true,
+                });
+            }
+
             return res.status(200).json({
                 call: 1,
                 exam_info: exam_info,
                 exam_question: question_paper,
                 _postsList: _postsList,
+                _mockStudentsList: _mockStudentsList ?? [],
             });
         } catch (error) {
             console.log(error);

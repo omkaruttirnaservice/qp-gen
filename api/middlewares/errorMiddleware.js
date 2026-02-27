@@ -4,12 +4,11 @@ dotenv.config();
 
 const errorHandler = (err, req, res, next) => {
     let error = err;
+    // console.log(error, 'error');
     const { originalUrl, method } = req;
 
     console.error(
-        `[ERROR] | [${new Date().toLocaleString()}] | [method]: ${method} | [endpoint]: ${originalUrl} | [error]: ${
-            error?.message
-        }`
+        `[ERROR] | [${new Date().toLocaleString()}] | [method]: ${method} | [endpoint]: ${originalUrl} | [error]: ${error?.message} | [code] : ${error?.code}`,
     );
 
     if (error.code) {
@@ -19,7 +18,7 @@ const errorHandler = (err, req, res, next) => {
                     409,
                     'Duplicate entry. Already exists.',
                     error.errors || [],
-                    error.stack
+                    error.stack,
                 );
                 error.statusCode = 409;
                 break;
@@ -28,7 +27,7 @@ const errorHandler = (err, req, res, next) => {
                     400,
                     'A required field is missing.',
                     error.errors || [],
-                    error.stack
+                    error.stack,
                 );
                 error.statusCode = 400;
                 break;
@@ -37,7 +36,7 @@ const errorHandler = (err, req, res, next) => {
                     500,
                     'Database error occurred.',
                     error.errors || [],
-                    error.stack
+                    error.stack,
                 );
                 error.statusCode = 400;
         }

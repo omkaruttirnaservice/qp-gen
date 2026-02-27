@@ -128,8 +128,8 @@ function MenuBar({ isSidebarOpen }) {
             prev.map((navItem) =>
                 navItem.key === itemKey
                     ? { ...navItem, isChildrensOpen: !navItem.isChildrensOpen }
-                    : navItem
-            )
+                    : navItem,
+            ),
         );
     };
 
@@ -150,15 +150,19 @@ function MenuBar({ isSidebarOpen }) {
                 <div className="flex items-center gap-2 justify-center">
                     {auth?.username && (
                         <>
-                            <CgProfile className="w-6 h-6 text-white" />
                             {isSidebarOpen && (
-                                <div className="flex flex-col items-start">
-                                    <span className="text-xs text-white  font-medium">
-                                        Welcome,
-                                    </span>
-                                    <span className="text-white text-sm text-ellipsis">
-                                        {auth.username}
-                                    </span>
+                                <div className="flex flex-col">
+                                    <CgProfile className="w-6 h-6 text-white" />
+                                    <div className="flex flex-col items-start">
+                                        <span className="text-xs text-white  font-medium">
+                                            Welcome,
+                                        </span>
+                                        <span className="text-white text-sm text-ellipsis">
+                                            {auth.username}
+                                        </span>
+                                    </div>
+
+                                    <Clock />
                                 </div>
                             )}
                         </>
@@ -231,6 +235,43 @@ function MenuBar({ isSidebarOpen }) {
                 </div>
             </div>
         </>
+    );
+}
+
+function Clock() {
+    const [time, setTime] = useState('');
+    const [date, setDate] = useState('');
+    useEffect(() => {
+        const updateClock = () => {
+            const now = new Date();
+
+            // Date formatting (DD-MM-YYYY)
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            setDate(`${day}-${month}-${year}`);
+
+            // Time formatting (HH:MM:SS AM/PM)
+            let hours = now.getHours();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            setTime(`${String(hours).padStart(2, '0')}:${minutes}:${seconds} ${ampm}`);
+        };
+        updateClock();
+        const interval = setInterval(updateClock, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+    return (
+        <div className="bg-white/90 px-4 py-3 shadow-sm">
+            <div className="flex items-center gap-1">
+                <span className="font-mono text-sm font-bold text-gray-800 ">{date}</span>
+            </div>
+            <div className="font-mono text-sm font-bold text-gray-800 ">{time}</div>
+        </div>
     );
 }
 
