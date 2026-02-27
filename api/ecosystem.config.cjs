@@ -1,18 +1,16 @@
 module.exports = {
     apps: [
         {
-            name: 'qp_gen_api',
+            name: 'api.qp.uttirna.in',
             script: 'app.js',
             instances: 1,
             autorestart: true,
-            watch: true,
+            watch: false,
             mode: 'fork',
-            max_memory_restart: '2G',
+            max_memory_restart: '500M',
             env: {
-                NODE_ENV: 'development',
             },
             env_production: {
-                NODE_ENV: 'production',
             },
         },
     ],
