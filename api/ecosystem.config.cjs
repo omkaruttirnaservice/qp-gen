@@ -8,10 +8,8 @@ module.exports = {
             watch: false,
             mode: 'fork',
             max_memory_restart: '500M',
-            env: {
-            },
-            env_production: {
-            },
+            env: {},
+            env_production: {},
         },
     ],
 };
