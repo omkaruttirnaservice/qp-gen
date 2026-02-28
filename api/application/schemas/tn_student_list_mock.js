@@ -103,6 +103,11 @@ export const studentListTableStructure = {
         type: DataTypes.DATEONLY,
         allowNull: true,
     },
+    sl_gender: {
+        type: DataTypes.STRING(10),
+        allowNull: true,
+        default: '-',
+    },
     sl_school_name: {
         type: DataTypes.STRING(500),
         allowNull: true,
