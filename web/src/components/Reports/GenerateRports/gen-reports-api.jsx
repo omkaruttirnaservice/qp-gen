@@ -69,7 +69,6 @@ export const getResultViewData = async (viewResultBy) => {
     }
 
     const data = await _res.json();
-    console.log(data, '==data==');
     return data;
 };
 

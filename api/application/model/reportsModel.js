@@ -73,6 +73,7 @@ const reportsModel = {
 							'id', sub.id,
 							'full_name', CONCAT(sub.sl_f_name,' ',sub.sl_m_name,' ',sub.sl_l_name),
 							'dob', DATE_FORMAT(sub.sl_date_of_birth,'%d-%m-%Y'),
+                            'gender', sl.sl_gender,
 							'post', sub.sl_post,
 							'marks', sub.sfrs_marks_gain,
 							'sfrs_student_roll_no', sub.sfrs_student_roll_no,

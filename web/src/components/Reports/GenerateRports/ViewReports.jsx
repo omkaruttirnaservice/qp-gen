@@ -84,6 +84,12 @@ function ViewReports() {
             name: 'Roll No',
             selector: (row) => row.sfrs_student_roll_no,
         },
+
+        {
+            sortable: true,
+            name: 'Gender',
+            selector: (row) => row.sl_gender,
+        },
         {
             sortable: true,
             name: 'Unattempted',
@@ -220,7 +226,7 @@ function ViewReports() {
         mutationFn: (data) => {
             return getCustomResultExcel(data);
         },
-        onSuccess: (data) => {},
+        onSuccess: (data) => { },
         onError: (error) => {
             console.log(error.message, '==error==');
             toast.error(error?.message || 'Server error');
