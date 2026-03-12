@@ -9,6 +9,16 @@ The `dbSync` script uses Sequelize's `sync` method with the `{ alter: true }` op
 - **Location**: `api/bin/dbSync.js`
 - **Sequelize Command**: `sequelize.sync({ alter: true })`
 
+## Prerequisites
+
+Before running the script, ensure you have a `.env` file configured in the `api` directory with the following database credentials:
+
+- `HOST`: Database host address (e.g., `127.0.0.1`).
+- `DB_USER`: Database username.
+- `DB_PASSWORD`: Database password.
+- `DB_PORT`: Database port (e.g., `3306`).
+- `DB_NAME`: The name of the database to synchronize.
+
 ## How to Run
 
 You can execute this script using `npm` from the `api` directory:
