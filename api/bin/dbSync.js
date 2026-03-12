@@ -34,4 +34,4 @@ const getSync = () => {
         .catch((error) => console.log(error));
 };
 
-export default getSync;
+getSync();
